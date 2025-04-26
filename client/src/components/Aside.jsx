@@ -1,0 +1,88 @@
+import { Card, CardContent } from "./ui/card";
+import Text from "./Text";
+import { Banknote, BedDouble, Calendar, CalendarRange, ChevronRight, UsersRound, XIcon } from "lucide-react";
+import { differenceInDays, format, interval, intlFormatDistance } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useBooking } from "@/hooks/useBooking";
+import { Button } from "./ui/button";
+
+export default function Aside({ action }) {
+  const { booking } = useBooking();
+
+  return (
+    <>
+      <Card className={"w-[16%] h-fit mr-8 mt-8 fixed right-0 top-0"}>
+        <CardContent>
+          <Text heading="h3">Resumo da reserva</Text>
+          <Text heading="small">Durante o cadastro de sua solicitação, realizaremos a previsão de cálculos da sua reserva.</Text>
+          <section className="mt-6 flex flex-col gap-6">
+            <div className="flex flex-col">
+              <header className="flex gap-4">
+                <CalendarRange strokeWidth={3} size={20} className="text-yellow-500" />
+                <strong className="text-sm">Período de estadia</strong>
+              </header>
+              <div className="ml-9">
+                {
+                  booking
+                    ?
+                    <>
+                      <Text heading={"small"}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Text>
+                      <Text heading={"small"}>{format(booking.check_out, "d 'de' MMMM (ccc)", { locale: ptBR })}</Text>
+                      <Text heading={"small"}>Total de {differenceInDays(booking.check_out, booking.check_in)} dia(s)</Text>
+                    </>
+                    :
+                    <Text heading={"small"}>A definir</Text>
+
+                }
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <header className="flex gap-4">
+                <UsersRound strokeWidth={3} size={20} className="text-blue-500" />
+                <strong className="text-sm">Quantidade de pessoas</strong>
+              </header>
+              <div className="ml-9">
+                {
+                  booking
+                    ?
+                    <>
+                      <Text heading={"small"}>1x Titular</Text>
+                      <Text heading={"small"}>{booking.dependents_quantity}x Dependente(s)</Text>
+                      <Text heading={"small"}>{booking.guests_quantity}x Convidado(s)</Text>
+                      <Text heading={"small"}>{booking.children_age_max_quantity}x Criança(s)</Text>
+                      <Text heading={"small"}>Total de {1 + booking.dependents_quantity + booking.guests_quantity + booking.children_age_max_quantity} pessoas</Text>
+                    </>
+                    :
+                    <Text heading={"small"}>A definir</Text>
+
+                }
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <header className="flex gap-4">
+                <BedDouble strokeWidth={3} size={20} className="text-red-500" />
+                <strong className="text-sm">Quartos</strong>
+              </header>
+              <div className="ml-9">
+                <Text heading={"small"}>{booking && booking.rooms ? booking.rooms : "A definir"}</Text>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <header className="flex gap-4">
+                <Banknote strokeWidth={3} size={20} className="text-emerald-600" />
+                <strong className="text-sm">Preço</strong>
+              </header>
+              <div className="ml-9">
+                <Text heading={"small"}>Aguardando escolha dos quartos</Text>
+              </div>
+            </div>
+          </section>
+          <footer className="flex flex-col mt-16 gap-8">
+            <Button variant={"positive"} onClick={action}>Ir para a próxima etapa <ChevronRight /></Button>
+            <Button variant={"destructive"}>Cancelar <XIcon /></Button>
+          </footer>
+        </CardContent>
+      </Card>
+    </>
+  )
+}
