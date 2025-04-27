@@ -45,7 +45,7 @@ export async function getBookingComplete(id) {
             .where('cb.booking_id', id)
     ]);
 
-    const booking = db('bookings').where({ id }).first();
+    const booking = await db('bookings').where({ id }).first();
 
     return { ...booking, guests, dependents, children }
 }

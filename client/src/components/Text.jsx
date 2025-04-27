@@ -7,6 +7,8 @@ export default function Text({ children, heading }) {
         return <h2 className="text-2xl text-sky-950 font-bold">{children}</h2>;
       case 'h3':
         return <h3 className="text-xl text-black font-bold">{children}</h3>;
+      case 'h4':
+        return <h3 className="text-lg text-black font-bold">{children}</h3>;
       case 'small':
         return <p className="text-sm text-muted-foreground">{children}</p>
     }

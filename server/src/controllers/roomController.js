@@ -49,3 +49,17 @@ export async function findRoomById(req, res) {
       res.status(500).json({ error: err.message });
   }
 }
+
+export async function bookRoom(req, res) {
+  try {
+    const { booking_id, rooms, check_in, check_out } = req.body;
+    const result = await roomService.bookRoom(booking_id, rooms);
+    
+    if (!result) return res.status(404).json({ message: "nenhum quarto encontrado." });
+
+    res.status(200).json(result);
+  } catch (err) {
+      logger.error('Error on findAvailableRooms', { err });
+      res.status(500).json({ error: err.message });
+  }
+}

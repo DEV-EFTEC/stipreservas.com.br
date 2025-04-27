@@ -20,7 +20,6 @@ import { BookingProvider } from './hooks/useBooking';
 import { Toaster } from './components/ui/sonner';
 import { AppSidebar } from './components/associate/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
-import GlobalBreadcrumb from './components/associate/GlobalBreadcrumb';
 import "@/lib/setupPDF";
 import GetRoom from './pages/associate/GetRoom';
 

@@ -17,15 +17,15 @@ export async function findRoomById(id) {
 export async function findAvailableRooms(checkIn, checkOut) {
   return db('rooms as r')
     .leftJoin('booking_rooms as br', 'r.id', 'br.room_id')
-    .leftJoin('bookings as b', 'br.booking_id', 'b.id')
-    .where(builder => 
+    .where(builder =>
       builder
-        .whereNull('b.id')
+        .whereNull('br.id')
         .orWhere(function () {
-          this.where('b.check_out', '<=', checkIn)
-          .orWhere('b.check_in', '>=', checkOut);
+          this.where('br.check_in', '>=', checkOut)
+              .orWhere('br.check_out', '<=', checkIn);
         })
     )
     .select('r.*')
-    .groupBy('r.id');
+    .groupBy('r.id')
+    .orderBy("number", "asc");
 }

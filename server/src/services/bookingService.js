@@ -4,7 +4,7 @@ import * as guestsModel from '#models/guestsModel.js';
 import * as childrenModel from '#models/childrenModel.js';
 import _ from 'lodash';
 
-export async function getBooking(id) {
+export async function findBookingById(id) {
     const booking = await bookingModel.findBookingById(id);
     return booking || null;
 }  
@@ -87,11 +87,13 @@ export async function createParticipants(data) {
   };
 }
 
-export async function updateEntityList(entityList, modelUpdateFn) {
+export async function updateEntityList(entityList, modelUpdateFn, fieldsToIgnore = ["id", "utc_created_on", "booking_id"]) {
   return Promise.all(
     entityList.map((entity) => {
-      const { id, ...payload } = entity;
-      return modelUpdateFn(id, payload);
+      const payload = Object.fromEntries(
+        Object.entries(entity).filter(([key]) => !fieldsToIgnore.includes(key))
+      );
+      return modelUpdateFn(entity.id, payload);
     })
   );
 }
@@ -100,9 +102,9 @@ export async function updateParticipants(data) {
   const { dependents, guests, children } = data;
 
   const [updatedDependents, updatedGuests, updatedChildren] = await Promise.all([
-    updateEntityList(dependents, dependentsModel.updateDependent),
-    updateEntityList(guests, guestsModel.updateGuest),
-    updateEntityList(children, childrenModel.updateChild),
+    updateEntityList(dependents, dependentsModel.updateDependent, ["id", "utc_created_on", "dependent_id", "booking_id"]),
+    updateEntityList(guests, guestsModel.updateGuest, ["id", "utc_created_on", "guest_id", "booking_id"]),
+    updateEntityList(children, childrenModel.updateChild, ["id", "utc_created_on", "child_id", "booking_id"]),
   ]);
 
   return {

@@ -18,12 +18,14 @@ import Aside from "@/components/Aside";
 import { useBooking } from "@/hooks/useBooking";
 import { apiRequest } from "@/lib/api";
 import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
+import { useNavigate } from "react-router-dom";
 
 export default function SendDocuments() {
   const { user } = useAuth();
   const { state } = useLocation();
   const { booking, loadingBooking, saveBooking, setBooking } = useBooking();
   const { participants } = state;
+  const navigate = useNavigate();
 
   const {
     list: dependents,
@@ -46,12 +48,20 @@ export default function SendDocuments() {
   useEffect(() => {
     if (loadingBooking) return;
 
+    async function fetchData() {
+      const response = await apiRequest(`/bookings/get-booking-complete?booking_id=${booking.id}`);
+
+      if (response) {
+        setDependents(response.dependents);
+
+        setGuests(response.guests);
+  
+        setChildren(response.children);
+      }
+    }
+
     if (booking) {
-      setDependents(participants.dependents);
-
-      setGuests(participants.guests);
-
-      setChildren(participants.children);
+      fetchData();
     }
   }, [booking]);
 
@@ -75,6 +85,7 @@ export default function SendDocuments() {
     })
 
     saveBooking(result);
+    navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/escolher-quarto`);
 
   }
 
@@ -108,6 +119,7 @@ export default function SendDocuments() {
                     url_receipt_picture: newURL
                   }
                 })}
+                value={booking ? booking.url_receipt_picture : ""}
               />
               <FileUploadBlock
                 label="Carteira de Trabalho Digital"
@@ -123,6 +135,7 @@ export default function SendDocuments() {
                     url_word_card_file: newURL
                   }
                 })}
+                value={booking ? booking.url_word_card_file : ""}
               />
             </CardContent>
           </Card>
@@ -168,6 +181,7 @@ export default function SendDocuments() {
                         documentsAssociation={'dependents'}
                         userId={user.id}
                         setFile={(url) => updateDependent(index, "url_document_picture", url)}
+                        value={dep ? dep.url_document_picture : ""}
                       />
                     </div>
                   </div>
@@ -182,6 +196,7 @@ export default function SendDocuments() {
                           documentsAssociation={'dependents'}
                           userId={user.id}
                           setFile={(url) => updateDependent(index, "url_medical_report", url)}
+                          value={dep ? dep.url_medical_report : ""}
                         />
                       </div>
                       :
@@ -248,6 +263,7 @@ export default function SendDocuments() {
                         documentsAssociation={'dependents'}
                         userId={user.id}
                         setFile={(url) => updateGuest(index, "url_document_picture", url)}
+                        value={gue ? gue.url_document_picture : ""}
                       />
                     </div>
                   </div>
@@ -262,6 +278,7 @@ export default function SendDocuments() {
                           documentsAssociation={'dependents'}
                           userId={user.id}
                           setFile={(url) => updateGuest(index, "url_medical_report", url)}
+                          value={gue ? gue.url_medical_report : ""}
                         />
                       </div>
                       :
@@ -328,6 +345,7 @@ export default function SendDocuments() {
                         documentsAssociation={'dependents'}
                         userId={user.id}
                         setFile={(url) => updateChild(index, "url_document_picture", url)}
+                        value={chi ? chi.url_document_picture : ""}
                       />
                     </div>
                   </div>
@@ -342,6 +360,7 @@ export default function SendDocuments() {
                           documentsAssociation={'dependents'}
                           userId={user.id}
                           setFile={(url) => updateChild(index, "url_medical_report", url)}
+                          value={chi ? chi.url_medical_report : ""}
                         />
                       </div>
                       :
