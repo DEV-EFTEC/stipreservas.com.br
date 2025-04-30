@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import Text from "@/components/Text";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
-import { Baby, BabyIcon, UserRound, UsersRound } from "lucide-react";
+import { Baby, HelpCircle, UserRound, UsersRound } from "lucide-react";
 import { useDynamicList } from "@/hooks/useDynamicList";
 import DatePickerBirth from "@/components/DatePickerBirth";
 import LabeledInput from "@/components/LabeledInput";
@@ -19,12 +19,19 @@ import { useBooking } from "@/hooks/useBooking";
 import { apiRequest } from "@/lib/api";
 import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 import { useNavigate } from "react-router-dom";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 export default function SendDocuments() {
   const { user } = useAuth();
-  const { state } = useLocation();
   const { booking, loadingBooking, saveBooking, setBooking } = useBooking();
-  const { participants } = state;
   const navigate = useNavigate();
 
   const {
@@ -55,7 +62,7 @@ export default function SendDocuments() {
         setDependents(response.dependents);
 
         setGuests(response.guests);
-  
+
         setChildren(response.children);
       }
     }
@@ -86,8 +93,16 @@ export default function SendDocuments() {
 
     saveBooking(result);
     navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/escolher-quarto`);
-
   }
+
+  useEffect(() => {
+    (async () => {
+      const response  = await apiRequest(`/dependents/get-dependent-by-parcial-name?parcial_name=ju&created_by=${user.id}`, {
+        method: "get"
+      })
+      console.log(response);
+    })();
+  }, [])
 
   return (
     <>
@@ -101,7 +116,9 @@ export default function SendDocuments() {
               <Badge variant="">#{booking && booking.id.slice(0, 8)}</Badge>
             </div>
           </div>
+
           <Text heading="h2">Documentos do titular</Text>
+
           <Card className="w-fit mb-7 mt-5">
             <CardContent className="flex gap-15 w-fit">
               <FileUploadBlock
@@ -145,10 +162,34 @@ export default function SendDocuments() {
             {dependents.map((dep, index) => (
               <Card className="w-fit">
                 <CardContent>
-                  <header className="flex items-center gap-2 mb-4">
-                    <UserRound strokeWidth={3} className="text-blue-500" width={20} />
-                    <Text heading={'h3'}>{dep.name ? dep.name : `Dependente ${index + 1}`}</Text>
-                    <Badge variant="">#{dep.id?.slice(0, 8)}</Badge>
+                  <header className="flex w-full justify-between items-center">
+                    <div className="flex items-center gap-2 mb-4">
+                      <UserRound strokeWidth={3} className="text-blue-500" width={20} />
+                      <Text heading={'h3'}>{dep.name ? dep.name : `Dependente ${index + 1}`}</Text>
+                      <Badge variant="">#{dep.id?.slice(0, 8)}</Badge>
+                    </div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant={'secondary'}>Importar dependente</Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className="flex w-full items-center justify-between mb-2">
+                          <Text heading={'h4'}>Importar dependente</Text>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle size={20} strokeWidth={3} className="text-sky-600"/>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Se você realizou outras reservas pela plataforma,<br />os dependentes, convidados e crianças ficaram salvos.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <Input placeholder="Digite o nome parcial ou completo..." className={"mb-4"} />
+                        <Button variant={'default'} className={'w-full'}>Buscar</Button>
+                      </PopoverContent>
+                    </Popover>
                   </header>
                   <div className="flex flex-col gap-8 mb-8">
                     <div className="flex gap-15">

@@ -24,8 +24,8 @@ export async function createRoom(req, res) {
 
 export async function findAvailableRooms(req, res) {
   try {
-      const { check_in, check_out } = req.query;
-      const result = await roomService.findAvailableRooms(check_in, check_out);
+      const { check_in, check_out, capacity } = req.query;
+      const result = await roomService.findAvailableRooms(check_in, check_out, capacity);
       
       if (!result) return res.status(404).json({ message: "Nenhum quarto disponível para essas datas." });
 
@@ -52,8 +52,8 @@ export async function findRoomById(req, res) {
 
 export async function bookRoom(req, res) {
   try {
-    const { booking_id, rooms, check_in, check_out } = req.body;
-    const result = await roomService.bookRoom(booking_id, rooms);
+    const { rooms } = req.body;
+    const result = await roomService.bookRoom(rooms);
     
     if (!result) return res.status(404).json({ message: "nenhum quarto encontrado." });
 

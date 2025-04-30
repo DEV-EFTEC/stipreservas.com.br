@@ -55,3 +55,14 @@ export async function findDependentsByUser(req, res) {
     res.status(500).json({ error: 'Erro ao encontrar Dependents' });
   }
 }
+
+export async function getDependetByParcialName(req, res) {
+  try {
+    const { parcial_name, created_by } = req.query;
+    const dependents = await dependentsServices.getDependetByParcialName(parcial_name, created_by);
+    res.status(200).json({ dependents });
+  } catch (err) {
+    logger.error('Error on findDependentsByUser', { err });
+    res.status(500).json({ error: 'Erro ao encontrar Dependents' });
+  }
+}

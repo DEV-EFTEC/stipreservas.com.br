@@ -22,6 +22,8 @@ import { AppSidebar } from './components/associate/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
 import "@/lib/setupPDF";
 import GetRoom from './pages/associate/GetRoom';
+import BookingDetails from './pages/associate/BookingDetails';
+import FinishBook from './pages/associate/FinishBook';
 
 let router = createBrowserRouter([
   {
@@ -96,6 +98,34 @@ let router = createBrowserRouter([
             <AppSidebar />
             <SidebarTrigger />
             <GetRoom />
+          </BookingProvider>
+        </SidebarProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/criar-reserva/:id/finalizar-reserva",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SidebarProvider>
+          <BookingProvider>
+            <AppSidebar />
+            <SidebarTrigger />
+            <FinishBook />
+          </BookingProvider>
+        </SidebarProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/solicitacao/:id",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SidebarProvider>
+          <BookingProvider>
+            <AppSidebar />
+            <SidebarTrigger />
+            <BookingDetails />
           </BookingProvider>
         </SidebarProvider>
       </ProtectedRoute>

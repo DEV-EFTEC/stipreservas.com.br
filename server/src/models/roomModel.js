@@ -14,7 +14,7 @@ export async function findRoomById(id) {
   return db('rooms').select('*').where(id);
 }
 
-export async function findAvailableRooms(checkIn, checkOut) {
+export async function findAvailableRooms(checkIn, checkOut, capacity) {
   return db('rooms as r')
     .leftJoin('booking_rooms as br', 'r.id', 'br.room_id')
     .where(builder =>
@@ -25,7 +25,18 @@ export async function findAvailableRooms(checkIn, checkOut) {
               .orWhere('br.check_out', '<=', checkIn);
         })
     )
+    .modify(queryBuilder => {
+      if (capacity < 5) {
+        queryBuilder.where('r.capacity', 4);
+      }
+    })
     .select('r.*')
     .groupBy('r.id')
     .orderBy("number", "asc");
+}
+
+
+export async function bookRoom(data) {
+  console.log(data)
+  return db('booking_rooms').insert(data);
 }

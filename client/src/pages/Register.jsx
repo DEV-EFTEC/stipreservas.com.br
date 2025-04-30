@@ -41,7 +41,7 @@ export default function Register() {
             email: "",
             birth_date: "",
             role: "associate",
-            associate_role: "partner",
+            associate_role: "contributor",
             password: ""
         }
     });
@@ -53,7 +53,7 @@ export default function Register() {
         })
         
         if (result) {
-            navigate("/login");
+            navigate("/signin");
         }
     }
 

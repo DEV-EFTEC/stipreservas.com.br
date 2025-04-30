@@ -1,7 +1,3 @@
-/**
- * Migration using knex.raw to create enums and tables
- */
-
 export async function up(knex) {
   await knex.raw(`
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -15,8 +11,11 @@ export async function up(knex) {
       'closed',
       'approved',
       'payment_pending',
-      'cancelled'
+      'cancelled',
+      'incomplete'
     );
+    CREATE TYPE booking_presence AS ENUM ('pending', 'not_present', 'present');
+    CREATE TYPE payment_status AS ENUM ('pending', 'paid', 'expired');
 
     CREATE TABLE users (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -93,7 +92,9 @@ export async function up(knex) {
       children_age_max_quantity INTEGER NOT NULL,
       url_receipt_picture TEXT,
       url_word_card_file TEXT,
-      status booking_status NOT NULL DEFAULT 'pending_approval',
+      status booking_status NOT NULL DEFAULT 'incomplete',
+      presence_role booking_presence NOT NULL DEFAULT 'pending',
+      partner_presence BOOLEAN NOT NULL,
       expires_at TIMESTAMPTZ,
       utc_created_on TIMESTAMP NOT NULL DEFAULT NOW()
     );
@@ -134,6 +135,7 @@ export async function up(knex) {
       user_id UUID NOT NULL REFERENCES users(id),
       link TEXT NOT NULL,
       price NUMERIC(10,2) NOT NULL,
+      status_role payment_status NOT NULL DEFAULT 'pending',
       utc_created_on TIMESTAMP NOT NULL DEFAULT NOW()
     );
   `);
@@ -144,6 +146,6 @@ export async function down(knex) {
     DROP TABLE IF EXISTS payments, children_bookings, dependents_bookings, guests_bookings,
     booking_rooms, bookings, children, dependents, guests, rooms, users CASCADE;
 
-    DROP TYPE IF EXISTS booking_status, user_role_associate, user_type_role, payment_status;
+    DROP TYPE IF EXISTS user_type_role, user_role_associate, booking_status, booking_presence, payment_status;
   `);
 }

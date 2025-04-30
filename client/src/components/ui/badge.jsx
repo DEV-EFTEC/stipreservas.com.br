@@ -33,6 +33,8 @@ const badgeVariants = cva(
           "border-transparent bg-pink-700 text-pink-50 [a&]:hover:bg-pink-700/90",
         preferential:
           "border-transparent bg-sky-700 text-sky-50 [a&]:hover:bg-sky-700/90",
+        incomplete:
+          "border-transparent bg-violet-700 text-violet-50 [a&]:hover:bg-violet-700/90",
       },
     },
     defaultVariants: {

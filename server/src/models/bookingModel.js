@@ -11,8 +11,18 @@ export async function findBookingsByUser(userId) {
 }
 
 export async function createBooking(data) {
-    return db('bookings').insert(data).returning("*");
+    const [book] = await db('bookings').insert(data).returning("*");
+
+    const [updatedBooking] = await db("bookings")
+        .where({ id: book.id })
+        .update({
+            expires_at: db.raw(`"utc_created_on" + interval '30 minutes'`)
+        })
+        .returning('*');
+    
+    return updatedBooking;
 }
+
 
 export async function updateBooking(id, data) {
     const [updated] = await db('bookings').where({ id }).update(data).returning('*');
@@ -21,16 +31,16 @@ export async function updateBooking(id, data) {
 
 export async function deleteBooking(id) {
     return db.transaction(async (trx) => {
-      await trx('guests_bookings').where({ booking_id: id }).delete();
-      await trx('children_bookings').where({ booking_id: id }).delete();
-      await trx('dependents_bookings').where({ booking_id: id }).delete();
-      await trx('booking_rooms').where({ booking_id: id }).delete();
-  
-      await trx('bookings').where({ id }).delete();
+        await trx('guests_bookings').where({ booking_id: id }).delete();
+        await trx('children_bookings').where({ booking_id: id }).delete();
+        await trx('dependents_bookings').where({ booking_id: id }).delete();
+        await trx('booking_rooms').where({ booking_id: id }).delete();
+
+        await trx('bookings').where({ id }).delete();
     });
-  }
+}
 export async function getBookingComplete(id) {
-    const [guests, dependents, children] = await Promise.all([
+    const [guests, dependents, children, rooms] = await Promise.all([
         db('guests_bookings as gb')
             .join('guests as g', 'gb.guest_id', 'g.id')
             .select('*')
@@ -42,10 +52,14 @@ export async function getBookingComplete(id) {
         db('children_bookings as cb')
             .join('children as c', 'cb.child_id', 'c.id')
             .select('*')
-            .where('cb.booking_id', id)
+            .where('cb.booking_id', id),
+        db('booking_rooms as br')
+            .join('rooms as r', "br.room_id", "r.id")
+            .select('*')
+            .where('br.booking_id', id),
     ]);
 
     const booking = await db('bookings').where({ id }).first();
 
-    return { ...booking, guests, dependents, children }
+    return { ...booking, guests, dependents, children, rooms }
 }

@@ -4,6 +4,7 @@ import logger from '#core/logger.js';
 import cors from '#middlewares/cors.js';
 import routes from '#routes/index.js';
 import requestLogger from '#middlewares/request-logger.js';
+import "#jobs/expireBookings.js";
 
 const app = express();
 dotenv.config();

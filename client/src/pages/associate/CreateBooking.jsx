@@ -26,6 +26,7 @@ import Text from "@/components/Text";
 import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 import { Label } from "@/components/ui/label";
 import { Baby, User, Users } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CreateBooking() {
   const { user, loading } = useAuth();
@@ -34,7 +35,8 @@ export default function CreateBooking() {
   const [date, setDate] = useState({
     from: addDays(new Date(), 7),
     to: addDays(new Date(), 13),
-  })
+  });
+  const [partnerPresence, setPartnerPresence] = useState(true);
 
   const formSchema = z.object({
     name: z.string(),
@@ -76,9 +78,11 @@ export default function CreateBooking() {
       body: JSON.stringify({
         ...values,
         check_in: date.from,
-        check_out: date.to
+        check_out: date.to,
+        partner_presence: partnerPresence
       })
     })
+    console.log(result)
     if (result) {
       const resultParticipants = await apiRequest("/bookings/create-participants", {
         method: "POST",
@@ -90,7 +94,7 @@ export default function CreateBooking() {
           booking_id: result.id
         })
       });
-      saveBooking({ ...values, check_in: date.from, check_out: date.to, id: result.id });
+      saveBooking({ ...values, check_in: date.from, check_out: date.to, id: result.id, partner_presence: partnerPresence });
       navigate(`/associado/criar-reserva/${result.id.slice(0, 8)}/enviar-documentos`, {
         state: { participants: resultParticipants }
       });
@@ -174,6 +178,19 @@ export default function CreateBooking() {
                       </FormItem>
                     )}
                   />
+                  {
+                    user.associate_role == "partner"
+                    &&
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="partner_presence" onCheckedChange={(checked) => setPartnerPresence(checked)}/>
+                      <label
+                        htmlFor="partner_presence"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Sócio estará presente?
+                      </label>
+                    </div>
+                  }
                 </div>
                 <hr />
                 <div>
@@ -193,7 +210,7 @@ export default function CreateBooking() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <User size={20} strokeWidth={3} className="text-blue-500"/>
+                            <User size={20} strokeWidth={3} className="text-blue-500" />
                             Dependentes
                           </FormLabel>
                           <FormControl>
@@ -209,7 +226,7 @@ export default function CreateBooking() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <Users size={20} strokeWidth={3} className="text-pink-500"/>
+                            <Users size={20} strokeWidth={3} className="text-pink-500" />
                             Convidados
                           </FormLabel>
                           <FormControl>
@@ -225,7 +242,7 @@ export default function CreateBooking() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            <Baby size={20} strokeWidth={3} className="text-orange-500"/>
+                            <Baby size={20} strokeWidth={3} className="text-orange-500" />
                             Menores de 5 anos
                           </FormLabel>
                           <FormControl>

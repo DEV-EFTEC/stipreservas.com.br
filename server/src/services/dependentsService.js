@@ -19,3 +19,7 @@ export async function findDependentById(id) {
 export async function findDependentsByUser(id) {
   return dependentsModel.findDependentsByUser(id);
 }
+
+export async function getDependetByParcialName(parcialName, createdBy) {
+  return dependentsModel.getDependetByParcialName(parcialName, createdBy);
+}

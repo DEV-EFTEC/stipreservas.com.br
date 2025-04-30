@@ -5,9 +5,11 @@ import { differenceInDays, format, interval, intlFormatDistance } from "date-fns
 import { ptBR } from "date-fns/locale";
 import { useBooking } from "@/hooks/useBooking";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function Aside({ action }) {
   const { booking } = useBooking();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -50,7 +52,7 @@ export default function Aside({ action }) {
                       <Text heading={"small"}>{booking.dependents_quantity}x Dependente(s)</Text>
                       <Text heading={"small"}>{booking.guests_quantity}x Convidado(s)</Text>
                       <Text heading={"small"}>{booking.children_age_max_quantity}x Criança(s)</Text>
-                      <Text heading={"small"}>Total de {1 + booking.dependents_quantity + booking.guests_quantity + booking.children_age_max_quantity} pessoas</Text>
+                      <Text heading={"small"}>Total de { } pessoas</Text>
                     </>
                     :
                     <Text heading={"small"}>A definir</Text>
@@ -79,7 +81,7 @@ export default function Aside({ action }) {
           </section>
           <footer className="flex flex-col mt-16 gap-8">
             <Button variant={"positive"} onClick={action}>Ir para a próxima etapa <ChevronRight /></Button>
-            <Button variant={"destructive"}>Cancelar <XIcon /></Button>
+            <Button variant={"destructive"} onClick={() => navigate("/associado/home")}>Cancelar <XIcon /></Button>
           </footer>
         </CardContent>
       </Card>

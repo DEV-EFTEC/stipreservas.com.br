@@ -20,13 +20,18 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function GetRoom() {
   const [rooms, setRooms] = useState([]);
   const [userType, setUserType] = useState();
+  const [selectedRoomsNumber, setSelectedRoomsNumber] = useState([]);
+  const [selectedRoomsCapacity, setSelectedRoomsCapacity] = useState(0);
   const [selectedRooms, setSelectedRooms] = useState([]);
+  const [peopleCapacity, setPeopleCapacity] = useState(0);
   const { booking } = useBooking();
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (loading) return;
@@ -34,8 +39,10 @@ export default function GetRoom() {
     setUserType(user.associate_role);
 
     if (booking) {
+      const qtd = (booking.partner_presence ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity + booking.children_age_max_quantity;
+      setPeopleCapacity(qtd);
       (async () => {
-        const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}`);
+        const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}`);
         setRooms(response);
       })()
     }
@@ -48,8 +55,35 @@ export default function GetRoom() {
     "3": "3º Andar",
   }
 
-  return (
+  function handleSelectRoom(room) {
+    setSelectedRoomsNumber(prevState => [...prevState, room.number]); setSelectedRoomsCapacity(prevState => prevState + room.capacity);
+    setSelectedRooms(prevState => [...prevState, {
+      booking_id: booking.id,
+      room_id: room.id,
+      check_in: booking.check_in,
+      check_out: booking.check_out
+    }])
+  }
 
+  function handleUnselectRoom(room) {
+    setSelectedRoomsNumber(prevState => prevState.filter(r => r !== room.number));
+    setSelectedRoomsCapacity(prevState => prevState - room.capacity);
+    setSelectedRooms(prevState => prevState.filter(r => r.room_id !== room.id));
+  }
+
+  useEffect(() => {
+    console.log(selectedRooms);
+  }, [selectedRooms])
+
+  function handleSubmit() {
+    apiRequest(`/rooms/book-room`, {
+      method: "POST",
+      body: JSON.stringify({rooms: selectedRooms})
+    });
+
+    navigate(`/associado/criar-reserva/${booking.id.slice(0,8)}/finalizar-reserva?booking_id=${booking.id}`);
+  }
+  return (
     <section className="flex w-full p-20 justify-between">
       <section className="w-[80%]">
         <GlobalBreadcrumb />
@@ -57,7 +91,7 @@ export default function GetRoom() {
         <section className="grid xl:grid-cols-3 gap-3 sm:grid-cols-1 lg:grid-cols-2 md:grid-cols-1 w-full">
           {
             rooms.map((room, index) => (
-              <Card className={"flex flex-col justify-between"}>
+              <Card className={`flex flex-col justify-between ${selectedRooms.includes(room.number) && "border-teal-500"}`}>
                 <CardContent>
                   <Text heading={"h4"}>Quarto {room.number < 10 ? `0${room.number}` : room.number}</Text>
                   <div className="flex flex-col space-y-2 mt-4">
@@ -103,20 +137,20 @@ export default function GetRoom() {
                           </div>
                         </div>
                         <AlertDialog>
-                          <AlertDialogTrigger className="w-full">
-                            {
-                              selectedRooms.includes(room.number)
-                                ?
-                                <Button variant={"selected"} className={"w-full"}>
-                                  Sua seleção
-                                </Button>
-                                :
-                                <Button className={"w-full"} onClick={() => setSelectedRooms(prevState => [...prevState, room.number])}>
+                          {
+                            selectedRoomsNumber.includes(room.number)
+                              ?
+                              <Button variant={"selected"} className={"w-full"} onClick={() => handleUnselectRoom(room)}>
+                                Cancelar seleção
+                              </Button>
+                              :
+                              <AlertDialogTrigger className="w-full">
+                                <Button className={"w-full"} onClick={() => handleSelectRoom(room)} disabled={selectedRoomsCapacity >= peopleCapacity}>
                                   Selecionar
                                 </Button>
-                            }
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className={"bg-amber-500"}>
+                              </AlertDialogTrigger>
+                          }
+                          <AlertDialogContent className={"bg-amber-400"}>
                             <AlertDialogHeader>
                               <AlertDialogTitle className={"text-white"}>Atenção!</AlertDialogTitle>
                               <AlertDialogDescription className={"text-white"}>
@@ -150,13 +184,13 @@ export default function GetRoom() {
                           </div>
                         </div>
                         {
-                          selectedRooms.includes(room.number)
+                          selectedRoomsNumber.includes(room.number)
                             ?
-                            <Button variant={"selected"} className={"w-full"}>
-                              Sua seleção
+                            <Button variant={"selected"} className={"w-full"} onClick={() => handleUnselectRoom(room)}>
+                              Cancelar seleção
                             </Button>
                             :
-                            <Button className={"w-full"} onClick={() => setSelectedRooms(prevState => [...prevState, room.number])}>
+                            <Button className={"w-full"} onClick={() => handleSelectRoom(room)} disabled={selectedRoomsCapacity >= peopleCapacity}>
                               Selecionar
                             </Button>
                         }
@@ -168,7 +202,7 @@ export default function GetRoom() {
           }
         </section>
       </section>
-      <Aside />
+      <Aside action={handleSubmit}/>
     </section>
   )
 }

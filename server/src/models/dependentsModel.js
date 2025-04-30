@@ -34,3 +34,11 @@ export async function getDependentsByBooking(booking_id) {
     .where('db.booking_id', booking_id)
     .select('d.*');
 }
+
+export async function getDependetByParcialName(partialName, created_by) {
+  const dependents = await db('dependents')
+    .whereILike('name', `${partialName}%`)
+    .andWhere({ created_by });
+
+  return dependents;
+}

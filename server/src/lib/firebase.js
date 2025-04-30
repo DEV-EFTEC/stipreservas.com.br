@@ -2,7 +2,11 @@ import logger from "#core/logger.js";
 import { v4 as uuid } from "uuid";
 import { initializeApp, cert } from "firebase-admin/app";
 import { getStorage } from "firebase-admin/storage";
-import serviceAccount from "../../serviceCredentials.json" with { type: "json" }
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 initializeApp({
   credential: cert(serviceAccount),

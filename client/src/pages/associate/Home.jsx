@@ -19,7 +19,6 @@ import {
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import Text from "@/components/Text";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
 import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 
 export function Home() {
@@ -75,6 +74,7 @@ export function Home() {
     "approved": "Aprovado",
     "payment_pending": "Pagamento pendente",
     "cancelled": "Cancelado",
+    "incomplete": "Incompleta"
   }
 
   return (
@@ -122,7 +122,7 @@ export function Home() {
               <TableCell>{format(booking.check_out, "dd/MM/yyyy")}</TableCell>
               <TableCell>{format(booking.utc_created_on, "dd/MM/yyyy 'às' HH:mm")}</TableCell>
               <TableCell className={"w-min"}>
-                <Button variant={"outline"} size={"sm"}>Ver detalhes</Button>
+                <Button variant={"outline"} size={"sm"} onClick={() => navigate(`/associado/solicitacao/${booking.id.slice(0, 8)}?booking_id=${booking.id}`)}>Ver detalhes</Button>
               </TableCell>
             </TableRow>
           ))}
