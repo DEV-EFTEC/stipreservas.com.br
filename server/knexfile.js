@@ -5,11 +5,11 @@ export default {
   development: {
     client: 'pg',
     connection: {
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'devlyh',
-      password: process.env.DB_PASSWORD || 'abc',
-      database: process.env.DB_NAME || 'stipreservas',
-      port: process.env.DB_PORT || 5432,
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT
     },
     migrations: {
       directory: './migrations',
@@ -21,7 +21,13 @@ export default {
 
   production: {
     client: 'pg',
-    connection: process.env.DATABASE_URL, // Ideal para Railway
+    connection: {
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT,
+    },
     migrations: {
       directory: './migrations',
     },

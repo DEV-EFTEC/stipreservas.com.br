@@ -18,7 +18,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --watch ./src/index.js"
+    "start": "cross-env NODE_ENV=production node ./src/index.js",
+    "dev": "cross-env NODE_ENV=development node --watch ./src/index.js",
+    "migrate": "knex migrate:latest --env $NODE_ENV"
   },
   "keywords": [],
   "author": "",
@@ -36,5 +38,8 @@
     "node-cron": "^3.0.3",
     "pg": "^8.14.1",
     "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
