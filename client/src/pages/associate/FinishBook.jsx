@@ -2,16 +2,18 @@ import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 import Text from "@/components/Text";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
 
 export default function FinishBook() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const booking_id = queryParams.get("booking_id");
+  const navigate = useNavigate();
 
   const [booking, setBooking] = useState();
 
@@ -22,7 +24,6 @@ export default function FinishBook() {
       });
 
       setBooking(response);
-      console.log(response);
     })()
   }, [])
 
@@ -35,6 +36,20 @@ export default function FinishBook() {
     "payment_pending": "Pagamento pendente",
     "cancelled": "Cancelado",
     "incomplete": "Incompleto"
+  }
+
+  function handleSubmit() {
+    apiRequest(`/bookings/update-booking`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: booking_id,
+        status: "pending_approval"
+      })
+    })
+
+    localStorage.removeItem("booking")
+
+    navigate("/associado/home");
   }
 
   return (
@@ -95,6 +110,7 @@ export default function FinishBook() {
               }
             </div>
           </div>
+          <Button variant="positive" onClick={handleSubmit}>Finalizar reserva</Button>
         </section>
       }
     </section>

@@ -30,7 +30,6 @@ function info(msg, context) {
     }
 
     params.push('');
-    console.log(params.join(''));
 }
 
 function errorFn(error, context) {

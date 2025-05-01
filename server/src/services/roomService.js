@@ -13,10 +13,14 @@ export async function findRoomById(id) {
   return roomModel.findRoomById(id);
 }
 
-export async function findAvailableRooms(checkIn, checkOut, capacity) {
-  return roomModel.findAvailableRooms(checkIn, checkOut, capacity);
+export async function findAvailableRooms(checkIn, checkOut, capacity, bookingId) {
+  return roomModel.findAvailableRooms(checkIn, checkOut, capacity, bookingId);
 }
 
 export async function bookRoom(data) {
   return roomModel.bookRoom(data);
+}
+
+export async function unselectRoom(bookingId, roomId) {
+  return roomModel.unselectRoom(bookingId, roomId)
 }

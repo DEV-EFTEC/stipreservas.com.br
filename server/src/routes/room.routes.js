@@ -8,5 +8,6 @@ router.post('/', roomController.createRoom);
 router.get('/get-rooms', roomController.getAll);
 router.get('/get-available-rooms', roomController.findAvailableRooms);
 router.post('/book-room', roomController.bookRoom);
+router.post('/unselect-room', roomController.unselectRoom);
 
 export default router;

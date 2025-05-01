@@ -98,6 +98,7 @@ let router = createBrowserRouter([
             <AppSidebar />
             <SidebarTrigger />
             <GetRoom />
+            <Toaster richColors/>
           </BookingProvider>
         </SidebarProvider>
       </ProtectedRoute>

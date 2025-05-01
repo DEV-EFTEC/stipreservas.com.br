@@ -25,8 +25,6 @@ export function FileUploadBlock({
   const [preview, setPreview] = useState(value);
   const [fileName, setFileName] = useState("");
 
-  console.log({ preview, value })
-
   async function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;

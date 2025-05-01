@@ -22,7 +22,6 @@ export default function BookingDetails() {
       });
 
       setBooking(response);
-      console.log(response);
     })()
   }, [])
 

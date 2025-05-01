@@ -88,6 +88,8 @@ export async function createParticipants(data) {
 }
 
 export async function updateEntityList(entityList, modelUpdateFn, fieldsToIgnore = ["id", "utc_created_on", "booking_id"]) {
+  if (!Array.isArray(entityList) || entityList.length === 0) return [];
+
   return Promise.all(
     entityList.map((entity) => {
       const payload = Object.fromEntries(
@@ -99,12 +101,22 @@ export async function updateEntityList(entityList, modelUpdateFn, fieldsToIgnore
 }
 
 export async function updateParticipants(data) {
-  const { dependents, guests, children } = data;
+  const {
+    dependents = [],
+    guests = [],
+    children = []
+  } = data;
 
   const [updatedDependents, updatedGuests, updatedChildren] = await Promise.all([
-    updateEntityList(dependents, dependentsModel.updateDependent, ["id", "utc_created_on", "dependent_id", "booking_id"]),
-    updateEntityList(guests, guestsModel.updateGuest, ["id", "utc_created_on", "guest_id", "booking_id"]),
-    updateEntityList(children, childrenModel.updateChild, ["id", "utc_created_on", "child_id", "booking_id"]),
+    dependents.length
+      ? updateEntityList(dependents, dependentsModel.updateDependent, ["id", "utc_created_on", "dependent_id", "booking_id"])
+      : [],
+    guests.length
+      ? updateEntityList(guests, guestsModel.updateGuest, ["id", "utc_created_on", "guest_id", "booking_id"])
+      : [],
+    children.length
+      ? updateEntityList(children, childrenModel.updateChild, ["id", "utc_created_on", "child_id", "booking_id"])
+      : [],
   ]);
 
   return {

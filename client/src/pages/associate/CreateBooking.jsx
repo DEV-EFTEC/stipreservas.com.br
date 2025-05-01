@@ -82,7 +82,6 @@ export default function CreateBooking() {
         partner_presence: partnerPresence
       })
     })
-    console.log(result)
     if (result) {
       const resultParticipants = await apiRequest("/bookings/create-participants", {
         method: "POST",
@@ -109,7 +108,7 @@ export default function CreateBooking() {
         <section className="flex w-full p-20 justify-between">
           <section className="w-full">
             <GlobalBreadcrumb />
-            <div className="flex flex-col gap-8 mb-6">
+            <div className="flex flex-col space-y-4 mb-6">
               <Text heading={"h1"}>Nova solicitação</Text>
               <Text heading={"h2"}>Informações do titular</Text>
             </div>
