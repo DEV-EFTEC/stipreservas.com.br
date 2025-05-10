@@ -44,7 +44,7 @@ export function Home() {
 
     socket.on("new-booking-response", (data) => {
       console.log("Nova solicitação de", data);
-      toast.success(`Nova solicitação de ${data.userName}`);
+      toast.info(`Nova solicitação do usuário: ${data.userId}`);
     });
   
     // Emitir evento de teste

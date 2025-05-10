@@ -50,7 +50,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("new-booking", (data) => {
-        logger.info("Nova reserva recebida:", data);
+        logger.info("Nova reserva recebida:", data.userId);
         socket.broadcast.emit("new-booking-response", data); // ✅ envia para todos os outros
     });
 
