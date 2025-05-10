@@ -1,3 +1,5 @@
+import { createServer } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 import express from 'express';
 import dotenv from 'dotenv';
 import logger from '#core/logger.js';
@@ -6,8 +8,16 @@ import routes from '#routes/index.js';
 import requestLogger from '#middlewares/request-logger.js';
 import "#jobs/expireBookings.js";
 
-const app = express();
 dotenv.config();
+
+const app = express();
+const httpServer = createServer(app); // criar servidor HTTP
+const io = new SocketIOServer(httpServer, {
+    cors: {
+        origin: "*", // ou defina as origens permitidas
+        methods: ["GET", "POST"]
+    }
+});
 
 function fatalHandler(err) {
     logger.error(err, { FATAL: true });
@@ -17,12 +27,36 @@ function fatalHandler(err) {
 process.on('uncaughtException', fatalHandler);
 process.on('unhandledRejection', fatalHandler);
 
+// middlewares
 app.use(requestLogger);
 app.use(cors);
 app.use(express.json());
 
+// rotas
 routes(app);
 
-app.listen(process.env.API_HTTP_PORT, () => {
-    logger.info(`http server opended on http://localhost:${process.env.API_HTTP_PORT}`)
-})
+// socket.io handlers
+io.on("connection", (socket) => {
+    logger.info(`Usuário conectado: ${socket.id}`);
+
+    socket.on("disconnect", () => {
+        logger.info(`Usuário desconectado: ${socket.id}`);
+    });
+
+    // exemplo de canal personalizado
+    socket.on("custom-event", (data) => {
+        logger.info("Evento recebido:", data);
+        socket.emit("custom-event-response", { message: "Recebido!" });
+    });
+
+    socket.on("new-booking", (data) => {
+        logger.info("Nova reserva recebida:", data);
+        socket.broadcast.emit("new-booking-response", data); // ✅ envia para todos os outros
+    });
+
+});
+
+// iniciar servidor HTTP com WebSocket
+httpServer.listen(process.env.API_HTTP_PORT, () => {
+    logger.info(`Servidor HTTP+WebSocket rodando em http://localhost:${process.env.API_HTTP_PORT}`);
+});

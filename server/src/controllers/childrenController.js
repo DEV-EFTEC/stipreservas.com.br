@@ -50,7 +50,7 @@ export async function findChildrenByUser(req, res) {
   try {
     const { id } = req.query;
     const children = await childrenService.findChildrenByUser(id);
-    res.status(200).json({ children });
+    res.status(200).json(children);
   } catch (err) {
     logger.error('Error on createChildren', { err });
     res.status(500).json({ error: 'Erro ao criar children' });

@@ -8,7 +8,7 @@ import {
 import { CircleHelp } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { sendDocument } from "@/lib/storage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 
 export function FileUploadBlock({
@@ -24,6 +24,8 @@ export function FileUploadBlock({
 }) {
   const [preview, setPreview] = useState(value);
   const [fileName, setFileName] = useState("");
+  const [isImage, setIsImage] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   async function handleFileChange(e) {
     const file = e.target.files[0];
@@ -54,11 +56,13 @@ export function FileUploadBlock({
 
         const imgData = canvas.toDataURL();
         setPreview(imgData);
+        setIsImage(false);
       };
       fileReader.readAsArrayBuffer(file);
     } else {
       const localPreviewUrl = URL.createObjectURL(file);
       setPreview(localPreviewUrl);
+      setIsImage(true);
     }
 
     const documentUrl = await sendDocument(
@@ -71,6 +75,35 @@ export function FileUploadBlock({
 
     if (documentUrl) {
       setFile(documentUrl.fileUrl);
+    }
+  }
+
+  useEffect(() => {
+    if (!value) return;
+
+    // Tenta carregar como imagem
+    const img = new Image();
+    img.onload = () => {
+      setIsImage(true);
+      setPreview(value);
+    };
+    img.onerror = () => {
+      setIsImage(false);
+      setPreview(value);
+    };
+    img.src = value;
+  }, [value]);
+
+  function getFileNameFromFirebaseUrl(url) {
+    try {
+      const decodedPath = decodeURIComponent(
+        new URL(url).pathname.split("/o/")[1].split("?")[0]
+      )
+      const parts = decodedPath.split("/")
+      return parts[parts.length - 1] // último item do caminho
+    } catch (err) {
+      console.error("Erro ao extrair nome do arquivo:", err)
+      return null
     }
   }
 
@@ -97,11 +130,26 @@ export function FileUploadBlock({
       </div>
 
       {preview ? (
-        <div className="flex items-center border rounded-md px-3 py-2 gap-3 w-80 bg-white">
+        <div
+          className="flex items-center border rounded-md px-3 py-2 gap-3 w-80 bg-white cursor-pointer"
+          onClick={() => !isImage && setShowModal(true)}
+        >
           <div className="w-10 h-10 flex-shrink-0 overflow-hidden rounded-md border">
-            <img src={preview} alt="Preview" className="object-cover w-full h-full" />
+            {isImage ? (
+              <img
+                src={preview}
+                alt="Preview"
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                PDF
+              </div>
+            )}
           </div>
-          <span className="text-sm text-gray-700 truncate">{fileName}</span>
+          <span className="text-sm text-gray-700 truncate">
+            {value ? getFileNameFromFirebaseUrl(value) : fileName}
+          </span>
         </div>
       ) : (
         <Input
@@ -110,6 +158,25 @@ export function FileUploadBlock({
           onChange={handleFileChange}
           accept="image/*,application/pdf"
         />
+      )}
+
+      {/* Modal para PDF */}
+      {showModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-10 flex items-center justify-center z-50"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg overflow-hidden w-11/12 h-5/6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <iframe
+              src={value}
+              title="Documento"
+              className="w-full h-full"
+            />
+          </div>
+        </div>
       )}
     </div>
   );

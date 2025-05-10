@@ -33,5 +33,9 @@ export function BookingProvider({ children }) {
 }
 
 export function useBooking() {
-  return useContext(BookingContext);
+  try {
+    return useContext(BookingContext);
+  } catch (err) {
+    throw new Error('useBooking precisa estar envolto por BookingProvider');
+  }
 }

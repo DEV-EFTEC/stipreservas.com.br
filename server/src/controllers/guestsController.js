@@ -48,8 +48,8 @@ export async function findGuestById(req, res) {
 export async function findGuestsByUser(req, res) {
   try {
     const { id } = req.query;
-    const Guests = await guestsServices.findGuestsByUser(id);
-    res.status(200).json({ Guests });
+    const guests = await guestsServices.findGuestsByUser(id);
+    res.status(200).json(guests);
   } catch (err) {
     logger.error('Error on findGuestsByUser', { err });
     res.status(500).json({ error: 'Erro ao encontrar Guests' });

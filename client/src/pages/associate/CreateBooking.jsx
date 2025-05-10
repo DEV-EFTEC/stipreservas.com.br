@@ -1,9 +1,8 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDays, format } from "date-fns";
+import { addDays } from "date-fns";
 import { apiRequest } from "@/lib/api";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -25,7 +24,6 @@ import Aside from "@/components/Aside";
 import Text from "@/components/Text";
 import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 import { Label } from "@/components/ui/label";
-import { Baby, User, Users } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CreateBooking() {
@@ -42,18 +40,6 @@ export default function CreateBooking() {
     name: z.string(),
     cpf: z.string().min(14),
     associate_role: z.enum(["partner", "contributor"]),
-    guests_quantity: z
-      .string()
-      .transform((val) => Number(val))
-      .refine((val) => !isNaN(val), { message: "Deve ser um número" }),
-    dependents_quantity: z
-      .string()
-      .transform((val) => Number(val))
-      .refine((val) => !isNaN(val), { message: "Deve ser um número" }),
-    children_age_max_quantity: z
-      .string()
-      .transform((val) => Number(val))
-      .refine((val) => !isNaN(val), { message: "Deve ser um número" }),
   });
 
   const form = useForm({
@@ -62,9 +48,6 @@ export default function CreateBooking() {
       name: user.name,
       cpf: user.cpf,
       associate_role: user.associate_role,
-      guests_quantity: 0,
-      dependents_quantity: 0,
-      children_age_max_quantity: 0
     }
   });
 
@@ -83,20 +66,8 @@ export default function CreateBooking() {
       })
     })
     if (result) {
-      const resultParticipants = await apiRequest("/bookings/create-participants", {
-        method: "POST",
-        body: JSON.stringify({
-          guests_quantity: values.guests_quantity,
-          dependents_quantity: values.dependents_quantity,
-          children_age_max_quantity: values.children_age_max_quantity,
-          created_by: user.id,
-          booking_id: result.id
-        })
-      });
       saveBooking({ ...values, check_in: date.from, check_out: date.to, id: result.id, partner_presence: partnerPresence });
-      navigate(`/associado/criar-reserva/${result.id.slice(0, 8)}/enviar-documentos`, {
-        state: { participants: resultParticipants }
-      });
+      navigate(`/associado/criar-reserva/${result.id.slice(0, 8)}/enviar-documentos`);
     }
   }
 
@@ -181,7 +152,7 @@ export default function CreateBooking() {
                     user.associate_role == "partner"
                     &&
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="partner_presence" onCheckedChange={(checked) => setPartnerPresence(checked)}/>
+                      <Checkbox id="partner_presence" onCheckedChange={(checked) => setPartnerPresence(checked)} />
                       <label
                         htmlFor="partner_presence"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -198,60 +169,6 @@ export default function CreateBooking() {
                 <div>
                   <Label className={"mb-2"}>Data de Entrada e Saída</Label>
                   <DatePickerWithRange date={date} setDate={setDate} associate_role={user.associate_role} />
-                </div>
-                <hr />
-                <div className="flex flex-col space-y-8">
-                  <Text heading={"h2"}>Quantidade de pessoas</Text>
-                  <div className="flex justify-between gap-12">
-                    <FormField
-                      control={form.control}
-                      name="dependents_quantity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            <User size={20} strokeWidth={3} className="text-blue-500" />
-                            Dependentes
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder={0} {...field} type={"number"} min={0} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="guests_quantity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            <Users size={20} strokeWidth={3} className="text-pink-500" />
-                            Convidados
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder={0} {...field} type={"number"} min={0} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="children_age_max_quantity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            <Baby size={20} strokeWidth={3} className="text-orange-500" />
-                            Menores de 5 anos
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder={0} {...field} type={"number"} min={0} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
                 </div>
               </form>
             </Form>

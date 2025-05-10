@@ -23,7 +23,6 @@ export async function createBooking(data) {
     return updatedBooking;
 }
 
-
 export async function updateBooking(id, data) {
     const [updated] = await db('bookings').where({ id }).update(data).returning('*');
     return updated;
@@ -62,4 +61,12 @@ export async function getBookingComplete(id) {
     const booking = await db('bookings').where({ id }).first();
 
     return { ...booking, guests, dependents, children, rooms }
+}
+
+export async function getAllBookings(limit, offset) {
+    return db('bookings').select('*').limit(limit).offset(offset).orderBy('utc_created_on', 'desc');
+}
+
+export async function bookingCount() {
+    return db('bookings').count();
 }

@@ -48,7 +48,7 @@ export default function Aside({ action }) {
                   booking
                     ?
                     <>
-                      <Text heading={"small"}>1x Titular</Text>
+                      <Text heading={"small"}>{booking.partner_presence ? 1 : 0}x Titular</Text>
                       <Text heading={"small"}>{booking.dependents_quantity}x Dependente(s)</Text>
                       <Text heading={"small"}>{booking.guests_quantity}x Convidado(s)</Text>
                       <Text heading={"small"}>{booking.children_age_max_quantity}x Criança(s)</Text>

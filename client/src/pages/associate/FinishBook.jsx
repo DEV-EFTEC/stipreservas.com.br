@@ -43,12 +43,12 @@ export default function FinishBook() {
       method: "POST",
       body: JSON.stringify({
         id: booking_id,
-        status: "pending_approval"
+        status: "pending_approval",
+        expires_at: null
       })
     })
-
-    localStorage.removeItem("booking")
-
+    
+    localStorage.removeItem("booking");
     navigate("/associado/home");
   }
 

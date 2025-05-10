@@ -32,100 +32,6 @@ export async function getBookingComplete(id) {
   return await bookingModel.getBookingComplete(id);
 }
 
-export async function createParticipants(data) {
-  const {
-    dependents_quantity,
-    guests_quantity,
-    children_age_max_quantity,
-    created_by,
-    booking_id
-  } = data;
-
-  const dependents = await Promise.all(
-    Array.from({ length: dependents_quantity }).map(() =>
-      dependentsModel.createDependent({ created_by })
-    )
-  );
-
-  const guests = await Promise.all(
-    Array.from({ length: guests_quantity }).map(() =>
-      guestsModel.createGuest({ created_by })
-    )
-  );
-
-  const children = await Promise.all(
-    Array.from({ length: children_age_max_quantity }).map(() =>
-      childrenModel.createChild({ created_by })
-    )
-  );
-
-  await Promise.all([
-    ...dependents.map((d) =>
-      dependentsModel.createDependentByBooking({
-        dependent_id: d.id,
-        booking_id,
-      })
-    ),
-    ...guests.map((g) =>
-      guestsModel.createGuestByBooking({
-        guest_id: g.id,
-        booking_id
-      })
-    ),
-    ...children.map((c) =>
-      childrenModel.createChildByBooking({
-        child_id: c.id,
-        booking_id,
-      })
-    ),
-  ]);
-
-  return {
-    dependents,
-    guests,
-    children,
-  };
-}
-
-export async function updateEntityList(entityList, modelUpdateFn, fieldsToIgnore = ["id", "utc_created_on", "booking_id"]) {
-  if (!Array.isArray(entityList) || entityList.length === 0) return [];
-
-  return Promise.all(
-    entityList.map((entity) => {
-      const payload = Object.fromEntries(
-        Object.entries(entity).filter(([key]) => !fieldsToIgnore.includes(key))
-      );
-      return modelUpdateFn(entity.id, payload);
-    })
-  );
-}
-
-export async function updateParticipants(data) {
-  const {
-    dependents = [],
-    guests = [],
-    children = []
-  } = data;
-
-  const [updatedDependents, updatedGuests, updatedChildren] = await Promise.all([
-    dependents.length
-      ? updateEntityList(dependents, dependentsModel.updateDependent, ["id", "utc_created_on", "dependent_id", "booking_id"])
-      : [],
-    guests.length
-      ? updateEntityList(guests, guestsModel.updateGuest, ["id", "utc_created_on", "guest_id", "booking_id"])
-      : [],
-    children.length
-      ? updateEntityList(children, childrenModel.updateChild, ["id", "utc_created_on", "child_id", "booking_id"])
-      : [],
-  ]);
-
-  return {
-    dependents: updatedDependents,
-    guests: updatedGuests,
-    children: updatedChildren,
-  };
-}
-
 export async function getParticipants(bookingId) {
   const dependents = await dependentsModel.getDependentsByBooking(bookingId);
   const guests = await guestsModel.getGuestsByBooking(bookingId);
@@ -136,4 +42,27 @@ export async function getParticipants(bookingId) {
 
 export async function deleteBooking(id) {
   return await bookingModel.deleteBooking(id);
+}
+
+export async function getAllBookings(userType, page, limit) {
+  if (userType === 'admin') {
+    const newPage = parseInt(page) || 1;
+    const newLimit = parseInt(limit) || 10;
+
+    const offset = (page - 1) * limit;
+
+    const bookings = await bookingModel.getAllBookings(newLimit, offset);
+    const [{ count }] = await bookingModel.bookingCount();
+    return {
+      data: bookings,
+      pagination:{
+        total: parseInt(count),
+        page: newPage,
+        limit: newLimit,
+        total_pages: Math.ceil(count / newLimit)
+      }
+    }
+  } else {
+    throw new Error('Não autorizado');
+  }
 }

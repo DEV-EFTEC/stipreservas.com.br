@@ -28,7 +28,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "../ui/sidebar"
+} from "../ui/admin/sidebar"
 import { useAuth } from "@/hooks/useAuth"
 
 export function NavUser({
@@ -44,11 +44,11 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sky-950 data-[state=open]:text-sky-50"
+              className="data-[state=open]:bg-slate-900 data-[state=open]:text-slate-50"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.url_profile_picture} alt={user.name} />
-                <AvatarFallback className="rounded-lg text-sky-700 uppercase font-medium">{user.name.slice(0, 2)}</AvatarFallback>
+                <AvatarFallback className="rounded-lg text-slate-600 uppercase">{user.name.slice(0, 2)}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
@@ -67,7 +67,7 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg text-sky-700 uppercase font-medium">{user.name.slice(0, 2)}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg text-slate-600 uppercase">{user.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
@@ -81,10 +81,14 @@ export function NavUser({
                 <BadgeCheck />
                 Perfil
               </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Bell />
+                Notificações
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>
-              <LogOut />
+            <DropdownMenuItem className={'text-red-500'} onClick={logout}>
+              <LogOut className="text-red-500"/>
               Sair
             </DropdownMenuItem>
           </DropdownMenuContent>

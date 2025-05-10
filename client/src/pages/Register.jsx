@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import StipLogo from "@/assets/StipLogo";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -51,16 +52,20 @@ export default function Register() {
             method: "POST",
             body: JSON.stringify(values)
         })
-        
+
         if (result) {
             navigate("/signin");
         }
     }
 
     return (
-        <section className="flex flex-col items-center justify-center h-screen bg-radial from-sky-800 to-sky-950">
+        <section className="flex flex-col items-center justify-center h-full bg-radial from-sky-800 to-sky-950 py-30 overflow-y-auto space-y-8">
+            <StipLogo />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-white w-sm p-10 rounded-xl">
+                    <div className="flex items-center justify-center text-black">
+                        <h2 className="text-2xl font-bold">Seja bem-vindo!</h2>
+                    </div>
                     <FormField
                         control={form.control}
                         name="name"
@@ -81,7 +86,7 @@ export default function Register() {
                             <FormItem>
                                 <FormLabel>Data de nascimento</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="E.g.: 01/01/1990" {...field} type="date"/>
+                                    <Input placeholder="E.g.: 01/01/1990" {...field} type="date" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -167,7 +172,7 @@ export default function Register() {
                         )}
                     />
                     <Button type="submit" className={"w-full"}>Criar conta</Button>
-                    <p>Já possui uma conta? <Link to={"/signin"}>Entrar</Link></p>
+                    <p className="text-center">Já possui uma conta? <Link to={"/signin"} className="underline text-sky-700">Entrar</Link></p>
                 </form>
             </Form>
         </section>

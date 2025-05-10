@@ -24,8 +24,17 @@ export async function findDependentsByUser(id) {
   return db('dependents').where({ created_by: id }).select('*');
 }
 
+export async function findExistingDependent({ created_by, cpf }) {
+  return db.dependents.findFirst({
+    where: {
+      created_by,
+      cpf
+    },
+  });
+}
+
 export async function createDependentByBooking(data) {
-  return db('dependents_bookings').insert(data);
+  return db('dependents_bookings').insert(data).onConflict(['dependent_id', 'booking_id']).ignore();
 }
 
 export async function getDependentsByBooking(booking_id) {

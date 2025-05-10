@@ -46,7 +46,7 @@ export async function up(knex) {
 
     CREATE TABLE guests (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      created_by UUID NOT NULL REFERENCES users(id),
+      created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       name TEXT,
       cpf TEXT UNIQUE,
       birth_date DATE,
@@ -58,7 +58,7 @@ export async function up(knex) {
 
     CREATE TABLE dependents (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      created_by UUID NOT NULL REFERENCES users(id),
+      created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       name TEXT,
       cpf TEXT UNIQUE,
       degree_of_kinship TEXT,
@@ -71,7 +71,7 @@ export async function up(knex) {
 
     CREATE TABLE children (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      created_by UUID NOT NULL REFERENCES users(id),
+      created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       name TEXT,
       cpf TEXT UNIQUE,
       birth_date DATE,
@@ -84,12 +84,12 @@ export async function up(knex) {
 
     CREATE TABLE bookings (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      created_by UUID NOT NULL REFERENCES users(id),
+      created_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       check_in DATE NOT NULL,
       check_out DATE NOT NULL,
-      guests_quantity INTEGER NOT NULL,
-      dependents_quantity INTEGER NOT NULL,
-      children_age_max_quantity INTEGER NOT NULL,
+      guests_quantity INTEGER,
+      dependents_quantity INTEGER,
+      children_age_max_quantity INTEGER,
       url_receipt_picture TEXT,
       url_word_card_file TEXT,
       status booking_status NOT NULL DEFAULT 'incomplete',
@@ -102,7 +102,7 @@ export async function up(knex) {
     CREATE TABLE booking_rooms (
       id UUID DEFAULT uuid_generate_v4(),
       room_id UUID NOT NULL REFERENCES rooms(id),
-      booking_id UUID NOT NULL REFERENCES bookings(id),
+      booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
       check_in DATE NOT NULL,
       check_out DATE NOT NULL,
       utc_created_on TIMESTAMP NOT NULL DEFAULT NOW()
@@ -110,28 +110,29 @@ export async function up(knex) {
 
     CREATE TABLE guests_bookings (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      guest_id UUID NOT NULL REFERENCES guests(id),
-      booking_id UUID NOT NULL REFERENCES bookings(id),
+      guest_id UUID NOT NULL REFERENCES guests(id) ON DELETE CASCADE,
+      booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
       utc_created_on TIMESTAMP NOT NULL DEFAULT NOW()
     );
 
     CREATE TABLE dependents_bookings (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      dependent_id UUID NOT NULL REFERENCES dependents(id),
-      booking_id UUID NOT NULL REFERENCES bookings(id),
-      utc_created_on TIMESTAMP NOT NULL DEFAULT NOW()
+      dependent_id UUID NOT NULL REFERENCES dependents(id) ON DELETE CASCADE,
+      booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+      utc_created_on TIMESTAMP NOT NULL DEFAULT NOW(),
+      UNIQUE (dependent_id, booking_id)
     );
 
     CREATE TABLE children_bookings (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      child_id UUID NOT NULL REFERENCES children(id),
-      booking_id UUID NOT NULL REFERENCES bookings(id),
+      child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+      booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
       utc_created_on TIMESTAMP NOT NULL DEFAULT NOW()
     );
 
     CREATE TABLE payments (
       id UUID DEFAULT uuid_generate_v4(),
-      booking_id UUID NOT NULL REFERENCES bookings(id),
+      booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
       user_id UUID NOT NULL REFERENCES users(id),
       link TEXT NOT NULL,
       price NUMERIC(10,2) NOT NULL,

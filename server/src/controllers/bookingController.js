@@ -63,16 +63,6 @@ export async function getBookingComplete(req, res) {
     }
 }
 
-export async function createParticipants(req, res) {
-    try {
-        const result = await bookingService.createParticipants(req.body);
-        res.status(201).json(result);
-    } catch (err) {
-        logger.error('Error on createParticipants', { err });
-        res.status(500).json({ error: err.message });
-    }
-}
-
 export async function getParticipants(req, res) {
     try {
         const { booking_id } = req.query;
@@ -84,16 +74,6 @@ export async function getParticipants(req, res) {
     }
 }
 
-export async function updateParticipants(req, res) {
-    try {
-        const result = await bookingService.updateParticipants(req.body);
-        res.status(200).json(result);
-    } catch (err) {
-        logger.error('Error on updateParticipants', { err });
-        res.status(500).json({ error: err.message });
-    }
-}
-
 export async function deleteBooking(req, res) {
     try {
         const { id } = req.params;
@@ -101,6 +81,17 @@ export async function deleteBooking(req, res) {
         res.status(200).json(result);
     } catch (err) {
         logger.error('Error on updateParticipants', { err });
+        res.status(500).json({ error: err.message });
+    }
+}
+
+export async function getAllBookings(req, res) {
+    try {
+        const { user_type, page, limit } = req.query;
+        const result = await bookingService.getAllBookings(user_type, page, limit);
+        res.status(200).json(result);
+    } catch (err) {
+        logger.error('Error on getAllBookings', { err });
         res.status(500).json({ error: err.message });
     }
 }

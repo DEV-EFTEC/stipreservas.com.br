@@ -1,29 +1,35 @@
 import { createRoot } from 'react-dom/client'
-import './index.css'
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider
 } from "react-router";
 import { AuthProvider } from './hooks/useAuth';
-
-import { Home as AssociateHome } from './pages/associate/Home';
-import { Home as AdminHome } from './pages/admin/Home';
-import SignIn from "./pages/SignIn";
-import Register from "./pages/Register";
-import ProtectedRoute from './components/ProtectedRoute';
-import Unauthorized from './pages/Unauthorized';
-import CreateBooking from './pages/associate/CreateBooking';
-import App from './App';
-import SendDocuments from './pages/associate/SendDocuments';
 import { BookingProvider } from './hooks/useBooking';
 import { Toaster } from './components/ui/sonner';
-import { AppSidebar } from './components/associate/AppSidebar';
-import { SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
-import "@/lib/setupPDF";
+import ProtectedRoute from './components/ProtectedRoute';
+
+import { SidebarProvider as AssociateSidebarProvider, SidebarTrigger as AssociateSidebarTrigger } from './components/ui/sidebar';
+import { SidebarProvider as AdminSidebarProvider, SidebarTrigger as AdminSidebarTrigger } from './components/ui/admin/sidebar';
+
+import { AppSidebar as AssociateSidebar } from './components/associate/AppSidebar';
+import { AppSidebar as AdminSidebar } from './components/admin/AppSidebar';
+import { Home as AssociateHome } from './pages/associate/Home';
+import { Home as AdminHome } from './pages/admin/Home/index';
+
+import App from './App';
+import SignIn from "./pages/SignIn";
+import Register from "./pages/Register";
+
+import Unauthorized from './pages/Unauthorized';
+import CreateBooking from './pages/associate/CreateBooking';
+import SendDocuments from './pages/associate/SendDocuments/index';
 import GetRoom from './pages/associate/GetRoom';
 import BookingDetails from './pages/associate/BookingDetails';
 import FinishBook from './pages/associate/FinishBook';
+
+import "@/lib/setupPDF";
+import './index.css';
 
 let router = createBrowserRouter([
   {
@@ -44,20 +50,20 @@ let router = createBrowserRouter([
   },
   {
     path: "/associado",
-    element: <Navigate to="/associado/home" replace/>
+    element: <Navigate to="/associado/home" replace />
   },
   {
     path: "/associado/home",
     element: (
       <ProtectedRoute role={"associate"}>
-        <SidebarProvider>
+        <AssociateSidebarProvider>
           <BookingProvider>
-            <AppSidebar />
-            <SidebarTrigger />
+            <AssociateSidebar />
+            <AssociateSidebarTrigger />
             <AssociateHome />
-            <Toaster />
+            <Toaster richColors />
           </BookingProvider>
-        </SidebarProvider>
+        </AssociateSidebarProvider>
       </ProtectedRoute>
     )
   },
@@ -65,13 +71,13 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva",
     element: (
       <ProtectedRoute role={"associate"}>
-        <SidebarProvider>
+        <AssociateSidebarProvider>
           <BookingProvider>
-            <AppSidebar />
-            <SidebarTrigger />
+            <AssociateSidebar />
+            <AssociateSidebarTrigger />
             <CreateBooking />
           </BookingProvider>
-        </SidebarProvider>
+        </AssociateSidebarProvider>
       </ProtectedRoute>
     )
   },
@@ -79,13 +85,13 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva/:id/enviar-documentos",
     element: (
       <ProtectedRoute role={"associate"}>
-        <SidebarProvider>
+        <AssociateSidebarProvider>
           <BookingProvider>
-            <AppSidebar />
-            <SidebarTrigger />
+            <AssociateSidebar />
+            <AssociateSidebarTrigger />
             <SendDocuments />
           </BookingProvider>
-        </SidebarProvider>
+        </AssociateSidebarProvider>
       </ProtectedRoute>
     )
   },
@@ -93,14 +99,14 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva/:id/escolher-quarto",
     element: (
       <ProtectedRoute role={"associate"}>
-        <SidebarProvider>
+        <AssociateSidebarProvider>
           <BookingProvider>
-            <AppSidebar />
-            <SidebarTrigger />
+            <AssociateSidebar />
+            <AssociateSidebarTrigger />
             <GetRoom />
-            <Toaster richColors/>
+            <Toaster richColors />
           </BookingProvider>
-        </SidebarProvider>
+        </AssociateSidebarProvider>
       </ProtectedRoute>
     )
   },
@@ -108,13 +114,13 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva/:id/finalizar-reserva",
     element: (
       <ProtectedRoute role={"associate"}>
-        <SidebarProvider>
+        <AssociateSidebarProvider>
           <BookingProvider>
-            <AppSidebar />
-            <SidebarTrigger />
+            <AssociateSidebar />
+            <AssociateSidebarTrigger />
             <FinishBook />
           </BookingProvider>
-        </SidebarProvider>
+        </AssociateSidebarProvider>
       </ProtectedRoute>
     )
   },
@@ -122,13 +128,13 @@ let router = createBrowserRouter([
     path: "/associado/solicitacao/:id",
     element: (
       <ProtectedRoute role={"associate"}>
-        <SidebarProvider>
+        <AssociateSidebarProvider>
           <BookingProvider>
-            <AppSidebar />
-            <SidebarTrigger />
+            <AssociateSidebar />
+            <AssociateSidebarTrigger />
             <BookingDetails />
           </BookingProvider>
-        </SidebarProvider>
+        </AssociateSidebarProvider>
       </ProtectedRoute>
     )
   },
@@ -136,7 +142,12 @@ let router = createBrowserRouter([
     path: "/admin/home",
     element: (
       <ProtectedRoute role={"admin"}>
-        <AdminHome />
+        <AdminSidebarProvider>
+          <AdminSidebar />
+          <AdminSidebarTrigger />
+          <AdminHome />
+          <Toaster richColors />
+        </AdminSidebarProvider>
       </ProtectedRoute>
     )
   },

@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
+import StipLogo from "@/assets/StipLogo";
+import Text from "@/components/Text";
 
 export default function SignIn() {
     const { login } = useAuth();
@@ -47,9 +49,13 @@ export default function SignIn() {
     }
 
     return (
-        <section className="flex flex-col items-center justify-center h-screen bg-radial from-sky-800 to-sky-950">
+        <section className="flex flex-col items-center justify-center h-screen bg-radial from-sky-800 to-sky-950 space-y-8">
+            <StipLogo />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-white w-sm p-10 rounded-xl">
+                    <div className="flex items-center justify-center text-black">
+                        <h2 className="text-2xl font-bold">Seja bem-vindo!</h2>
+                    </div>
                     <FormField
                         control={form.control}
                         name="cpf"
@@ -70,16 +76,20 @@ export default function SignIn() {
                             <FormItem>
                                 <FormLabel>Senha</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="*******" {...field} type={'password'}/>
+                                    <Input placeholder="*******" {...field} type={'password'} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                     <Button type="submit" className={"w-full"}>Entrar</Button>
-                    <p>Ainda não criou sua conta? <Link to={"/register"}>Registre-se</Link></p>
+                    <p className="text-center">Ainda não criou sua conta? <Link to={"/register"} className="underline text-sky-700">Registre-se</Link></p>
                 </form>
             </Form>
+            <p className="text-sm text-white text-center">
+                Clicando em continuar, você concorda com os nossos<br />
+                <Link className="underline">Termos de Serviço</Link> e <Link className="underline">Políticas de Privacidade</Link>.
+            </p>
         </section>
     )
 }

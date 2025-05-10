@@ -27,13 +27,31 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { DataTable } from "@/components/associate/ParcialName/data-table";
+import { columns } from "@/components/associate/ParcialName/columns";
+import { dependentModel } from "@/models/dependentModel";
 
 export default function SendDocuments() {
   const { user } = useAuth();
   const { booking, loadingBooking, saveBooking, setBooking } = useBooking();
   const navigate = useNavigate();
   const [dependentsParcial, setDependentsParcial] = useState([]);
-  const [parcialName, setParcialName] = useState('');
+  const [guestsParcial, setGuestsParcial] = useState([]);
+  const [childrenParcial, setChildrenParcial] = useState([]);
+  const [selectedDependents, setSelectedDependents] = useState([]);
+  const [selectedGuests, setSelectedGuests] = useState([]);
+  const [selectedChildren, setSelectedChildren] = useState([]);
 
   const {
     list: dependents,
@@ -52,6 +70,18 @@ export default function SendDocuments() {
     updateItem: updateChild,
     resetList: setChildren
   } = useDynamicList([]);
+
+  const enumEntityUpdateRoute = {
+    'd': '/dependents/update-dependent',
+    'g': '/guests/update-guest',
+    'c': '/children/update-child'
+  }
+
+  const enumEntityDeleteRoute = {
+    'd': '/dependents/delete-dependent',
+    'g': '/guests/delete-guest',
+    'c': '/children/delete-child'
+  }
 
   useEffect(() => {
     if (loadingBooking) return;
@@ -72,6 +102,23 @@ export default function SendDocuments() {
       fetchData();
     }
   }, [booking]);
+
+  useEffect(() => {
+    (async () => {
+      const response_dep = await apiRequest(`/dependents/get-dependents?id=${user.id}`, {
+        method: "GET"
+      });
+      const response_gue = await apiRequest(`/guests/get-guests?id=${user.id}`, {
+        method: "GET"
+      });
+      const response_chi = await apiRequest(`/children/get-children?id=${user.id}`, {
+        method: "GET"
+      });
+      setDependentsParcial(response_dep);
+      setGuestsParcial(response_gue);
+      setChildrenParcial(response_chi);
+    })();
+  }, []);
 
   async function handleSubmit() {
     await apiRequest("/bookings/update-participants", {
@@ -96,11 +143,61 @@ export default function SendDocuments() {
     navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/escolher-quarto`);
   }
 
-  async function getDependentParcial() {
-    const response = await apiRequest(`/dependents/get-dependent-by-parcial-name?parcial_name=${parcialName}&created_by=${user.id}`, {
-      method: "get"
+  async function createEntity(key) {
+    const result = await apiRequest(`/${key}/`, {
+      method: 'POST',
+      body: JSON.stringify({
+        created_by: user.id
+      })
     });
-    setDependentsParcial(response.dependents);
+
+    if (result) {
+      setDependents(prevState => [...prevState, result]);
+    }
+  }
+
+  async function saveEntity(entity) {
+    const result = await apiRequest(`/${key}/`, {
+      method: 'POST',
+      body: JSON.stringify({
+        ...entity,
+        created_by: user.id
+      })
+    });
+
+    if (result) {
+      setDependents(prevState => {
+        const filtered = prevState.filter(d => d.cpf === result.cpf);
+        return [...filtered, result];
+      });
+    };
+  }
+
+  async function updateEntity(key, entity, index) {
+    const { is_saved, ...newEntity } = entity;
+    await apiRequest(`${enumEntityUpdateRoute[key]}/${entity.id}`, {
+      method: "PATCH",
+      body: JSON.stringify(newEntity)
+    });
+    await apiRequest(`/dependents/create-dependent-booking`, {
+      method: "POST",
+      body: JSON.stringify({
+        dependent_id: entity.id,
+        booking_id: booking.id
+      })
+    });
+    updateDependent(index, "is_saved", true);
+  }
+
+  function deleteEntity(key, entity) {
+    apiRequest(`${enumEntityDeleteRoute[key]}/${entity.id}`, {
+      method: "DELETE"
+    });
+
+    setDependents(prevState => {
+      const newState = prevState.filter(e => e.id !== entity.id);
+      return newState;
+    });
   }
 
   return (
@@ -155,134 +252,169 @@ export default function SendDocuments() {
           </Card>
           {
             dependents.length > 0
-            &&
-            <>
-              <hr className="my-14" />
-              <Text heading="h2">Documentos dos dependentes</Text>
-              <div className="flex flex-col gap-8 mt-4">
-                {dependents.map((dep, index) => (
-                  <Card className="w-fit">
-                    <CardContent>
-                      <header className="flex w-full justify-between items-center">
-                        <div className="flex items-center gap-2 mb-4">
-                          <UserRound strokeWidth={3} className="text-blue-500" width={20} />
-                          <Text heading={'h3'}>{dep.name ? dep.name : `Dependente ${index + 1}`}</Text>
-                          <Badge variant="">#{dep.id?.slice(0, 8)}</Badge>
-                        </div>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant={'secondary'}>Importar dependente</Button>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <div className="flex w-full items-center justify-between mb-2">
-                              <Text heading={'h4'}>Importar dependente</Text>
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <HelpCircle size={20} strokeWidth={3} className="text-sky-600" />
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Se você realizou outras reservas pela plataforma,<br />os dependentes, convidados e crianças ficaram salvos.</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            </div>
-                            <Input placeholder="Digite o nome parcial ou completo..." className={"mb-4"} onChange={(e) => setParcialName(e.target.value)} />
-                            {
-                              dependentsParcial.length > 0
-                                ?
-                                dependentsParcial.map(dp => (
-                                  <Button variant={"outline"} className={"flex-col space-y-0 gap-0 items-start py-2"}>
-                                    <p>{dp.name}</p>
-                                    <Text heading={"small"}>CPF: {dp.cpf}</Text>
-                                  </Button>
-                                ))
-                                :
-                                <Text heading={"small"}>Sem resultados</Text>
-                            }
-                            <Button variant={'default'} className={'w-full'} onClick={getDependentParcial}>Buscar</Button>
-                          </PopoverContent>
-                        </Popover>
-                      </header>
-                      <div className="flex flex-col gap-8 mb-8">
-                        <div className="flex gap-15">
-                          <LabeledInput
-                            label={"Nome"}
-                            onChange={(e) => updateDependent(index, "name", e.target.value)}
-                            value={dep.name}
-                            id={"dep_name" + index}
-                            key={"dep_name" + index} />
-                          <LabeledInput
-                            label={"CPF"}
-                            onChange={(e) => updateDependent(index, "cpf", e.target.value)}
-                            value={dep.cpf}
-                            id={"dep_cpf" + index}
-                            key={"dep_cpf" + index} />
-                        </div>
-                        <div className="flex gap-15">
-                          <div className="flex flex-col w-80 gap-2">
-                            <Label>Data de Nascimento</Label>
-                            <DatePickerBirth
-                              date={new Date(dep.birth_date || '2000-01-01')}
-                              setDate={(newDate) => updateDependent(index, "birth_date", newDate)}
-                            />
+              ?
+              <>
+                <hr className="my-14" />
+                <div className="w-full flex items-center justify-between">
+                  <Text heading="h2">Documentos dos dependentes</Text>
+                </div>
+                <div className="flex flex-col gap-8 mt-4">
+                  {dependents.map((dep, index) => (
+                    <Card className="w-fit">
+                      <CardContent>
+                        <header className="flex w-full justify-between items-center">
+                          <div className="flex items-center gap-2 mb-4">
+                            <UserRound strokeWidth={3} className="text-blue-500" width={20} />
+                            <Text heading={'h3'}>{dep.name ? dep.name : `Dependente ${index + 1}`}</Text>
+                            <Badge variant="">#{dep.id?.slice(0, 8)}</Badge>
                           </div>
-                          <FileUploadBlock
-                            label="Documento com foto"
-                            id={"dep_picture" + index}
-                            associationId={user.id}
-                            documentType={'documento_com_foto'}
-                            documentsAssociation={'dependents'}
-                            userId={user.id}
-                            setFile={(url) => updateDependent(index, "url_document_picture", url)}
-                            value={dep ? dep.url_document_picture : ""}
-                          />
-                        </div>
-                      </div>
-                      {
-                        dep.disability == true ?
-                          <div className="mb-8">
+                        </header>
+                        <div className="flex flex-col gap-8 mb-8">
+                          <div className="flex gap-15">
+                            <LabeledInput
+                              label={"Nome"}
+                              onChange={(e) => updateDependent(index, "name", e.target.value)}
+                              value={dep.name}
+                              id={"dep_name" + index}
+                              key={"dep_name" + index} />
+                            <LabeledInput
+                              label={"CPF"}
+                              onChange={(e) => updateDependent(index, "cpf", e.target.value)}
+                              value={dep.cpf}
+                              id={"dep_cpf" + index}
+                              key={"dep_cpf" + index} />
+                          </div>
+                          <div className="flex gap-15">
+                            <div className="flex flex-col w-80 gap-2">
+                              <Label>Data de Nascimento</Label>
+                              <DatePickerBirth
+                                date={new Date(dep.birth_date || '2000-01-01')}
+                                setDate={(newDate) => updateDependent(index, "birth_date", newDate)}
+                              />
+                            </div>
                             <FileUploadBlock
-                              label="Documento comprobatório"
-                              id={"dep_url_medical_report" + index}
+                              label="Documento com foto"
+                              id={"dep_picture" + index}
                               associationId={user.id}
-                              documentType={'doc_comprobatorio'}
+                              documentType={'documento_com_foto'}
                               documentsAssociation={'dependents'}
                               userId={user.id}
-                              setFile={(url) => updateDependent(index, "url_medical_report", url)}
-                              value={dep ? dep.url_medical_report : ""}
+                              setFile={(url) => updateDependent(index, "url_document_picture", url)}
+                              value={dep ? dep.url_document_picture : ""}
                             />
                           </div>
-                          :
-                          <></>
-                      }
-                      <div className="items-top flex space-x-2">
-                        <Checkbox id="dep_disability" onClick={(e) => { updateDependent(index, "disability", e.currentTarget.ariaChecked == 'true' ? false : true) }} />
-                        <div className="grid gap-1.5 leading-none">
-                          <label
-                            htmlFor="dep_disability"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            Possui dificuldade de locomoção ou laudo médico
-                          </label>
-                          <p className="text-sm text-muted-foreground">
-                            Marque esta opção caso tenha documento comprobatório.
-                          </p>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-                }
-              </div>
-            </>
+                        {
+                          dep.disability == true ?
+                            <div className="mb-8">
+                              <FileUploadBlock
+                                label="Documento comprobatório"
+                                id={"dep_url_medical_report" + index}
+                                associationId={user.id}
+                                documentType={'doc_comprobatorio'}
+                                documentsAssociation={'dependents'}
+                                userId={user.id}
+                                setFile={(url) => updateDependent(index, "url_medical_report", url)}
+                                value={dep ? dep.url_medical_report : ""}
+                              />
+                            </div>
+                            :
+                            <></>
+                        }
+                        <div className="items-top flex space-x-2">
+                          <Checkbox id="dep_disability" onClick={(e) => { updateDependent(index, "disability", e.currentTarget.ariaChecked == 'true' ? false : true) }} />
+                          <div className="grid gap-1.5 leading-none">
+                            <label
+                              htmlFor="dep_disability"
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Possui dificuldade de locomoção ou laudo médico
+                            </label>
+                            <p className="text-sm text-muted-foreground">
+                              Marque esta opção caso tenha documento comprobatório.
+                            </p>
+                          </div>
+                        </div>
+                        {
+                          !dep.is_saved
+                          &&
+                          <div className="flex items-center justify-end w-full space-x-8">
+                            <Button variant={'secondary'}>Cancelar</Button>
+                            <Button variant={'default'} onClick={() => updateEntity('d', dep, index)}>Salvar</Button>
+                          </div>
+                        }
+                      </CardContent>
+                    </Card>
+                  ))
+                  }
+                </div>
+              </>
+              :
+              <>
+                <hr className="my-14" />
+                <div className="w-full flex items-center justify-between">
+                  <Text heading="h2">Documentos dos dependentes</Text>
+                </div>
+              </>
           }
+          <Button onClick={() => setDependents(prevState => [...prevState, dependentModel])}>Criar dependente</Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="secondary">Importar dependentes</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Importar dependentes</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Caso você já tenha feito reservas pela plataforma, salvamos os dependentes informados nas reservas anteriores.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <DataTable
+                columns={columns}
+                data={dependentsParcial}
+                onSelectionChange={(data) => setSelectedDependents(data)}
+              />
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={() => {
+                  console.log("Dependentes selecionados:", selectedDependents);
+                  setDependents(prevState => [...prevState, ...selectedDependents])
+                }}>Continuar</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           {
             guests.length > 0
             &&
             <>
               <hr className="my-14" />
-              <Text heading="h2">Documentos dos convidados</Text>
+              <div className="w-full flex items-center justify-between">
+                <Text heading="h2">Documentos dos convidados</Text>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="secondary">Importar convidados</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Importar convidados</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Caso você já tenha feito reservas pela plataforma, salvamos os dependentes informados nas reservas anteriores.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <DataTable
+                      columns={columns}
+                      data={guestsParcial}
+                      onSelectionChange={(data) => setSelectedGuests(data)}
+                    />
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => {
+                        setGuests(selectedGuests);
+                      }}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
               <div className="flex flex-col gap-8 mt-4">
                 {guests.map((gue, index) => (
                   <Card className="w-fit">
@@ -370,7 +502,33 @@ export default function SendDocuments() {
             &&
             <>
               <hr className="my-14" />
-              <Text heading="h2">Documentos de crianças menores de 5 anos</Text>
+              <div className="w-full flex items-center justify-between">
+                <Text heading="h2">Documentos de crianças menores de 5 anos</Text>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="secondary">Importar crianças</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Importar crianças</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Caso você já tenha feito reservas pela plataforma, salvamos os dependentes informados nas reservas anteriores.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <DataTable
+                      columns={columns}
+                      data={childrenParcial}
+                      onSelectionChange={(data) => setSelectedChildren(data)}
+                    />
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => {
+                        setChildren(selectedChildren);
+                      }}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
               <div className="flex flex-col gap-8 mt-4">
                 {children.map((chi, index) => (
                   <Card className="w-fit">

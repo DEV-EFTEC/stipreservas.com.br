@@ -13,8 +13,6 @@ export async function authenticate(cpf, password) {
   const user = await userModel.findUserByCPF(cpf);
   if (!user) return null;
 
-  console.log(password, user.password)
-
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return null;
 
