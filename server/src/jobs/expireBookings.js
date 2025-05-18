@@ -4,7 +4,7 @@ import knexConfig from '../../knexfile.js';
 
 const db = knex(knexConfig.development);
 
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/30 * * * *", async () => {
   console.log(`\x1b[33m[CRON]\x1b[0m${new Date().toISOString()} ~ Verificando reservas expiradas...`);
 
   try {

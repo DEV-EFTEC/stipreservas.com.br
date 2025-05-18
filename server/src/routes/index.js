@@ -7,7 +7,6 @@ import guestsRoutes from './guests.routes.js';
 import paymentsRoutes from './payment.routes.js';
 import storageRoutes from './storage.routes.js';
 import auth from '#middlewares/auth.js';
-import upload from '#middlewares/multer.js';
 
 export default (app) => {
     app.use('/users', userRoutes);

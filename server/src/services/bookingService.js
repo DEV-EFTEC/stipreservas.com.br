@@ -66,3 +66,21 @@ export async function getAllBookings(userType, page, limit) {
     throw new Error('Não autorizado');
   }
 }
+
+export async function createParticipantsBooking(children, guests, dependents) {
+  const tasks = [];
+
+  if (children.length > 0) {
+    tasks.push(childrenModel.createChildByBooking(children));
+  }
+
+  if (guests.length > 0) {
+    tasks.push(guestsModel.createGuestByBooking(guests));
+  }
+
+  if (dependents.length > 0) {
+    tasks.push(dependentsModel.createDependentByBooking(dependents));
+  }
+
+  return await Promise.all(tasks);
+}

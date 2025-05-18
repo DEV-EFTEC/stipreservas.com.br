@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/table"
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { io } from "socket.io-client";
 import Text from "@/components/Text";
 import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 
@@ -27,25 +26,6 @@ export function Home() {
   const { user, loading } = useAuth();
   const { booking, removeBooking } = useBooking();
   const [bookings, setBookings] = useState([]);
-
-  const socket = io(import.meta.env.VITE_API_URL);
-
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Conectado ao socket:", socket.id);
-    });
-
-    socket.on("custom-event-response", (data) => {
-      console.log("Resposta recebida:", data);
-    });
-
-    // Emitir evento de teste
-    socket.emit("custom-event", { user: "Emily", msg: "Olá servidor!" });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -63,12 +43,6 @@ export function Home() {
 
     fetchBookings();
   }, [loading]);
-
-  function handleSocket() {
-    // Enviar para o admin quando uma nova solicitação for feita:
-    socket.emit("new-booking", { userId: "abc", bookingId: "123", room: "lalala" });
-  }
-
 
   function handleCancel() {
     apiRequest(`/bookings/delete-booking/${booking.id}`, {
@@ -108,7 +82,6 @@ export function Home() {
       <div className="flex w-full justify-between items-center mb-10">
         <Text heading={'h1'}>Suas solicitações recentes</Text>
         <Button variant="positive" onClick={() => navigate("/associado/criar-reserva")}><PlusIcon /> Criar uma nova solicitação</Button>
-        <Button variant="destructive" onClick={handleSocket}><PlusIcon /> SocketIO</Button>
       </div>
       {
         booking

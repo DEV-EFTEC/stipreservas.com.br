@@ -64,8 +64,19 @@ export async function getBookingComplete(id) {
 }
 
 export async function getAllBookings(limit, offset) {
-    return db('bookings').select('*').limit(limit).offset(offset).orderBy('utc_created_on', 'desc');
+  return db('bookings')
+    .select(
+      'bookings.*',
+      'users.name as created_by_name',
+      'users.associate_role as created_by_associate_role',
+    )
+    .where('status', '<>', 'incomplete')
+    .leftJoin('users', 'bookings.created_by', 'users.id')
+    .orderBy('bookings.utc_created_on', 'desc')
+    .limit(limit)
+    .offset(offset);
 }
+
 
 export async function bookingCount() {
     return db('bookings').count();

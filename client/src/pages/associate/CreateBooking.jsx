@@ -13,18 +13,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+ 
 import DatePickerWithRange from "@/components/DatePickerWithRange";
-
-import { useForm } from "react-hook-form";
-import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useBooking } from "@/hooks/useBooking";
 import Aside from "@/components/Aside";
 import Text from "@/components/Text";
 import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useBooking } from "@/hooks/useBooking";
 
 export default function CreateBooking() {
   const { user, loading } = useAuth();
@@ -66,7 +67,7 @@ export default function CreateBooking() {
       })
     })
     if (result) {
-      saveBooking({ ...values, check_in: date.from, check_out: date.to, id: result.id, partner_presence: partnerPresence });
+      saveBooking(result);
       navigate(`/associado/criar-reserva/${result.id.slice(0, 8)}/enviar-documentos`);
     }
   }

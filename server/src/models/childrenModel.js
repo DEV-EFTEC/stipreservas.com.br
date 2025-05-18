@@ -25,7 +25,7 @@ export async function findChildrenByUser(id) {
 }
 
 export async function createChildByBooking(data) {
-  return db('children_bookings').insert(data);
+  return db('children_bookings').insert(data).onConflict(['child_id', 'booking_id']).ignore();
 }
 
 export async function getChildrenByBooking(booking_id) {

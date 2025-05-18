@@ -3,8 +3,8 @@ import logger from '#core/logger.js';
 
 export async function createGuest(req, res) {
   try {
-    await guestsServices.createGuest(req.body);
-    res.status(200).json({ message: "Guest created" });
+    const guest = await guestsServices.createGuest(req.body);
+    res.status(200).json({ ...guest, is_saved: false });
   } catch (err) {
     logger.error('Error on createGuest', { err });
     res.status(500).json({ error: 'Erro ao criar Guest' });

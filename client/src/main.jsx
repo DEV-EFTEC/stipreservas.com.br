@@ -27,9 +27,11 @@ import SendDocuments from './pages/associate/SendDocuments/index';
 import GetRoom from './pages/associate/GetRoom';
 import BookingDetails from './pages/associate/BookingDetails';
 import FinishBook from './pages/associate/FinishBook';
+import BookingSettings from './pages/associate/BookingSettings';
 
 import "@/lib/setupPDF";
 import './index.css';
+import { SocketProvider } from './hooks/useSocket';
 
 let router = createBrowserRouter([
   {
@@ -114,13 +116,31 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva/:id/finalizar-reserva",
     element: (
       <ProtectedRoute role={"associate"}>
-        <AssociateSidebarProvider>
-          <BookingProvider>
-            <AssociateSidebar />
-            <AssociateSidebarTrigger />
-            <FinishBook />
-          </BookingProvider>
-        </AssociateSidebarProvider>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <FinishBook />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/criar-reserva/:id/organizar-reserva",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <BookingSettings />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
       </ProtectedRoute>
     )
   },
@@ -139,15 +159,21 @@ let router = createBrowserRouter([
     )
   },
   {
+    path: "/admin",
+    element: <Navigate to="/admin/home" replace />
+  },
+  {
     path: "/admin/home",
     element: (
       <ProtectedRoute role={"admin"}>
-        <AdminSidebarProvider>
-          <AdminSidebar />
-          <AdminSidebarTrigger />
-          <AdminHome />
-          <Toaster richColors />
-        </AdminSidebarProvider>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <AdminSidebar />
+            <AdminSidebarTrigger />
+            <AdminHome />
+            <Toaster richColors />
+          </AdminSidebarProvider>
+        </SocketProvider>
       </ProtectedRoute>
     )
   },

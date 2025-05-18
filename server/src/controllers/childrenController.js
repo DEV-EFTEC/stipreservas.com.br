@@ -4,8 +4,8 @@ import logger from '#core/logger.js';
 
 export async function createChild(req, res) {
   try {
-    await childrenService.createChild(req.body);
-    res.status(200).json({ message: "Children created" });
+    const child = await childrenService.createChild(req.body);
+    res.status(200).json({...child, is_saved: false});
   } catch (err) {
     logger.error('Error on createChildren', { err });
     res.status(500).json({ error: 'Erro ao criar children' });

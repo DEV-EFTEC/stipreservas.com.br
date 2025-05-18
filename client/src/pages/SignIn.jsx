@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { apiRequest } from "@/lib/api";
 
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
     Form,
     FormControl,
@@ -13,15 +14,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import StipLogo from "@/assets/StipLogo";
-import Text from "@/components/Text";
+import maskCPF from "@/lib/maskCPF";
+import { AlertCircle } from "lucide-react";
 
 export default function SignIn() {
     const { login } = useAuth();
     const navigate = useNavigate();
+    const [submitError, setSubmitError] = useState("");
 
     const formSchema = z.object({
         cpf: z.string().min(14),
@@ -33,18 +37,27 @@ export default function SignIn() {
         defaultValues: {
             cpf: "",
             password: ""
-        }
+        },
     });
 
     async function onSubmit(values) {
-        const result = await apiRequest("/users/login", {
-            method: "POST",
-            body: JSON.stringify(values)
-        })
-        if (result) {
+        try {
+            setSubmitError("");
+
+            const result = await apiRequest("/users/login", {
+                method: "POST",
+                body: JSON.stringify(values)
+            });
+
+            if (!result?.token) {
+                throw new Error("CPF ou senha inválidos.");
+            }
+
             localStorage.setItem("token", result.token);
             login(result.user);
             navigate(result.path);
+        } catch (err) {
+            setSubmitError(err.message || "Erro ao fazer login. Tente novamente.");
         }
     }
 
@@ -63,7 +76,11 @@ export default function SignIn() {
                             <FormItem>
                                 <FormLabel>CPF</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="123.456.789-00" {...field} />
+                                    <Input
+                                        placeholder="123.456.789-00"
+                                        {...field}
+                                        onChange={(e) => field.onChange(maskCPF(e.target.value))}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -82,6 +99,15 @@ export default function SignIn() {
                             </FormItem>
                         )}
                     />
+                    {submitError && (
+                        <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>Houve um erro!</AlertTitle>
+                            <AlertDescription>
+                                {submitError}
+                            </AlertDescription>
+                        </Alert>
+                    )}
                     <Button type="submit" className={"w-full"}>Entrar</Button>
                     <p className="text-center">Ainda não criou sua conta? <Link to={"/register"} className="underline text-sky-700">Registre-se</Link></p>
                 </form>

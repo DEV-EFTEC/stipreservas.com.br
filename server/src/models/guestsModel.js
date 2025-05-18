@@ -25,7 +25,7 @@ export async function findGuestsByUser(id) {
 }
 
 export async function createGuestByBooking(data) {
-  return db('guests_bookings').insert(data);
+  return db('guests_bookings').insert(data).onConflict(['guest_id', 'booking_id']).ignore();
 }
 
 export async function getGuestsByBooking(booking_id) {

@@ -1,5 +1,3 @@
-import { apiRequest } from "./api";
-
 export async function sendDocument(
   file,
   userId,

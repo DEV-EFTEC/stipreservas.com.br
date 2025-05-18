@@ -1,36 +1,20 @@
 import Aside from "@/components/Aside";
-import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
-import Text from "@/components/Text";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Card, CardContent } from "@/components/ui/card";
-import { useBooking } from "@/hooks/useBooking";
-import { apiRequest } from "@/lib/api";
-import { Accessibility, AlertTriangle, Building, Terminal, UsersRound } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { Label } from "@/components/ui/label";
 import RoomCard from "@/components/associate/RoomCard";
+import Text from "@/components/Text";
+import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
+
 import { toast } from "sonner";
+
+import { apiRequest } from "@/lib/api";
+import { useBooking } from "@/hooks/useBooking";
+import { useAuth } from "@/hooks/useAuth";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function GetRoom() {
   const [rooms, setRooms] = useState([]);
   const [userType, setUserType] = useState();
-  const [selectedRoomsNumber, setSelectedRoomsNumber] = useState([]);
   const [selectedRoomsCapacity, setSelectedRoomsCapacity] = useState(0);
-  const [selectedRooms, setSelectedRooms] = useState([]);
   const [peopleCapacity, setPeopleCapacity] = useState(0);
   const { booking } = useBooking();
   const { user, loading } = useAuth();
@@ -106,9 +90,9 @@ export default function GetRoom() {
 
   function handleSubmit() {
     if (selectedRoomsCapacity < peopleCapacity) {
-      toast.warning("Você não selecionou quartos o suficiente pela quantidade total de pessoas na reserva.")
+      toast.warning("Você não selecionou quartos suficientes pela quantidade total de pessoas na reserva.")
     } else {
-      navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/finalizar-reserva?booking_id=${booking.id}`);
+      navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/organizar-reserva?booking_id=${booking.id}`);
     }
   }
 

@@ -23,6 +23,7 @@ import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { io } from "socket.io-client";
+import { useSocket } from "@/hooks/useSocket";
 
 export function Home() {
   const navigate = useNavigate();
@@ -30,32 +31,20 @@ export function Home() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [bookings, setBookings] = useState([]);
-
-  const socket = io(import.meta.env.VITE_API_URL);
+  const { socket } = useSocket();
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Conectado ao socket:", socket.id);
-    });
-
-    socket.on("custom-event-response", (data) => {
-      console.log("Resposta recebida:", data);
-    });
+    if (!socket) return;
 
     socket.on("new-booking-response", (data) => {
-      console.log("Nova solicitação de", data);
-      toast.info(`Nova solicitação do usuário: ${data.userId}`);
+      setBookings(prevState => [...prevState, data]);
+      toast.info(`Nova solicitação do usuário: ${data.created_by_name}`);
     });
-  
-    // Emitir evento de teste
-    socket.emit("custom-event", { user: "Emily", msg: "Olá servidor!" });
 
     return () => {
-      socket.disconnect();
+      socket.off("new-booking-response");
     };
-  }, []);
-
-  // Ouvir no painel do admin:
+  }, [socket]);
 
   useEffect(() => {
     (async () => {
@@ -63,17 +52,6 @@ export function Home() {
       setBookings(result.data);
     })();
   }, [page]);
-
-  const enumStatus = {
-    "pending_approval": "Aprovação pendente",
-    "refused": "Recusado",
-    "expired": "Expirado",
-    "closed": "Encerrado",
-    "approved": "Aprovado",
-    "payment_pending": "Pagamento pendente",
-    "cancelled": "Cancelado",
-    "incomplete": "Incompleta"
-  }
 
   return (
     <section className="w-full p-20">

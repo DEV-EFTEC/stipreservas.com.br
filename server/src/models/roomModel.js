@@ -23,7 +23,7 @@ export async function findAvailableRooms(checkIn, checkOut, capacity, bookingId)
         .orWhere(function () {
           this.where('br.check_in', '>=', checkOut)
               .orWhere('br.check_out', '<=', checkIn)
-              .orWhere('br.booking_id', '=', bookingId); // mantém os do booking atual
+              .orWhere('br.booking_id', '=', bookingId);
         })
     )
     .modify(queryBuilder => {
@@ -35,7 +35,7 @@ export async function findAvailableRooms(checkIn, checkOut, capacity, bookingId)
       'r.*',
       db.raw(`CASE WHEN br.booking_id = ? THEN true ELSE false END as is_selected`, [bookingId])
     )
-    .groupBy('r.id', 'br.booking_id') // necessário incluir br.booking_id no groupBy
+    .groupBy('r.id', 'br.booking_id')
     .orderBy('r.number', 'asc');
 }
 

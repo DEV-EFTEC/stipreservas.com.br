@@ -8,12 +8,16 @@ import { apiRequest } from "@/lib/api";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
+import { useSocket } from "@/hooks/useSocket";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function FinishBook() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const booking_id = queryParams.get("booking_id");
   const navigate = useNavigate();
+  const { socket } = useSocket();
+  const { user } = useAuth();
 
   const [booking, setBooking] = useState();
 
@@ -38,18 +42,28 @@ export default function FinishBook() {
     "incomplete": "Incompleto"
   }
 
-  function handleSubmit() {
-    apiRequest(`/bookings/update-booking`, {
+  async function handleSubmit() {
+    const result = await apiRequest(`/bookings/update-booking`, {
       method: "POST",
       body: JSON.stringify({
         id: booking_id,
         status: "pending_approval",
         expires_at: null
       })
-    })
-    
-    localStorage.removeItem("booking");
-    navigate("/associado/home");
+    });
+
+    if (result) {
+      setBooking(result); // atualiza com o que o backend devolveu (opcional)
+
+      socket.emit("new-booking", {
+        ...result,
+        created_by_name: user.name,
+        created_by_associate_role: user.associate_role
+      });
+
+      localStorage.removeItem("booking");
+      navigate("/associado/home");
+    }
   }
 
   return (

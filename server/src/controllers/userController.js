@@ -6,7 +6,7 @@ export async function signIn(req, res) {
     const { cpf, password } = req.body;
     const result = await userService.authenticate(cpf, password);
 
-    if (!result) return res.status(401).json({ message: "CPF or Password Invalid." });
+    if (!result) return res.status(401).json({ message: "CPF ou Senha Inválidos." });
 
     res.status(200).json(result);
   } catch (err) {

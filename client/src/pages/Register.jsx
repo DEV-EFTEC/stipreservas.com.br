@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import StipLogo from "@/assets/StipLogo";
+import maskCPF from "@/lib/maskCPF";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -99,7 +100,11 @@ export default function Register() {
                             <FormItem>
                                 <FormLabel>CPF</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="E.g.: 123.456.789-00" {...field} />
+                                    <Input
+                                        placeholder="123.456.789-00"
+                                        {...field}
+                                        onChange={(e) => field.onChange(maskCPF(e.target.value))}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -120,7 +125,7 @@ export default function Register() {
                     />
                     <FormField
                         control={form.control}
-                        name="type"
+                        name="associate_role"
                         render={({ field }) => (
                             <FormItem className="space-y-3">
                                 <FormLabel>Em qual modalidade você se enquadra?</FormLabel>

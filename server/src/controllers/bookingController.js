@@ -95,3 +95,14 @@ export async function getAllBookings(req, res) {
         res.status(500).json({ error: err.message });
     }
 }
+
+export async function createParticipantsBooking(req, res) {
+    try {
+        const {children, guests, dependents} = req.body;
+        const result = await bookingService.createParticipantsBooking(children, guests, dependents);
+        res.status(200).json(result);
+    } catch (err) {
+        logger.error('Error on createParticipantsBooking', err);
+        res.status(500).json({ error: err.message });
+    }
+}
