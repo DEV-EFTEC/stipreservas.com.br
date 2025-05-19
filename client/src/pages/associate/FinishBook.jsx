@@ -53,7 +53,7 @@ export default function FinishBook() {
     });
 
     if (result) {
-      setBooking(result); // atualiza com o que o backend devolveu (opcional)
+      setBooking(result);
 
       socket.emit("new-booking", {
         ...result,

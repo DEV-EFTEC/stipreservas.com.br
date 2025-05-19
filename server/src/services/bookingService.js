@@ -20,7 +20,7 @@ export async function findBookingsByUser(userId) {
 }
 
 export async function createBooking(bookingData) {
-  return await  bookingModel.createBooking(bookingData);
+  return await bookingModel.createBooking(bookingData);
 }
 
 export async function updateBooking(data) {
@@ -55,7 +55,7 @@ export async function getAllBookings(userType, page, limit) {
     const [{ count }] = await bookingModel.bookingCount();
     return {
       data: bookings,
-      pagination:{
+      pagination: {
         total: parseInt(count),
         page: newPage,
         limit: newLimit,
@@ -82,5 +82,51 @@ export async function createParticipantsBooking(children, guests, dependents) {
     tasks.push(dependentsModel.createDependentByBooking(dependents));
   }
 
+  return await Promise.all(tasks);
+}
+
+export async function updateParticipantsBooking(booking_id, children, guests, dependents) {
+  const tasks = [];
+
+  if (children.length > 0) {
+    const childrenUpdates = children.map(child =>
+      childrenModel.updateChildByBooking({
+        child_id: child.id,
+        check_in: child.check_in,
+        check_out: child.check_out,
+        room_id: child.room_id,
+        booking_id
+      })
+    );
+    tasks.push(...childrenUpdates);
+  }
+
+  if (guests.length > 0) {
+    const guestsUpdates = guests.map(guest =>
+      guestsModel.updateGuestsByBooking({
+        guest_id: guest.id,
+        check_in: guest.check_in,
+        check_out: guest.check_out,
+        room_id: guest.room_id,
+        booking_id
+      })
+    );
+    tasks.push(...guestsUpdates);
+  }
+
+  if (dependents.length > 0) {
+    const dependentsUpdates = dependents.map(dep =>
+      dependentsModel.updateDependentsByBooking({
+        dependent_id: dep.id,
+        check_in: dep.check_in,
+        check_out: dep.check_out,
+        room_id: dep.room_id,
+        booking_id
+      })
+    );
+    tasks.push(...dependentsUpdates);
+  }
+
+  // Executa todas as atualizações em paralelo
   return await Promise.all(tasks);
 }

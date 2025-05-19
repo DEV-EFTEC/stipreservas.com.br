@@ -27,7 +27,7 @@ import SendDocuments from './pages/associate/SendDocuments/index';
 import GetRoom from './pages/associate/GetRoom';
 import BookingDetails from './pages/associate/BookingDetails';
 import FinishBook from './pages/associate/FinishBook';
-import BookingSettings from './pages/associate/BookingSettings';
+import BookingSettings from './pages/associate/BookingSettings/index';
 
 import "@/lib/setupPDF";
 import './index.css';

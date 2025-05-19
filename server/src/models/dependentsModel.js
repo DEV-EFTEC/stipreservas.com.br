@@ -51,3 +51,7 @@ export async function getDependetByParcialName(partialName, created_by) {
 
   return dependents;
 }
+
+export async function updateDependentsByBooking({dependent_id, check_in, check_out, room_id, booking_id}) {
+  return db('dependents_bookings').where({ booking_id, dependent_id }).update({ check_in, check_out, room_id });
+}

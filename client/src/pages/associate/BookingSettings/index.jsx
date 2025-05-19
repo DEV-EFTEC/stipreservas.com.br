@@ -1,0 +1,233 @@
+import Aside from "@/components/Aside";
+import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
+import Text from "@/components/Text";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { apiRequest } from "@/lib/api";
+import { Accessibility, Building, UsersRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import BookingTable from "./BookingTable";
+
+export default function BookingSettings() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const booking_id = queryParams.get("booking_id");
+  const [booking, setBooking] = useState();
+
+  const enumFloor = {
+    "0": "Térreo",
+    "1": "1º Andar",
+    "2": "2º Andar",
+    "3": "3º Andar",
+  };
+
+  useEffect(() => {
+    (async () => {
+      const response = await apiRequest(`/bookings/get-booking-complete?booking_id=${booking_id}`, {
+        method: "GET"
+      });
+      setBooking(response);
+    })();
+  }, []);
+
+  async function handleSubmit() {
+    const response = await apiRequest(`/bookings/update-participants-booking?booking_id=${booking.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        children: booking.children.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
+        dependents: booking.dependents.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
+        guests: booking.guests.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
+      })
+    })
+    if (response) {
+      navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/finalizar-reserva?booking_id=${booking.id}`);
+    }
+  }
+
+  useEffect(() => {
+    console.log(booking)
+  }, [booking])
+
+  return (
+    <section className="flex w-full p-20 justify-between">
+      <section className="w-fit">
+        <GlobalBreadcrumb />
+        <div>
+          <div className="flex gap-12 items-end mb-8">
+            <Text heading="h1">Organização da Reserva</Text>
+            <div className="flex items-center gap-2">
+              <Label>Solicitação</Label>
+              <Badge variant="">#aaa</Badge>
+            </div>
+          </div>
+          <p>Aqui você pode organizar a disposição dos quartos e definir uma data de entrada e saída para eventuais necessidades para você e sua companhia.</p>
+        </div>
+        {
+          booking &&
+          booking.rooms.map(room => (
+            <Card className={`flex flex-col justify-between`}>
+              <CardContent>
+                <Text heading={"h4"}>Quarto {room.number < 10 ? `0${room.number}` : room.number}</Text>
+                <div className="flex flex-col space-y-2 mt-4">
+                  <div className="flex items-center space-x-4">
+                    <UsersRound size={16} strokeWidth={3} />
+                    <p className="text-sm font-medium">Capacidade: {room.capacity}</p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Building size={16} strokeWidth={3} />
+                    <p className="text-sm font-medium">{enumFloor[room.floor]}</p>
+                  </div>
+                  {room.preferential && (
+                    <Badge variant="preferential">
+                      <Accessibility size={20} strokeWidth={3} />
+                      <p className="text-sm font-normal">Preferencial</p>
+                    </Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        }
+        {booking && (
+          <>
+            <BookingTable
+              title="Dependentes"
+              people={booking.dependents}
+              rooms={booking.rooms}
+              onChangeRoom={(id, value) => {
+                setBooking(prev => ({
+                  ...prev,
+                  dependents: prev.dependents.map(d =>
+                    d.id === id ? { ...d, room_id: value } : d
+                  )
+                }));
+              }}
+              onChangeCheckIn={(id, e) => {
+                const newDate = e.target.value;
+                setBooking(prev => ({
+                  ...prev,
+                  dependents: prev.dependents.map(d => {
+                    if (d.id === id) {
+                      return {
+                        ...d,
+                        check_in: newDate
+                      };
+                    }
+                    return d;
+                  })
+                }));
+              }}
+              onChangeCheckOut={(id, e) => {
+                const newDate = e.target.value;
+                setBooking(prev => ({
+                  ...prev,
+                  dependents: prev.dependents.map(d => {
+                    if (d.id === id) {
+                      return {
+                        ...d,
+                        check_out: newDate
+                      };
+                    }
+                    return d;
+                  })
+                }));
+              }}
+            />
+
+            <BookingTable
+              title="Convidados"
+              people={booking.guests}
+              rooms={booking.rooms}
+              onChangeRoom={(id, value) => {
+                setBooking(prev => ({
+                  ...prev,
+                  guests: prev.guests.map(g =>
+                    g.id === id ? { ...g, room_id: value } : g
+                  )
+                }));
+              }}
+              onChangeCheckIn={(id, e) => {
+                const newDate = e.target.value;
+                setBooking(prev => ({
+                  ...prev,
+                  guests: prev.guests.map(g => {
+                    if (g.id === id) {
+                      return {
+                        ...g,
+                        check_in: newDate
+                      };
+                    }
+                    return g;
+                  })
+                }));
+              }}
+              onChangeCheckOut={(id, e) => {
+                const newDate = e.target.value;
+                setBooking(prev => ({
+                  ...prev,
+                  guests: prev.guests.map(g => {
+                    if (g.id === id) {
+                      return {
+                        ...g,
+                        check_out: newDate
+                      };
+                    }
+                    return g;
+                  })
+                }));
+              }}
+            />
+
+            <BookingTable
+              title="Crianças"
+              people={booking.children}
+              rooms={booking.rooms}
+              onChangeRoom={(id, value) => {
+                setBooking(prev => ({
+                  ...prev,
+                  children: prev.children.map(c =>
+                    c.id === id ? { ...c, room_id: value } : c
+                  )
+                }));
+              }}
+              onChangeCheckIn={(id, e) => {
+                const newDate = e.target.value;
+                setBooking(prev => ({
+                  ...prev,
+                  children: prev.children.map(c => {
+                    if (c.id === id) {
+                      return {
+                        ...c,
+                        check_in: newDate
+                      };
+                    }
+                    return c;
+                  })
+                }));
+              }}
+              onChangeCheckOut={(id, e) => {
+                const newDate = e.target.value;
+                setBooking(prev => ({
+                  ...prev,
+                  children: prev.children.map(c => {
+                    if (c.id === id) {
+                      return {
+                        ...c,
+                        check_out: newDate
+                      };
+                    }
+                    return c;
+                  })
+                }));
+              }}
+            />
+          </>
+        )}
+      </section>
+      <Aside action={handleSubmit} />
+    </section>
+  )
+}

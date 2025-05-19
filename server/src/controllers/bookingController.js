@@ -19,7 +19,7 @@ export async function findBookingsByUser(req, res) {
     try {
         const { user_id } = req.query;
         const result = await bookingService.findBookingsByUser(user_id);
-        
+
         if (!result) return res.status(404).json({ message: "Nenhuma reserva encontrada." });
 
         res.status(200).json(result);
@@ -53,7 +53,7 @@ export async function getBookingComplete(req, res) {
     try {
         const { booking_id } = req.query;
         const result = await bookingService.getBookingComplete(booking_id);
-        
+
         if (!result) return res.status(404).json({ message: "Nenhuma reserva encontrada." });
 
         res.status(200).json(result);
@@ -98,11 +98,23 @@ export async function getAllBookings(req, res) {
 
 export async function createParticipantsBooking(req, res) {
     try {
-        const {children, guests, dependents} = req.body;
+        const { children, guests, dependents } = req.body;
         const result = await bookingService.createParticipantsBooking(children, guests, dependents);
         res.status(200).json(result);
     } catch (err) {
         logger.error('Error on createParticipantsBooking', err);
+        res.status(500).json({ error: err.message });
+    }
+}
+
+export async function updateParticipantsBooking(req, res) {
+    try {
+        const { booking_id } = req.query;
+        const { children, guests, dependents } = req.body;
+        const result = await bookingService.updateParticipantsBooking(booking_id, children, guests, dependents);
+        res.status(200).json(result);
+    } catch (err) {
+        logger.error('Error on updateParticipantsBooking', err);
         res.status(500).json({ error: err.message });
     }
 }

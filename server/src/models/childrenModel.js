@@ -34,3 +34,7 @@ export async function getChildrenByBooking(booking_id) {
     .where('cb.booking_id', booking_id)
     .select('c.*');
 }
+
+export async function updateChildByBooking({child_id, check_in, check_out, room_id, booking_id}) {
+  return db('children_bookings').where({ booking_id, child_id }).update({ check_in, check_out, room_id });
+}

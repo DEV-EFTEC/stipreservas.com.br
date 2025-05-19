@@ -34,3 +34,7 @@ export async function getGuestsByBooking(booking_id) {
     .where('gb.booking_id', booking_id)
     .select('g.*');
 }
+
+export async function updateGuestsByBooking({guest_id, check_in, check_out, room_id, booking_id}) {
+  return db('guests_bookings').where({ booking_id, guest_id }).update({ check_in, check_out, room_id });
+}
