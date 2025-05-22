@@ -10,6 +10,9 @@ import { Label } from "@/components/ui/label";
 import { sendDocument } from "@/lib/storage";
 import { useEffect, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import Text from "./Text";
+import { Button } from "./ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 export function FileUploadBlock({
   label,
@@ -26,6 +29,7 @@ export function FileUploadBlock({
   const [fileName, setFileName] = useState("");
   const [isImage, setIsImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const { user } = useAuth();
 
   async function handleFileChange(e) {
     const file = e.target.files[0];
@@ -132,7 +136,7 @@ export function FileUploadBlock({
       {preview ? (
         <div
           className="flex items-center border rounded-md px-3 py-2 gap-3 w-80 bg-white cursor-pointer"
-          onClick={() => !isImage && setShowModal(true)}
+          onClick={() => setShowModal(true)}
         >
           <div className="w-10 h-10 flex-shrink-0 overflow-hidden rounded-md border">
             {isImage ? (
@@ -163,18 +167,36 @@ export function FileUploadBlock({
       {/* Modal para PDF */}
       {showModal && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-10 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
           onClick={() => setShowModal(false)}
         >
           <div
-            className="bg-white rounded-lg overflow-hidden w-11/12 h-5/6"
+            className="bg-white rounded-lg overflow-hidden w-11/12 h-5/6 p-10"
             onClick={(e) => e.stopPropagation()}
           >
-            <iframe
-              src={value}
-              title="Documento"
-              className="w-full h-full"
-            />
+            <p className={'font-bold text-xl mb-2'}>Tipo de documento: {documentType.toUpperCase().replaceAll('_', ' ')}</p>
+            {
+              isImage
+                ?
+                <img
+                  src={preview}
+                  alt="Preview"
+                />
+                :
+                <iframe
+                  src={value}
+                  title="Documento"
+                  className="w-full h-full rounded"
+                />
+            }
+            {
+              user.role === 'admin'
+              &&
+              <div>
+                <Button variant={'destructive'}>Rejeitar</Button>
+                <Button variant={'positive'}>Aprovar</Button>
+              </div>
+            }
           </div>
         </div>
       )}

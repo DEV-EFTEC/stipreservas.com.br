@@ -34,7 +34,6 @@ export default function BookingDetails() {
       const response = await apiRequest(`/bookings/get-booking-complete?booking_id=${booking_id}`, {
         method: "GET"
       });
-      console.log(response)
       setBooking(response);
     })()
   }, [])
@@ -318,8 +317,14 @@ export default function BookingDetails() {
                 </CardContent>
               </Card>
             </section>
-            <div className="bg-slate-400">
-              Sidebar
+            <div className="relative bg-slate-400 w-[30%]">
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    Valor total
+                  </CardTitle>
+                </CardHeader>
+              </Card>
             </div>
           </section>
         </section>
