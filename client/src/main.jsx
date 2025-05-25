@@ -32,6 +32,7 @@ import BookingSettings from './pages/associate/BookingSettings/index';
 import "@/lib/setupPDF";
 import './index.css';
 import { SocketProvider } from './hooks/useSocket';
+import DocumentJudgement from './pages/admin/DocumentJudgement';
 
 let router = createBrowserRouter([
   {
@@ -171,6 +172,21 @@ let router = createBrowserRouter([
             <AdminSidebar />
             <AdminSidebarTrigger />
             <AdminHome />
+            <Toaster richColors />
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/solicitacao/:id",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <AdminSidebar />
+            <AdminSidebarTrigger />
+            <DocumentJudgement />
             <Toaster richColors />
           </AdminSidebarProvider>
         </SocketProvider>

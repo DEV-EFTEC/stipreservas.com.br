@@ -2,6 +2,8 @@
 
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const enumStatus = {
   "pending_approval": "Aprovação pendente",
@@ -14,6 +16,11 @@ const enumStatus = {
   "incomplete": "Incompleta"
 }
 
+const enumAssociateRole = {
+  "partner": "Sócio",
+  "contributor": "Contribuinte"
+}
+
 export const columns = [
   {
     accessorKey: "created_by_name",
@@ -22,7 +29,11 @@ export const columns = [
   {
     accessorKey: "created_by_associate_role",
     header: "Associação",
-    cell: ({ row }) => (row.original.created_by_associate_role == 'contributor' ? 'Contribuinte' : 'Sócio')
+    cell: ({ row }) => (
+      <Badge variant={row.original.created_by_associate_role}>
+        {enumAssociateRole[row.original.created_by_associate_role]}
+      </Badge>
+    )
   },
   {
     accessorKey: "status",
@@ -45,5 +56,27 @@ export const columns = [
     accessorKey: "utc_created_on",
     header: "Criada em",
     cell: ({ row }) => (format(row.original.utc_created_on, "dd/MM/yyyy 'às' HH:mm"))
+  },
+  {
+    accessorKey: "actions",
+    header: "Ações",
+    cell: ({ row }) => {
+      const navigate = useNavigate(); // AGORA dentro do componente (correto!)
+
+      return (
+        <>
+          {
+            row.original.status === 'pending_approval'
+            &&
+            <Button
+              variant={'outline'}
+              onClick={() => navigate(`/admin/solicitacao/${row.original.id}?booking_id=${row.original.id}`)}
+            >
+              Ver solicitação
+            </Button>
+          }
+        </>
+      );
+    }
   }
 ]

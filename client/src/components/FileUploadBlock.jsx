@@ -5,14 +5,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CircleHelp } from "lucide-react";
+import { Check, CircleHelp, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { sendDocument } from "@/lib/storage";
-import { useEffect, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
-import Text from "./Text";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { Skeleton } from "@/components/ui/skeleton"
+import Viewer from "react-viewer";
+import { useEffect, useRef, useState } from "react";
 
 export function FileUploadBlock({
   label,
@@ -29,12 +30,17 @@ export function FileUploadBlock({
   const [fileName, setFileName] = useState("");
   const [isImage, setIsImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
+  const viewerContainerRef = useRef(null);
+
   const { user } = useAuth();
 
   async function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
 
+    setIsLoading(true); // inicia o loading
     setFileName(file.name);
 
     const isPdfFile = file.type === "application/pdf";
@@ -61,12 +67,14 @@ export function FileUploadBlock({
         const imgData = canvas.toDataURL();
         setPreview(imgData);
         setIsImage(false);
+        setIsLoading(false); // fim do loading
       };
       fileReader.readAsArrayBuffer(file);
     } else {
       const localPreviewUrl = URL.createObjectURL(file);
       setPreview(localPreviewUrl);
       setIsImage(true);
+      setIsLoading(false); // fim do loading
     }
 
     const documentUrl = await sendDocument(
@@ -85,7 +93,6 @@ export function FileUploadBlock({
   useEffect(() => {
     if (!value) return;
 
-    // Tenta carregar como imagem
     const img = new Image();
     img.onload = () => {
       setIsImage(true);
@@ -104,7 +111,7 @@ export function FileUploadBlock({
         new URL(url).pathname.split("/o/")[1].split("?")[0]
       )
       const parts = decodedPath.split("/")
-      return parts[parts.length - 1] // último item do caminho
+      return parts[parts.length - 1]
     } catch (err) {
       console.error("Erro ao extrair nome do arquivo:", err)
       return null
@@ -133,10 +140,15 @@ export function FileUploadBlock({
         )}
       </div>
 
-      {preview ? (
+      {isLoading ? (
+        <Skeleton className="w-80 h-14 rounded-md" />
+      ) : preview ? (
         <div
           className="flex items-center border rounded-md px-3 py-2 gap-3 w-80 bg-white cursor-pointer"
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setShowModal(true);
+            setIsPreviewLoaded(false); // força mostrar o skeleton
+          }}
         >
           <div className="w-10 h-10 flex-shrink-0 overflow-hidden rounded-md border">
             {isImage ? (
@@ -164,37 +176,70 @@ export function FileUploadBlock({
         />
       )}
 
-      {/* Modal para PDF */}
       {showModal && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 px-20 py-10"
           onClick={() => setShowModal(false)}
         >
           <div
-            className="bg-white rounded-lg overflow-hidden w-11/12 h-5/6 p-10"
+            className="bg-white rounded-lg w-full h-full p-10 flex flex-col space-y-5"
             onClick={(e) => e.stopPropagation()}
           >
             <p className={'font-bold text-xl mb-2'}>Tipo de documento: {documentType.toUpperCase().replaceAll('_', ' ')}</p>
-            {
-              isImage
-                ?
+            {isImage ? (
+              <>
+                {!isPreviewLoaded && (
+                  <Skeleton className="w-full h-full rounded-xl border border-teal-500" />
+                )}
+
+                <div
+                  ref={viewerContainerRef}
+                  className={`${isPreviewLoaded ? "block" : "hidden"} w-full h-full rounded-xl border border-teal-500`}
+                />
+
+                {isPreviewLoaded && viewerContainerRef.current && (
+                  <Viewer
+                    visible
+                    container={viewerContainerRef.current}
+                    images={[{ src: preview, alt: 'Preview' }]}
+                    noNavbar
+                    attribute={false}
+                    zoomable
+                    scalable
+                    rotatable={false}
+                    drag={false}
+                    onClose={() => { }}
+                  />
+                )}
+
                 <img
                   src={preview}
                   alt="Preview"
+                  className="hidden"
+                  onLoad={() => setIsPreviewLoaded(true)}
                 />
-                :
-                <iframe
-                  src={value}
-                  title="Documento"
-                  className="w-full h-full rounded"
-                />
-            }
+              </>
+            ) : (
+              <>
+                {!isPreviewLoaded && (
+                  <Skeleton className="w-full h-full rounded-xl border border-teal-500" />
+                )}
+                {value && (
+                  <iframe
+                    src={value}
+                    title="Documento"
+                    className={`${isPreviewLoaded ? "block" : "hidden"} w-full h-full rounded-xl border border-teal-500`}
+                    onLoad={() => setIsPreviewLoaded(true)}
+                  />
+                )}
+              </>
+            )}
             {
               user.role === 'admin'
               &&
-              <div>
-                <Button variant={'destructive'}>Rejeitar</Button>
-                <Button variant={'positive'}>Aprovar</Button>
+              <div className="w-full flex items-center justify-center space-x-8">
+                <Button variant={'destructive'}><X />Rejeitar</Button>
+                <Button variant={'positive'}><Check />Aprovar</Button>
               </div>
             }
           </div>
