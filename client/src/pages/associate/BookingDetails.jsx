@@ -2,7 +2,7 @@ import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 import Text from "@/components/Text";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api";
 import { differenceInDays, format } from "date-fns";
@@ -16,15 +16,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, Users } from "lucide-react";
+import { Accessibility, ChevronRight, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
+import { Button } from "@/components/ui/button";
+import { useBooking } from "@/hooks/useBooking";
 
 export default function BookingDetails() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const booking_id = queryParams.get("booking_id");
+  const navigate = useNavigate();
+  const { saveBooking } = useBooking();
+
   const { user } = useAuth();
 
   const [booking, setBooking] = useState();
@@ -317,14 +322,24 @@ export default function BookingDetails() {
                 </CardContent>
               </Card>
             </section>
-            <div className="relative bg-slate-400 w-[30%]">
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    Valor total
-                  </CardTitle>
-                </CardHeader>
-              </Card>
+            <div className="relative w-[30%]">
+              <div className={'fixed bottom-10 right-20 w-fit'}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      Valor total
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    R$00,00
+                  </CardContent>
+                </Card>
+                {
+                  booking.status === 'incomplete'
+                  &&
+                  <Button className={'mt-4'} onClick={() => { navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/enviar-documentos`); saveBooking(booking); }}>Retomar solicitação de onde parou<ChevronRight /></Button>
+                }
+              </div>
             </div>
           </section>
         </section>

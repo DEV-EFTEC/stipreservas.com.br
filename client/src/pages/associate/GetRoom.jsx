@@ -26,7 +26,7 @@ export default function GetRoom() {
     setUserType(user.associate_role);
 
     if (booking) {
-      const qtd = (booking.partner_presence ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity + booking.children_age_max_quantity;
+      const qtd = (booking.partner_presence ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity;
       setPeopleCapacity(qtd);
       (async () => {
         const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}&booking_id=${booking.id}`);

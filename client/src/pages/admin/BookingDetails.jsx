@@ -15,12 +15,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, Users } from "lucide-react";
+import { Accessibility, ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
+import { Button } from "@/components/ui/button";
 
-export default function DocumentJudgement() {
+export function BookingDetails() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const booking_id = queryParams.get("booking_id");
@@ -124,31 +125,31 @@ export default function DocumentJudgement() {
                     <Card>
                       <CardHeader>
                         <CardTitle className={'flex items-center gap-4'}>
-                          {user.name}
-                          <Badge variant={user.associate_role}>
-                            {enumAssociateRole[user.associate_role]}
+                          {booking.holder.name}
+                          <Badge variant={booking.holder.associate_role}>
+                            {enumAssociateRole[booking.holder.associate_role]}
                           </Badge>
-                          <Badge variant={'cpf_details'}>CPF {user.cpf}</Badge>
+                          <Badge variant={'cpf_details'}>CPF {booking.holder.cpf}</Badge>
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="flex justify-between flex-wrap">
                         <FileUploadBlock
                           label="Holerite recente"
                           id="holerite"
-                          associationId={user.id}
+                          associationId={booking.holder.id}
                           documentType={'holerite'}
                           documentsAssociation={'holder'}
-                          userId={user.id}
+                          userId={booking.holder.id}
                           key={'holerite_sender'}
                           value={booking ? booking.url_receipt_picture : ""}
                         />
                         <FileUploadBlock
                           label="Carteira de Trabalho Digital"
                           id="clt-digital"
-                          associationId={user.id}
+                          associationId={booking.holder.id}
                           documentType={'clt_digital'}
                           documentsAssociation={'holder'}
-                          userId={user.id}
+                          userId={booking.holder.id}
                           value={booking ? booking.url_word_card_file : ""}
                         />
                       </CardContent>
@@ -316,14 +317,20 @@ export default function DocumentJudgement() {
                 </CardContent>
               </Card>
             </section>
-            <div className="relative bg-slate-400 w-[30%]">
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    Valor total
-                  </CardTitle>
-                </CardHeader>
-              </Card>
+            <div className="relative w-[30%]">
+              <div className={'fixed bottom-10 right-20 w-fit'}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      Valor total
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    R$jdsadoapsdjpao
+                  </CardContent>
+                </Card>
+                <Button className={'mt-4'}>Seguir para etapa de aprovação<ChevronRight /></Button>
+              </div>
             </div>
           </section>
         </section>

@@ -1,8 +1,8 @@
 export async function up(knex) {
   await knex.raw(`
-    CREATE TABLE associates_bookings (
+    CREATE TABLE holders_bookings (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-      associate_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      holder_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
       room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
       check_in DATE NOT NULL,
@@ -13,5 +13,5 @@ export async function up(knex) {
 }
 
 export async function down(knex) {
-  await knex.raw(`DROP TABLE IF EXISTS associates_bookings;`)
+  await knex.raw(`DROP TABLE IF EXISTS holders_bookings;`)
 }

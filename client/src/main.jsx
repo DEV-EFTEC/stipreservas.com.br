@@ -15,6 +15,7 @@ import { SidebarProvider as AdminSidebarProvider, SidebarTrigger as AdminSidebar
 import { AppSidebar as AssociateSidebar } from './components/associate/AppSidebar';
 import { AppSidebar as AdminSidebar } from './components/admin/AppSidebar';
 import { Home as AssociateHome } from './pages/associate/Home';
+import { Profile as AssociateProfile } from './pages/associate/Profile.jsx';
 import { Home as AdminHome } from './pages/admin/Home/index';
 
 import App from './App';
@@ -32,7 +33,7 @@ import BookingSettings from './pages/associate/BookingSettings/index';
 import "@/lib/setupPDF";
 import './index.css';
 import { SocketProvider } from './hooks/useSocket';
-import DocumentJudgement from './pages/admin/DocumentJudgement';
+import { BookingDetails as AdminBookingDetails } from './pages/admin/BookingDetails';
 
 let router = createBrowserRouter([
   {
@@ -66,6 +67,19 @@ let router = createBrowserRouter([
             <AssociateHome />
             <Toaster richColors />
           </BookingProvider>
+        </AssociateSidebarProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/perfil",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <AssociateSidebarProvider>
+          <AssociateSidebar />
+          <AssociateSidebarTrigger />
+          <AssociateProfile />
+          <Toaster richColors />
         </AssociateSidebarProvider>
       </ProtectedRoute>
     )
@@ -186,7 +200,7 @@ let router = createBrowserRouter([
           <AdminSidebarProvider>
             <AdminSidebar />
             <AdminSidebarTrigger />
-            <DocumentJudgement />
+            <AdminBookingDetails />
             <Toaster richColors />
           </AdminSidebarProvider>
         </SocketProvider>

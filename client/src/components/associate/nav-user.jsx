@@ -30,12 +30,14 @@ import {
   useSidebar,
 } from "../ui/sidebar"
 import { useAuth } from "@/hooks/useAuth"
+import { useNavigate } from "react-router-dom"
 
 export function NavUser({
   user,
 }) {
   const { isMobile } = useSidebar();
   const { logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <SidebarMenu>
@@ -66,7 +68,7 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={user.url_profile_picture} alt={user.name} />
                   <AvatarFallback className="rounded-lg text-sky-700 uppercase font-medium">{user.name.slice(0, 2)}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -77,7 +79,7 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/associado/perfil")}>
                 <BadgeCheck />
                 Perfil
               </DropdownMenuItem>

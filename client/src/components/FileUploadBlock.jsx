@@ -204,11 +204,12 @@ export function FileUploadBlock({
                     images={[{ src: preview, alt: 'Preview' }]}
                     noNavbar
                     attribute={false}
+                    drag={false}
                     zoomable
                     scalable
-                    rotatable={false}
-                    drag={false}
+                    rotatable
                     onClose={() => { }}
+                    zoomSpeed={1}
                   />
                 )}
 

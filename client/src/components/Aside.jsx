@@ -66,7 +66,7 @@ export default function Aside({ action }) {
                 <strong className="text-sm">Quartos</strong>
               </header>
               <div className="ml-9">
-                <Text heading={"small"}>{booking && booking.rooms ? booking.rooms : "A definir"}</Text>
+                <Text heading={"small"}>{booking?.rooms ? booking.rooms.length : "A definir"}</Text>
               </div>
             </div>
             <div className="flex flex-col">

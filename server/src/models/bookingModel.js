@@ -39,7 +39,7 @@ export async function deleteBooking(id) {
     });
 }
 export async function getBookingComplete(id) {
-    const [guests, dependents, children, rooms] = await Promise.all([
+    const [guests, dependents, children, rooms, holder] = await Promise.all([
         db('guests_bookings as gb')
             .join('guests as g', 'gb.guest_id', 'g.id')
             .select('*')
@@ -56,18 +56,23 @@ export async function getBookingComplete(id) {
             .join('rooms as r', "br.room_id", "r.id")
             .select('*')
             .where('br.booking_id', id),
+        db('bookings as b')
+            .join('users as u', 'b.created_by', 'u.id')
+            .select('*')
+            .whereRaw('u.id = b.created_by').first()
     ]);
 
     const booking = await db('bookings').where({ id }).first();
+    const { associate_role, presence_role, url_receipt_picture, url_word_card_file, email, name, cpf } = holder;
 
-    return { ...booking, guests, dependents, children, rooms }
+    return { ...booking, guests, dependents, children, rooms, holder: { associate_role, presence_role, url_receipt_picture, url_word_card_file, email, name, id: holder.id, cpf } }
 }
 
 export async function getAllBookings(limit, offset) {
   return db('bookings')
     .select(
       'bookings.*',
-      'users.name as created_by_name',
+      'users.name as created_by_ name',
       'users.associate_role as created_by_associate_role',
     )
     .where('status', '<>', 'incomplete')

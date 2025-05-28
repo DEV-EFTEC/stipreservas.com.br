@@ -18,6 +18,8 @@ function getDateRange(startDate, endDate) {
 function calculateTotalPrice(booking) {
   if (!booking || !booking.rooms?.length) return 0;
 
+  console.log({ booking })
+
   let total = 0;
   const roomOccupancy = {};
 
@@ -53,6 +55,7 @@ function calculateTotalPrice(booking) {
   // Calcula diária dos quartos baseados em dias únicos ocupados
   Object.entries(roomOccupancy).forEach(([roomId, dates]) => {
     const room = booking.rooms.find(r => r.id === roomId);
+    console.log('occupancy', total += dates.size * Number(room.partner_booking_fee_per_day))
     total += dates.size * Number(room.partner_booking_fee_per_day);
   });
 
@@ -62,8 +65,11 @@ function calculateTotalPrice(booking) {
     if (!room || !guest.check_in || !guest.check_out) return;
 
     const range = getDateRange(new Date(guest.check_in), new Date(guest.check_out));
+    console.log("guests", range.length * Number(room.partner_guest_fee_per_day))
     total += range.length * Number(room.partner_guest_fee_per_day);
   });
+
+  console.log(total)
 
   return total;
 }

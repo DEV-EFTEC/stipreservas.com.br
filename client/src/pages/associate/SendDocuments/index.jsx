@@ -8,7 +8,6 @@ import {
   Card,
   CardContent
 } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
 import Aside from "@/components/Aside";
 import { useBooking } from "@/hooks/useBooking";
@@ -18,8 +17,6 @@ import { useNavigate } from "react-router-dom";
 import Dependents from "./Dependents";
 import Guests from "./Guests";
 import Children from "./Children";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Terminal } from "lucide-react";
 
 export default function SendDocuments() {
   const { user } = useAuth();

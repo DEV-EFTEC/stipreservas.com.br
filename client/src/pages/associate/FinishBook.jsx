@@ -10,7 +10,7 @@ import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/hooks/useSocket";
 import { useAuth } from "@/hooks/useAuth";
-import { useBookingPrice } from "@/hooks/useBookingPrice";
+import { useBookingPrice, calculateTotalPrice } from "@/hooks/useBookingPrice";
 import {
   Card,
   CardContent,
@@ -24,13 +24,14 @@ import { enumAssociateRole } from "@/lib/enumAssociateRole";
 
 export default function FinishBook() {
   const location = useLocation();
-  const totalPrice = useBookingPrice(booking);
   const queryParams = new URLSearchParams(location.search);
   const booking_id = queryParams.get("booking_id");
   const navigate = useNavigate();
   const { socket } = useSocket();
   const { user } = useAuth();
   const [booking, setBooking] = useState();
+  // const totalPrice = useBookingPrice(booking);
+  const [totalPriceBooking, setTotalPriceBooking] = useState(0)
 
   useEffect(() => {
     (async () => {
@@ -91,7 +92,7 @@ export default function FinishBook() {
               <Badge variant="">#{booking && booking.id.slice(0, 8)}</Badge>
             </div>
           </div>
-          <h1>Total {totalPrice}</h1>
+          <h1>Total {console.log(calculateTotalPrice(booking))}</h1>
           <Button onClick={handleSubmit}>Finalizar reserva</Button>
 
           <section className="flex flex-column w-full space-x-16 justify-between">

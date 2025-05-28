@@ -19,12 +19,15 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import StipLogo from "@/assets/StipLogo";
 import maskCPF from "@/lib/maskCPF";
+import validarCpf from "validar-cpf";
 
 export default function Register() {
     const navigate = useNavigate();
 
     const formSchema = z.object({
-        cpf: z.string().min(14),
+        cpf: z.string().min(14, { message: "Deve ter no mínimo de 14 caracteres." }).refine((cpf) => validarCpf(cpf), {
+            message: "CPF Inválido."
+        }),
         name: z.string().min(5),
         email: z.string().includes('@').includes('.', {
             message: 'Endereço de e-mail inválido.'

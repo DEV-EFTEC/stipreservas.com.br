@@ -13,3 +13,12 @@ export async function createUser(data) {
 export async function getAllUsers() {
   return db.select('*').from('users');
 }
+
+export async function findUserById(id) {
+  return db('users').select('*').where({ id }).first();
+}
+
+export async function updateUser(id, data) {
+  const [updated] = await db('users').where({ id }).update(data).returning('*');
+  return updated;
+}

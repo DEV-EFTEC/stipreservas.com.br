@@ -29,7 +29,6 @@ import {
 import logo from "../../assets/stip-logo.svg"
 import { useAuth } from "@/hooks/useAuth"
 
-// This is sample data.
 const data = {
   user: {
     name: "shadcn",

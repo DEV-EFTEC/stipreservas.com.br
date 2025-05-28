@@ -22,3 +22,11 @@ export async function authenticate(cpf, password) {
 
   return { user: userWithoutPassword, token, path };
 }
+
+export async function findUserById(id) {
+  return userModel.findUserById(id);
+}
+
+export async function updateUser(id, data) {
+  return userModel.updateUser(id, data);
+}
