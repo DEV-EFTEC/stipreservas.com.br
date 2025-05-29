@@ -38,9 +38,10 @@ function calculateTotalPrice(booking) {
     range.forEach(date => roomOccupancy[roomId].add(date));
   }
 
-  // Titular ocupa quarto
-  if (booking.holder) {
-    addPersonToRoom(booking.holder);
+  if (booking.holders[0].associate_role === 'partner' && booking.partner_presence) {
+    addPersonToRoom(booking.holders[0]);
+  } else if (booking.holders[0].associate_role === 'contributor') {
+    addPersonToRoom(booking.holders[0]);
   }
 
   // Dependentes ocupam quarto
@@ -55,8 +56,7 @@ function calculateTotalPrice(booking) {
   // Calcula diária dos quartos baseados em dias únicos ocupados
   Object.entries(roomOccupancy).forEach(([roomId, dates]) => {
     const room = booking.rooms.find(r => r.id === roomId);
-    console.log('occupancy', total += dates.size * Number(room.partner_booking_fee_per_day))
-    total += dates.size * Number(room.partner_booking_fee_per_day);
+    total += dates.size * Number(booking.holders[0].associate_role == 'partner' ? room.partner_booking_fee_per_day : room.contributor_booking_fee_per_day);
   });
 
   // Calcula valor dos convidados por dia
@@ -65,13 +65,12 @@ function calculateTotalPrice(booking) {
     if (!room || !guest.check_in || !guest.check_out) return;
 
     const range = getDateRange(new Date(guest.check_in), new Date(guest.check_out));
-    console.log("guests", range.length * Number(room.partner_guest_fee_per_day))
-    total += range.length * Number(room.partner_guest_fee_per_day);
+    total += range.length * Number(booking.holders[0].associate_role == 'partner' ? room.partner_guest_fee_per_day : room.contributor_guest_fee_per_day);
   });
 
   console.log(total)
 
-  return total;
+  return Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total);
 }
 
 // Exemplo de hook React que usa a função pura

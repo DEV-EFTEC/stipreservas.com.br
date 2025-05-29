@@ -18,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, Users } from "lucide-react";
+import { Accessibility, Check, Users } from "lucide-react";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
 
@@ -92,9 +92,6 @@ export default function FinishBook() {
               <Badge variant="">#{booking && booking.id.slice(0, 8)}</Badge>
             </div>
           </div>
-          <h1>Total {console.log(calculateTotalPrice(booking))}</h1>
-          <Button onClick={handleSubmit}>Finalizar reserva</Button>
-
           <section className="flex flex-column w-full space-x-16 justify-between">
             <section className="w-[55%] flex-column space-y-8">
               <Card>
@@ -359,8 +356,26 @@ export default function FinishBook() {
                 </CardContent>
               </Card>
             </section>
-            <div className="bg-slate-400">
-              Sidebar
+            <div className="relative w-[30%]">
+              <div className={'fixed bottom-10 right-20 w-fit'}>
+                <Card className={'w-[250px] gap-0'}>
+                  <CardHeader>
+                    <CardTitle className={'text-sm text-zinc-500 mb-1'}>
+                      Valor total da reserva
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-2xl font-bold text-zinc-900">
+                      {calculateTotalPrice(booking)}
+                    </p>
+                  </CardContent>
+                </Card>
+                {
+                  booking.status === 'incomplete'
+                  &&
+                  <Button className={'mt-4 w-full'} onClick={handleSubmit} variant={'positive'}>Finalizar reserva<Check /></Button>
+                }
+              </div>
             </div>
           </section>
         </section>

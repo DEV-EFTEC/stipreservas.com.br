@@ -2,6 +2,7 @@ import * as bookingModel from '../models/bookingModel.js';
 import * as dependentsModel from '#models/dependentsModel.js';
 import * as guestsModel from '#models/guestsModel.js';
 import * as childrenModel from '#models/childrenModel.js';
+import * as holderModel from '#models/holderModel.js';
 import _ from 'lodash';
 
 export async function findBookingById(id) {
@@ -67,7 +68,7 @@ export async function getAllBookings(userType, page, limit) {
   }
 }
 
-export async function createParticipantsBooking(children, guests, dependents) {
+export async function createParticipantsBooking(children, guests, dependents, holders) {
   const tasks = [];
 
   if (children.length > 0) {
@@ -82,10 +83,14 @@ export async function createParticipantsBooking(children, guests, dependents) {
     tasks.push(dependentsModel.createDependentByBooking(dependents));
   }
 
+  if (holders.length > 0) {
+    tasks.push(holderModel.createHolderByBooking(holders));
+  }
+
   return await Promise.all(tasks);
 }
 
-export async function updateParticipantsBooking(booking_id, children, guests, dependents) {
+export async function updateParticipantsBooking(booking_id, children, guests, dependents, holders) {
   const tasks = [];
 
   if (children.length > 0) {
@@ -125,6 +130,19 @@ export async function updateParticipantsBooking(booking_id, children, guests, de
       })
     );
     tasks.push(...dependentsUpdates);
+  }
+
+  if (holders.length > 0) {
+    const holdersUpdates = holders.map(hol =>
+      holderModel.updateHoldersByBooking({
+        holder_id: hol.id,
+        check_in: hol.check_in,
+        check_out: hol.check_out,
+        room_id: hol.room_id,
+        booking_id
+      })
+    );
+    tasks.push(...holdersUpdates);
   }
 
   // Executa todas as atualizações em paralelo

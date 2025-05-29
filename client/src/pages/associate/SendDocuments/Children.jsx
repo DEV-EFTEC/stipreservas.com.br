@@ -27,6 +27,8 @@ import {
 import { DataTable } from "@/components/associate/ParcialName/data-table";
 import { useAuth } from "@/hooks/useAuth";
 import maskCPF from "@/lib/maskCPF";
+import validarCpf from "validar-cpf";
+import { toast } from "sonner";
 
 export default function Children({ setChildren, setSelectedChildren, childrenParcial, selectedChildren, children, updateChild, saveEntity, deleteEntity }) {
   const { user } = useAuth();
@@ -104,6 +106,7 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                         <DatePickerBirth
                           date={new Date(chi.birth_date || '2000-01-01')}
                           setDate={(newDate) => updateChild(index, "birth_date", newDate)}
+                          isChild={true}
                         />
                       </div>
                       <FileUploadBlock
@@ -135,7 +138,7 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                       :
                       <></>
                   }
-                  <div className="items-top flex space-x-2">
+                  <div className="items-top flex space-x-2 mb-4">
                     <Checkbox id="chi_disability" onCheckedChange={(checked) => { updateChild(index, "disability", checked) }} checked={chi.disability} />
                     <div className="grid gap-1.5 leading-none">
                       <label
@@ -149,12 +152,39 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                       </p>
                     </div>
                   </div>
+                  <div className="items-top flex space-x-2">
+                    <Checkbox id="chi_has_not_cpf" onCheckedChange={(checked) => { updateChild(index, "has_not_cpf", checked) }} checked={chi.has_not_cpf} />
+                    <div className="grid gap-1.5 leading-none">
+                      <label
+                        htmlFor="chi_has_not_cpf"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Não possui CPF
+                      </label>
+                      <p className="text-sm text-muted-foreground">
+                        Marque esta opção caso a criança não tenha CPF.
+                      </p>
+                    </div>
+                  </div>
                   {
                     !chi.is_saved
                     &&
                     <div className="flex items-center justify-end w-full space-x-8">
                       <Button variant={'secondary'} onClick={() => deleteEntity('c', chi)}>Cancelar</Button>
-                      <Button variant={'default'} onClick={async () => await saveEntity('c', chi)}>Salvar</Button>
+                      <Button variant="default" onClick={async () => {
+                        const cpf = chi?.cpf || "";
+                        const hasNotCpf = !!chi?.has_not_cpf;
+
+                        if (validarCpf(cpf) && !hasNotCpf) {
+                          await saveEntity('c', chi);
+                        } else if (cpf.trim().length === 0 && hasNotCpf) {
+                          await saveEntity('c', chi);
+                        } else {
+                          toast.error(`CPF inválido para criança ${chi?.name || ''}`);
+                        }
+                      }}>
+                        Salvar
+                      </Button>
                     </div>
                   }
                 </CardContent>

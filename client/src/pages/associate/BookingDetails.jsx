@@ -16,12 +16,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, ChevronRight, Users } from "lucide-react";
+import { Accessibility, ChevronRight, Users, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
 import { Button } from "@/components/ui/button";
 import { useBooking } from "@/hooks/useBooking";
+import { calculateTotalPrice } from "@/hooks/useBookingPrice";
+import { useSocket } from "@/hooks/useSocket";
+import { toast } from "sonner";
 
 export default function BookingDetails() {
   const location = useLocation();
@@ -29,6 +32,7 @@ export default function BookingDetails() {
   const booking_id = queryParams.get("booking_id");
   const navigate = useNavigate();
   const { saveBooking } = useBooking();
+  const { socket } = useSocket();
 
   const { user } = useAuth();
 
@@ -42,6 +46,27 @@ export default function BookingDetails() {
       setBooking(response);
     })()
   }, [])
+
+  async function handleCancel() {
+    const result = await apiRequest(`/bookings/update-booking`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: booking_id,
+        status: "cancelled"
+      })
+    })
+
+    if (result) {
+      if (socket) {
+        socket.emit("cancelled", {
+          booking_id
+        });
+        navigate(`/associado/home`);
+      }
+    } else {
+      toast.error("Ocorreu um erro ao cancelar a solicitação.");
+    }
+  }
 
   return (
     <section className="flex w-full p-20 justify-between">
@@ -324,20 +349,27 @@ export default function BookingDetails() {
             </section>
             <div className="relative w-[30%]">
               <div className={'fixed bottom-10 right-20 w-fit'}>
-                <Card>
+                <Card className={'w-[250px] gap-0'}>
                   <CardHeader>
-                    <CardTitle>
-                      Valor total
+                    <CardTitle className={'text-sm text-zinc-500 mb-1'}>
+                      Valor total da reserva
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    R$00,00
+                    <p className="text-2xl font-bold text-zinc-900">
+                      {calculateTotalPrice(booking)}
+                    </p>
                   </CardContent>
                 </Card>
                 {
                   booking.status === 'incomplete'
                   &&
                   <Button className={'mt-4'} onClick={() => { navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/enviar-documentos`); saveBooking(booking); }}>Retomar solicitação de onde parou<ChevronRight /></Button>
+                }
+                {
+                  booking.status === 'pending_approval'
+                  &&
+                  <Button className={'mt-4'} variant={'destructive'} onClick={handleCancel}>Cancelar solicitação<X /></Button>
                 }
               </div>
             </div>

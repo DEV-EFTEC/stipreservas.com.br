@@ -43,15 +43,22 @@ io.on("connection", (socket) => {
         logger.info(`Usuário desconectado: ${socket.id}`);
     });
 
-    // exemplo de canal personalizado
-    socket.on("custom-event", (data) => {
-        logger.info("Evento recebido:", data);
-        socket.emit("custom-event-response", { message: "Recebido!" });
+    socket.on("join-room", (roomName) => {
+        socket.join(roomName);
+        logger.info(`Socket ${socket.id} entrou na sala: ${roomName}`);
     });
 
     socket.on("new-booking", (data) => {
         logger.info("Nova reserva recebida:", data.userId);
         socket.broadcast.emit("new-booking-response", data); // ✅ envia para todos os outros
+    });
+
+    socket.on("cancelled", (data) => {
+        const {booking_id} = data;
+        logger.info(`Reserva cancelada: ${booking_id}`);
+
+        // Notifica apenas a sala dessa reserva
+        io.to('admin').emit("cancelled-response", booking_id);
     });
 
 });

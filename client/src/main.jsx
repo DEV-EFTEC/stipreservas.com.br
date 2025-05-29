@@ -107,6 +107,7 @@ let router = createBrowserRouter([
             <AssociateSidebar />
             <AssociateSidebarTrigger />
             <SendDocuments />
+            <Toaster richColors />
           </BookingProvider>
         </AssociateSidebarProvider>
       </ProtectedRoute>
@@ -147,15 +148,14 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva/:id/organizar-reserva",
     element: (
       <ProtectedRoute role={"associate"}>
-        <SocketProvider>
-          <AssociateSidebarProvider>
-            <BookingProvider>
-              <AssociateSidebar />
-              <AssociateSidebarTrigger />
-              <BookingSettings />
-            </BookingProvider>
-          </AssociateSidebarProvider>
-        </SocketProvider>
+        <AssociateSidebarProvider>
+          <BookingProvider>
+            <AssociateSidebar />
+            <AssociateSidebarTrigger />
+            <BookingSettings />
+            <Toaster richColors />
+          </BookingProvider>
+        </AssociateSidebarProvider>
       </ProtectedRoute>
     )
   },
@@ -163,13 +163,15 @@ let router = createBrowserRouter([
     path: "/associado/solicitacao/:id",
     element: (
       <ProtectedRoute role={"associate"}>
-        <AssociateSidebarProvider>
-          <BookingProvider>
-            <AssociateSidebar />
-            <AssociateSidebarTrigger />
-            <BookingDetails />
-          </BookingProvider>
-        </AssociateSidebarProvider>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <BookingDetails />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
       </ProtectedRoute>
     )
   },

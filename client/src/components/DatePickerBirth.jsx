@@ -10,18 +10,25 @@ import { Button } from "@/components/ui/button"
 import { CalendarIcon } from "lucide-react"
 import { useState } from "react"
 
-export default function DatePickerBirth({ date, setDate }) {
+export default function DatePickerBirth({ date, setDate, isChild = false }) {
   const [open, setOpen] = useState(false)
-  const [calendarMonth, setCalendarMonth] = useState(date || new Date());
+  const [calendarMonth, setCalendarMonth] = useState(date || new Date())
 
   const currentYear = new Date().getFullYear()
-  const years = Array.from({ length: 100 }, (_, i) => currentYear - i)
+  const maxYear = isChild ? currentYear : currentYear - 0
+  const minYear = isChild ? currentYear - 5 : currentYear - 100
+
+  const years = Array.from({ length: maxYear - minYear + 1 }, (_, i) => maxYear - i)
 
   const months = [
     "Janeiro", "Fevereiro", "Março", "Abril",
     "Maio", "Junho", "Julho", "Agosto",
     "Setembro", "Outubro", "Novembro", "Dezembro"
   ]
+
+  const today = new Date()
+  const fiveYearsAgo = new Date()
+  fiveYearsAgo.setFullYear(today.getFullYear() - 5)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -39,26 +46,32 @@ export default function DatePickerBirth({ date, setDate }) {
           mode="single"
           selected={date}
           onSelect={(selected) => {
-            setDate(selected);
-            setCalendarMonth(selected); // atualiza mês visível
-            setOpen(false);
+            setDate(selected)
+            setCalendarMonth(selected)
+            setOpen(false)
           }}
           locale={ptBR}
-          month={calendarMonth}             // <- controlando visível
-          onMonthChange={setCalendarMonth}  // <- controlando visível
+          month={calendarMonth}
+          onMonthChange={setCalendarMonth}
+          disabled={(date) => {
+            if (isChild) {
+              return date > today || date < fiveYearsAgo
+            }
+            return false
+          }}
           components={{
             Caption: ({ displayMonth, onMonthChange }) => {
               const handleMonthChange = (e) => {
-                const newDate = new Date(calendarMonth);
-                newDate.setMonth(Number(e.target.value));
-                setCalendarMonth(newDate);
-              };
+                const newDate = new Date(calendarMonth)
+                newDate.setMonth(Number(e.target.value))
+                setCalendarMonth(newDate)
+              }
 
               const handleYearChange = (e) => {
-                const newDate = new Date(calendarMonth);
-                newDate.setFullYear(Number(e.target.value));
-                setCalendarMonth(newDate);
-              };
+                const newDate = new Date(calendarMonth)
+                newDate.setFullYear(Number(e.target.value))
+                setCalendarMonth(newDate)
+              }
 
               return (
                 <div className="flex justify-center gap-2 mt-2 mb-4">

@@ -159,7 +159,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-slate-800 bg-zinc-50 w-(--sidebar-width) p-0 [&>button]:hidden"
+          className="bg-slate-800 bg-slate-800 w-(--sidebar-width) p-0 [&>button]:hidden"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE

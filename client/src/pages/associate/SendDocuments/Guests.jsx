@@ -27,6 +27,8 @@ import {
 import { DataTable } from "@/components/associate/ParcialName/data-table";
 import { useAuth } from "@/hooks/useAuth";
 import maskCPF from "@/lib/maskCPF";
+import validarCpf from "validar-cpf";
+import { toast } from "sonner";
 
 export default function Guests({ setGuests, setSelectedGuests, guestsParcial, selectedGuests, guests, updateGuest, saveEntity, deleteEntity }) {
   const { user } = useAuth();
@@ -154,7 +156,13 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                     &&
                     <div className="flex items-center justify-end w-full space-x-8">
                       <Button variant={'secondary'} onClick={() => deleteEntity('g', gue)}>Cancelar</Button>
-                      <Button variant={'default'} onClick={async () => await saveEntity('g', gue)}>Salvar</Button>
+                      <Button variant={'default'} onClick={async () => {
+                        if (validarCpf(gue.cpf)) {
+                          await saveEntity('g', gue);
+                        } else {
+                          toast.error(`CPF Inválido para convidado(a) ${gue.name}`)
+                        }
+                      }}>Salvar</Button>
                     </div>
                   }
                 </CardContent>

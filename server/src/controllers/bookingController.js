@@ -98,8 +98,8 @@ export async function getAllBookings(req, res) {
 
 export async function createParticipantsBooking(req, res) {
     try {
-        const { children, guests, dependents } = req.body;
-        const result = await bookingService.createParticipantsBooking(children, guests, dependents);
+        const { children, guests, dependents, holders } = req.body;
+        const result = await bookingService.createParticipantsBooking(children, guests, dependents, holders);
         res.status(200).json(result);
     } catch (err) {
         logger.error('Error on createParticipantsBooking', err);
@@ -110,8 +110,8 @@ export async function createParticipantsBooking(req, res) {
 export async function updateParticipantsBooking(req, res) {
     try {
         const { booking_id } = req.query;
-        const { children, guests, dependents } = req.body;
-        const result = await bookingService.updateParticipantsBooking(booking_id, children, guests, dependents);
+        const { children, guests, dependents, holders } = req.body;
+        const result = await bookingService.updateParticipantsBooking(booking_id, children, guests, dependents, holders);
         res.status(200).json(result);
     } catch (err) {
         logger.error('Error on updateParticipantsBooking', err);

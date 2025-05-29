@@ -9,6 +9,7 @@ import { Accessibility, Building, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import BookingTable from "./BookingTable";
+import { toast } from "sonner";
 
 export default function BookingSettings() {
   const location = useLocation();
@@ -34,9 +35,18 @@ export default function BookingSettings() {
   }, []);
 
   async function handleSubmit() {
+    const occupancy = getRoomOccupancy(booking);
+    const overfilled = booking.rooms.some(room => (occupancy[room.id] || 0) > room.capacity);
+
+    if (overfilled) {
+      toast.error("Um ou mais quartos estão com capacidade excedida.");
+      return;
+    }
+
     const response = await apiRequest(`/bookings/update-participants-booking?booking_id=${booking.id}`, {
       method: 'PUT',
       body: JSON.stringify({
+        holders: booking.holders.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
         children: booking.children.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
         dependents: booking.dependents.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
         guests: booking.guests.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
@@ -47,9 +57,24 @@ export default function BookingSettings() {
     }
   }
 
-  useEffect(() => {
-    console.log(booking)
-  }, [booking])
+  function getRoomOccupancy(booking) {
+    const allPeople = [
+      ...booking.holders,
+      ...booking.children,
+      ...booking.dependents,
+      ...booking.guests
+    ];
+
+    const occupancy = {};
+
+    allPeople.forEach(p => {
+      if (p.room_id) {
+        occupancy[p.room_id] = (occupancy[p.room_id] || 0) + 1;
+      }
+    });
+
+    return occupancy;
+  }
 
   return (
     <section className="flex w-full p-20 justify-between">
@@ -73,32 +98,82 @@ export default function BookingSettings() {
             </div>
             <div className="mb-10 flex items-center justify-between">
               {
-                booking.rooms.map(room => (
-                  <Card className={`flex flex-col justify-between border-teal-500`}>
-                    <CardContent>
-                      <Text heading={"h4"}>Quarto {room.number < 10 ? `0${room.number}` : room.number}</Text>
-                      <div className="flex flex-col space-y-2 mt-4">
-                        <div className="flex items-center space-x-4">
-                          <UsersRound size={16} strokeWidth={3} />
-                          <p className="text-sm font-medium">Capacidade: {room.capacity}</p>
+                booking.rooms.map(room => {
+                  const occupancy = getRoomOccupancy(booking);
+                  const count = occupancy[room.id] || 0;
+                  const isFull = count >= room.capacity;
+
+                  return (
+                    <Card className={`flex flex-col justify-between ${isFull ? 'border-red-500 bg-red-50' : 'border-teal-500'}`}>
+                      <CardContent>
+                        <Text heading={"h4"}>Quarto {room.number < 10 ? `0${room.number}` : room.number}</Text>
+                        <p className="text-sm font-medium">Ocupação: {count}/{room.capacity}</p>
+                        <div className="flex flex-col space-y-2 mt-4">
+                          <div className="flex items-center space-x-4">
+                            <UsersRound size={16} strokeWidth={3} />
+                            <p className="text-sm font-medium">Capacidade: {room.capacity}</p>
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <Building size={16} strokeWidth={3} />
+                            <p className="text-sm font-medium">{enumFloor[room.floor]}</p>
+                          </div>
+                          {room.preferential && (
+                            <Badge variant="preferential">
+                              <Accessibility size={20} strokeWidth={3} />
+                              <p className="text-sm font-normal">Preferencial</p>
+                            </Badge>
+                          )}
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <Building size={16} strokeWidth={3} />
-                          <p className="text-sm font-medium">{enumFloor[room.floor]}</p>
-                        </div>
-                        {room.preferential && (
-                          <Badge variant="preferential">
-                            <Accessibility size={20} strokeWidth={3} />
-                            <p className="text-sm font-normal">Preferencial</p>
-                          </Badge>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
+                      </CardContent>
+                    </Card>
+                  )
+                })
               }
             </div>
             <section className="flex flex-col space-y-8 ">
+              <BookingTable
+                title="Titular"
+                people={booking.holders}
+                rooms={booking.rooms}
+                onChangeRoom={(id, value) => {
+                  setBooking(prev => ({
+                    ...prev,
+                    holders: prev.holders.map(h =>
+                      h.id === id ? { ...h, room_id: value } : d
+                    )
+                  }));
+                }}
+                onChangeCheckIn={(id, e) => {
+                  const newDate = e.target.value;
+                  setBooking(prev => ({
+                    ...prev,
+                    holders: prev.holders.map(h => {
+                      if (h.id === id) {
+                        return {
+                          ...h,
+                          check_in: newDate
+                        };
+                      }
+                      return h;
+                    })
+                  }));
+                }}
+                onChangeCheckOut={(id, e) => {
+                  const newDate = e.target.value;
+                  setBooking(prev => ({
+                    ...prev,
+                    holders: prev.holders.map(h => {
+                      if (h.id === id) {
+                        return {
+                          ...h,
+                          check_out: newDate
+                        };
+                      }
+                      return h;
+                    })
+                  }));
+                }}
+              />
               <BookingTable
                 title="Dependentes"
                 people={booking.dependents}

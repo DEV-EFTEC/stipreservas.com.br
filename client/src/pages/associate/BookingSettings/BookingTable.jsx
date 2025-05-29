@@ -48,8 +48,7 @@ export default function BookingTable({ title, people, rooms, onChangeRoom, onCha
               <TableCell className="w-1/5">{person.cpf}</TableCell>
               <TableCell className="w-1/5">
                 <Select
-                  value={rooms.length === 1 ? rooms[0].id : person.room_id}
-                  disabled={rooms.length === 1}
+                  value={person.room_id}
                   onValueChange={(value) => onChangeRoom(person.id, value)}
                 >
                   <SelectTrigger>

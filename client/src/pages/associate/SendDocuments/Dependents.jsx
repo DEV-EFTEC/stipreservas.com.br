@@ -27,6 +27,8 @@ import {
 import { DataTable } from "@/components/associate/ParcialName/data-table";
 import { useAuth } from "@/hooks/useAuth";
 import maskCPF from "@/lib/maskCPF";
+import validarCpf from "validar-cpf";
+import { toast } from "sonner";
 
 export default function Dependents({ setDependents, setSelectedDependents, dependentsParcial, selectedDependents, dependents, updateDependent, saveEntity, deleteEntity }) {
   const { user } = useAuth();
@@ -155,7 +157,13 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
                     &&
                     <div className="flex items-center justify-end w-full space-x-8">
                       <Button variant={'secondary'} onClick={() => deleteEntity('d', dep)}>Cancelar</Button>
-                      <Button variant={'default'} onClick={async () => await saveEntity('d', dep)}>Salvar</Button>
+                      <Button variant={'default'} onClick={async () => {
+                        if (validarCpf(dep.cpf)) {
+                          await saveEntity('d', dep);
+                        } else {
+                          toast.error(`CPF Inválido para dependente ${dep.name}`)
+                        }
+                      }}>Salvar</Button>
                     </div>
                   }
                 </CardContent>

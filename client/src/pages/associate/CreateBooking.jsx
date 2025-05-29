@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
- 
+
 import DatePickerWithRange from "@/components/DatePickerWithRange";
 import Aside from "@/components/Aside";
 import Text from "@/components/Text";
@@ -65,9 +65,25 @@ export default function CreateBooking() {
         check_out: date.to,
         partner_presence: partnerPresence
       })
-    })
+    });
     if (result) {
-      saveBooking(result);
+      const holders = await apiRequest("/bookings/create-participants-booking", {
+        method: "POST",
+        body: JSON.stringify({
+          holders: [
+            {
+              holder_id: user.id,
+              booking_id: result.id,
+              check_in: result.check_in,
+              check_out: result.check_out
+            }
+          ],
+          dependents: [],
+          guests: [],
+          children: []
+        })
+      });
+      saveBooking({...result, holders});
       navigate(`/associado/criar-reserva/${result.id.slice(0, 8)}/enviar-documentos`);
     }
   }
