@@ -65,7 +65,7 @@ let router = createBrowserRouter([
             <AssociateSidebar />
             <AssociateSidebarTrigger />
             <AssociateHome />
-            <Toaster richColors />
+            <Toaster richColors expand={true} />
           </BookingProvider>
         </AssociateSidebarProvider>
       </ProtectedRoute>
@@ -79,7 +79,7 @@ let router = createBrowserRouter([
           <AssociateSidebar />
           <AssociateSidebarTrigger />
           <AssociateProfile />
-          <Toaster richColors />
+          <Toaster richColors expand={true} />
         </AssociateSidebarProvider>
       </ProtectedRoute>
     )
@@ -107,7 +107,7 @@ let router = createBrowserRouter([
             <AssociateSidebar />
             <AssociateSidebarTrigger />
             <SendDocuments />
-            <Toaster richColors />
+            <Toaster richColors expand={true} />
           </BookingProvider>
         </AssociateSidebarProvider>
       </ProtectedRoute>
@@ -122,7 +122,7 @@ let router = createBrowserRouter([
             <AssociateSidebar />
             <AssociateSidebarTrigger />
             <GetRoom />
-            <Toaster richColors />
+            <Toaster richColors expand={true} />
           </BookingProvider>
         </AssociateSidebarProvider>
       </ProtectedRoute>
@@ -153,7 +153,7 @@ let router = createBrowserRouter([
             <AssociateSidebar />
             <AssociateSidebarTrigger />
             <BookingSettings />
-            <Toaster richColors />
+            <Toaster richColors expand={true} />
           </BookingProvider>
         </AssociateSidebarProvider>
       </ProtectedRoute>
@@ -188,7 +188,7 @@ let router = createBrowserRouter([
             <AdminSidebar />
             <AdminSidebarTrigger />
             <AdminHome />
-            <Toaster richColors />
+            <Toaster richColors expand={true} />
           </AdminSidebarProvider>
         </SocketProvider>
       </ProtectedRoute>
@@ -203,7 +203,7 @@ let router = createBrowserRouter([
             <AdminSidebar />
             <AdminSidebarTrigger />
             <AdminBookingDetails />
-            <Toaster richColors />
+            <Toaster richColors expand={true} />
           </AdminSidebarProvider>
         </SocketProvider>
       </ProtectedRoute>

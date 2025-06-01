@@ -23,6 +23,19 @@ const enumAssociateRole = {
 
 export const columns = [
   {
+    accessorKey: "id",
+    header: "Cód.",
+    cell: ({ row }) => (
+      <>
+        #
+        {
+          row.original.id.slice(0, 8)
+
+        }
+      </>
+    )
+  },
+  {
     accessorKey: "created_by_name",
     header: "Titular",
   },

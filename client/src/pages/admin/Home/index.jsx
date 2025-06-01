@@ -8,6 +8,8 @@ import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { useSocket } from "@/hooks/useSocket";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 
 export function Home() {
   const { user, loading } = useAuth();
@@ -22,17 +24,26 @@ export function Home() {
     socket.emit('join-room', 'admin');
 
     socket.on("new-booking-response", (data) => {
-      setBookings(prevState => [...prevState, data]);
+      setBookings(prevState => [data, ...prevState]);
       toast.info(`Nova solicitação do usuário: ${data.created_by_name}`);
     });
 
     socket.on("cancelled-response", (data) => {
-      console.log("AQUIIIIIIII")
       setBookings(prevState => {
-        const newBookings = prevState.filter(b => b.id !== data);
+        const newBookings = prevState.map(ps => {
+          if (ps.id === data) {
+            return {
+              ...ps,
+              status: "cancelled"
+            }
+          }
+
+          return ps;
+        });
+
         return newBookings;
       });
-      toast.info(`A solicitação #${data} foi cancelada!`);
+      toast.error(`A solicitação ${data.slice(0, 8)} foi cancelada!`)
     })
 
     return () => {
@@ -54,6 +65,6 @@ export function Home() {
         <Text heading={'h1'}>Últimas solicitações</Text>
       </div>
       <DataTable data={bookings} columns={columns} />
-    </section>
+    </section >
   )
 }

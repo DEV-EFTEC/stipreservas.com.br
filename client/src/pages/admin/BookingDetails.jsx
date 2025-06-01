@@ -22,12 +22,15 @@ import { enumAssociateRole } from "@/lib/enumAssociateRole";
 import { Button } from "@/components/ui/button";
 
 export function BookingDetails() {
+  const { user } = useAuth();
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const booking_id = queryParams.get("booking_id");
-  const { user } = useAuth();
-
+  
   const [booking, setBooking] = useState();
+
+  useEffect()
 
   useEffect(() => {
     (async () => {
