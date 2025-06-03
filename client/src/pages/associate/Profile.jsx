@@ -21,7 +21,7 @@ export function Profile() {
       });
       setUserProfile(data.result);
     })();
-  }, [user])
+  }, [])
 
   async function handleSubmit() {
     const { url_document_picture, url_profile_picture } = userProfile;

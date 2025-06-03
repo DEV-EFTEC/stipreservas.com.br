@@ -5,11 +5,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Check, CircleHelp, X } from "lucide-react";
+import { Check, CircleCheck, CircleDashed, CircleHelp, CircleX, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { sendDocument } from "@/lib/storage";
 import * as pdfjsLib from "pdfjs-dist";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton"
 import Viewer from "react-viewer";
@@ -24,7 +24,9 @@ export function FileUploadBlock({
   documentsAssociation,
   documentType,
   setFile,
-  value
+  setStatus,
+  value,
+  status
 }) {
   const [preview, setPreview] = useState(value);
   const [fileName, setFileName] = useState("");
@@ -34,7 +36,11 @@ export function FileUploadBlock({
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
   const viewerContainerRef = useRef(null);
 
-  const { user } = useAuth();
+  const enumFileStatus = {
+    approved: <CircleCheck size={20} className="text-green-500" />,
+    neutral: <CircleDashed size={20} className="text-neutral-500" />,
+    refused: <CircleX size={20} className="text-red-500" />,
+  }
 
   async function handleFileChange(e) {
     const file = e.target.files[0];
@@ -144,28 +150,31 @@ export function FileUploadBlock({
         <Skeleton className="w-80 h-14 rounded-md" />
       ) : preview ? (
         <div
-          className="flex items-center border rounded-md px-3 py-2 gap-3 w-80 bg-white cursor-pointer"
+          className="flex items-center justify-between border rounded-md px-3 py-2 w-80 bg-white cursor-pointer"
           onClick={() => {
             setShowModal(true);
             setIsPreviewLoaded(false); // força mostrar o skeleton
           }}
         >
-          <div className="w-10 h-10 flex-shrink-0 overflow-hidden rounded-md border">
-            {isImage ? (
-              <img
-                src={preview}
-                alt="Preview"
-                className="object-cover w-full h-full"
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-                PDF
-              </div>
-            )}
+          <div className="flex items-center justify-start gap-3">
+            <div className="w-10 h-10 flex-shrink-0 overflow-hidden rounded-md border">
+              {isImage ? (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                  PDF
+                </div>
+              )}
+            </div>
+            <span className="text-sm text-gray-700 truncate">
+              {value ? getFileNameFromFirebaseUrl(value) : fileName}
+            </span>
           </div>
-          <span className="text-sm text-gray-700 truncate">
-            {value ? getFileNameFromFirebaseUrl(value) : fileName}
-          </span>
+          {enumFileStatus[status]}
         </div>
       ) : (
         <Input
@@ -235,6 +244,10 @@ export function FileUploadBlock({
                 )}
               </>
             )}
+            <div className="w-full flex items-center justify-center space-x-8">
+              <Button variant={'destructive'} onClick={() => setStatus("refused")}><X />Rejeitar</Button>
+              <Button variant={'positive'} onClick={() => setStatus("approved")}><Check />Aprovar</Button>
+            </div>
           </div>
         </div>
       )}

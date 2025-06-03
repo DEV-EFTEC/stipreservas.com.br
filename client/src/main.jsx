@@ -30,6 +30,8 @@ import BookingDetails from './pages/associate/BookingDetails';
 import FinishBook from './pages/associate/FinishBook';
 import BookingSettings from './pages/associate/BookingSettings/index';
 
+import ApproveDocuments from './pages/admin/ApproveDocuments';
+
 import "@/lib/setupPDF";
 import './index.css';
 import { SocketProvider } from './hooks/useSocket';
@@ -200,10 +202,29 @@ let router = createBrowserRouter([
       <ProtectedRoute role={"admin"}>
         <SocketProvider>
           <AdminSidebarProvider>
-            <AdminSidebar />
-            <AdminSidebarTrigger />
-            <AdminBookingDetails />
-            <Toaster richColors expand={true} />
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <AdminBookingDetails />
+              <Toaster richColors expand={true} />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/aprovar-documentacao/:id",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <ApproveDocuments />
+              <Toaster richColors expand={true} />
+            </BookingProvider>
           </AdminSidebarProvider>
         </SocketProvider>
       </ProtectedRoute>

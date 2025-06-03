@@ -2,7 +2,7 @@ import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
 import Text from "@/components/Text";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api";
 import { differenceInDays, format } from "date-fns";
@@ -17,9 +17,11 @@ import {
 } from "@/components/ui/card";
 import { Accessibility, ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { FileUploadBlock } from "@/components/FileUploadBlock";
+import { FileUploadBlock } from "@/components/admin/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
 import { Button } from "@/components/ui/button";
+import { calculateTotalPrice } from "@/hooks/useBookingPrice";
+import { useBooking } from "@/hooks/useBooking";
 
 export function BookingDetails() {
   const { user } = useAuth();
@@ -27,10 +29,10 @@ export function BookingDetails() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const booking_id = queryParams.get("booking_id");
-  
-  const [booking, setBooking] = useState();
+  const navigate = useNavigate();
+  const { saveBooking } = useBooking();
 
-  useEffect()
+  const [booking, setBooking] = useState();
 
   useEffect(() => {
     (async () => {
@@ -40,6 +42,11 @@ export function BookingDetails() {
       setBooking(response);
     })()
   }, [])
+
+  function handleApprove() {
+    saveBooking(booking);
+    navigate(`/admin/aprovar-documentacao/${booking.id.slice(0, 8)}`);
+  }
 
   return (
     <section className="flex w-full p-20 justify-between">
@@ -128,31 +135,31 @@ export function BookingDetails() {
                     <Card>
                       <CardHeader>
                         <CardTitle className={'flex items-center gap-4'}>
-                          {booking.holder.name}
-                          <Badge variant={booking.holder.associate_role}>
-                            {enumAssociateRole[booking.holder.associate_role]}
+                          {booking.holders[0].name}
+                          <Badge variant={booking.holders[0].associate_role}>
+                            {enumAssociateRole[booking.holders[0].associate_role]}
                           </Badge>
-                          <Badge variant={'cpf_details'}>CPF {booking.holder.cpf}</Badge>
+                          <Badge variant={'cpf_details'}>CPF {booking.holders[0].cpf}</Badge>
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="flex justify-between flex-wrap">
                         <FileUploadBlock
                           label="Holerite recente"
                           id="holerite"
-                          associationId={booking.holder.id}
+                          associationId={booking.holders[0].id}
                           documentType={'holerite'}
                           documentsAssociation={'holder'}
-                          userId={booking.holder.id}
+                          userId={booking.holders[0].id}
                           key={'holerite_sender'}
                           value={booking ? booking.url_receipt_picture : ""}
                         />
                         <FileUploadBlock
                           label="Carteira de Trabalho Digital"
                           id="clt-digital"
-                          associationId={booking.holder.id}
+                          associationId={booking.holders[0].id}
                           documentType={'clt_digital'}
                           documentsAssociation={'holder'}
-                          userId={booking.holder.id}
+                          userId={booking.holders[0].id}
                           value={booking ? booking.url_word_card_file : ""}
                         />
                       </CardContent>
@@ -322,17 +329,23 @@ export function BookingDetails() {
             </section>
             <div className="relative w-[30%]">
               <div className={'fixed bottom-10 right-20 w-fit'}>
-                <Card>
+                <Card className={'w-[250px] gap-0'}>
                   <CardHeader>
-                    <CardTitle>
-                      Valor total
+                    <CardTitle className={'text-sm text-zinc-500 mb-1'}>
+                      Valor total da reserva
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    R$jdsadoapsdjpao
+                    <p className="text-2xl font-bold text-zinc-900">
+                      {calculateTotalPrice(booking)}
+                    </p>
                   </CardContent>
                 </Card>
-                <Button className={'mt-4'}>Seguir para etapa de aprovação<ChevronRight /></Button>
+                {
+                  booking.status === 'pending_approval'
+                  &&
+                  <Button className={'mt-4'} onClick={handleApprove}>Ir para etapa de aprovação<ChevronRight /></Button>
+                }
               </div>
             </div>
           </section>
