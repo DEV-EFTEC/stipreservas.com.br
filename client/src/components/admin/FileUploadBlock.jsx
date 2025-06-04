@@ -245,8 +245,8 @@ export function FileUploadBlock({
               </>
             )}
             <div className="w-full flex items-center justify-center space-x-8">
-              <Button variant={'destructive'} onClick={() => setStatus("refused")}><X />Rejeitar</Button>
-              <Button variant={'positive'} onClick={() => setStatus("approved")}><Check />Aprovar</Button>
+              <Button variant={'destructive'} onClick={() => {setStatus("refused"); setShowModal(false);}}><X />Rejeitar</Button>
+              <Button variant={'positive'} onClick={() => {setStatus("approved"); setShowModal(false);}}><Check />Aprovar</Button>
             </div>
           </div>
         </div>
