@@ -78,6 +78,8 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                         userId={user.id}
                         setFile={(url) => updateGuest(index, "url_document_picture", url)}
                         value={gue ? gue.url_document_picture : ""}
+                        setStatus={(status) => updateGuest(index, "document_picture_status", status)}
+                        status={gue ? gue.document_picture_status : "neutral"}
                       />
                     </div>
                   </div>
@@ -93,6 +95,8 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                           userId={user.id}
                           setFile={(url) => updateGuest(index, "url_medical_report", url)}
                           value={gue ? gue.url_medical_report : ""}
+                          setStatus={(status) => updateGuest(index, "medical_report_status", status)}
+                          status={gue ? gue.medical_report_status : "neutral"}
                         />
                       </div>
                       :

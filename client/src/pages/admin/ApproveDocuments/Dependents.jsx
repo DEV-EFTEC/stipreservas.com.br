@@ -78,6 +78,8 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
                         userId={user.id}
                         setFile={(url) => updateDependent(index, "url_document_picture", url)}
                         value={dep ? dep.url_document_picture : ""}
+                        setStatus={(status) => updateDependent(index, "document_picture_status", status)}
+                        status={dep ? dep.document_picture_status : "neutral"}
                       />
                     </div>
                   </div>
@@ -93,6 +95,8 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
                           userId={user.id}
                           setFile={(url) => updateDependent(index, "url_medical_report", url)}
                           value={dep ? dep.url_medical_report : ""}
+                          setStatus={(status) => updateDependent(index, "medical_report_status", status)}
+                          status={dep ? dep.medical_report_status : "neutral"}
                         />
                       </div>
                       :

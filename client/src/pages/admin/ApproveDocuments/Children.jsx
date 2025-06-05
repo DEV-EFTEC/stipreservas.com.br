@@ -79,6 +79,8 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                         userId={user.id}
                         setFile={(url) => updateChild(index, "url_document_picture", url)}
                         value={chi ? chi.url_document_picture : ""}
+                        setStatus={(status) => updateChild(index, "document_picture_status", status)}
+                        status={chi ? chi.document_picture_status : "neutral"}
                       />
                     </div>
                   </div>
@@ -94,7 +96,8 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                           userId={user.id}
                           setFile={(url) => updateChild(index, "url_medical_report", url)}
                           value={chi ? chi.url_medical_report : ""}
-                          status={chi && chi.medical_report_status}
+                          setStatus={(status) => updateChild(index, "medical_report_status", status)}
+                          status={chi ? chi.medical_report_status : "neutral"}
                         />
                       </div>
                       :

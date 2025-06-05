@@ -224,10 +224,11 @@ export default function ApproveDocuments() {
                 setStatus={(status) => setBooking(prevState => (
                   {
                     ...prevState,
-                    word_card_file_status: newReceiptStatus
+                    word_card_file_status: status
                   }
                 ))}
                 value={booking ? booking.url_word_card_file : ""}
+                status={booking ? booking.word_card_file_status : "neutral"}
               />
             </CardContent>
           </Card>
@@ -266,7 +267,6 @@ export default function ApproveDocuments() {
                 saveEntity={saveEntity}
                 deleteEntity={deleteEntity}
               />
-
             </>
           }
         </section>
