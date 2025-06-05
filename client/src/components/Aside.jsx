@@ -66,7 +66,17 @@ export default function Aside({ action }) {
                 <strong className="text-sm">Quartos</strong>
               </header>
               <div className="ml-9">
-                <Text heading={"small"}>{booking?.rooms ? booking.rooms.length : "A definir"}</Text>
+                <Text heading={"small"}>
+                  {booking?.rooms
+                    ? booking.rooms
+                      .map((rm) => `Quarto ${rm.number}`)
+                      .reduce((acc, curr, idx, arr) => {
+                        if (idx === 0) return curr;
+                        if (idx === arr.length - 1) return `${acc} e ${curr}`;
+                        return `${acc}, ${curr}`;
+                      }, "")
+                    : "A definir"}
+                </Text>
               </div>
             </div>
             <div className="flex flex-col">
