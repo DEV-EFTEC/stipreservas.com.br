@@ -30,7 +30,6 @@ export const columns = [
         #
         {
           row.original.id.slice(0, 8)
-
         }
       </>
     )
