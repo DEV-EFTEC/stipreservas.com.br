@@ -14,8 +14,7 @@ export async function createGuest(req, res) {
 export async function updateGuest(req, res) {
   try {
     const { id } = req.params;
-    const { data } = req.body;
-    const guest = await guestsServices.updateGuest(id, data);
+    const guest = await guestsServices.updateGuest(id, req.body);
     res.status(200).json({ guest });
   } catch (err) {
     logger.error('Error on createGuests', { err });

@@ -118,9 +118,9 @@ export default function ApproveDocuments() {
   }
 
   const enumSaveEntity = {
-    'd': '/dependents',
-    'g': '/guests',
-    'c': '/children'
+    'd': '/dependents/update-dependent',
+    'g': '/guests/update-guest',
+    'c': '/children/update-child'
   }
 
   const entitySetters = {
@@ -146,12 +146,12 @@ export default function ApproveDocuments() {
   };
 
   async function saveEntity(key, entity) {
-    const { is_saved, id, ...newEntity } = entity;
-    const result = await apiRequest(enumSaveEntity[key], {
-      method: 'POST',
+    const { is_saved, id, medical_report_status, document_picture_status, ...newEntity } = entity;
+    const result = await apiRequest(`${enumSaveEntity[key]}/${id}`, {
+      method: 'PATCH',
       body: JSON.stringify({
-        ...newEntity,
-        created_by: user.id
+        medical_report_status,
+        document_picture_status,
       })
     });
 

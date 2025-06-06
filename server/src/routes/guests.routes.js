@@ -6,7 +6,7 @@ const router = express.Router();
 router.post('/', guestsController.createGuest);
 router.get('/get-guest', guestsController.findGuestById);
 router.get('/get-guests', guestsController.findGuestsByUser);
-router.get('/update-guest', guestsController.updateGuest);
+router.patch('/update-guest/:id', guestsController.updateGuest);
 router.get('/delete-guest', guestsController.deleteGuest);
 
 export default router;
