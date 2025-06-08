@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { CalendarIcon } from "lucide-react"
 import { useState } from "react"
 
-export default function DatePickerBirth({ date, setDate, isChild = false }) {
+export default function DatePickerBirth({ date, setDate, isChild = false, isDisabled = false }) {
   const [open, setOpen] = useState(false)
   const [calendarMonth, setCalendarMonth] = useState(date || new Date())
 
@@ -36,6 +36,7 @@ export default function DatePickerBirth({ date, setDate, isChild = false }) {
         <Button
           variant="outline"
           className="w-80 justify-start text-left font-normal"
+          disabled={isDisabled}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : <span>Selecionar data</span>}

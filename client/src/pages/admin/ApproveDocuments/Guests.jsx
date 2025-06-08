@@ -49,7 +49,8 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                         onChange={(e) => updateGuest(index, "name", e.target.value)}
                         value={gue.name}
                         id={"gue_name" + index}
-                        key={"gue_name" + index} />
+                        key={"gue_name" + index}
+                        disabled />
                       <LabeledInput
                         label={"CPF"}
                         onChange={(e) => {
@@ -59,7 +60,8 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                         }}
                         value={gue.cpf}
                         id={"gue_cpf" + index}
-                        key={"gue_cpf" + index} />
+                        key={"gue_cpf" + index}
+                        disabled />
                     </div>
                     <div className="flex gap-15">
                       <div className="flex flex-col w-80 gap-2">
@@ -67,6 +69,7 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                         <DatePickerBirth
                           date={new Date(gue.birth_date || '2000-01-01')}
                           setDate={(newDate) => updateGuest(index, "birth_date", newDate)}
+                          isDisabled
                         />
                       </div>
                       <FileUploadBlock
@@ -103,7 +106,7 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                       <></>
                   }
                   <div className="items-top flex space-x-2">
-                    <Checkbox id="gue_disability" onCheckedChange={(checked) => { updateGuest(index, "disability", checked) }} checked={gue.disability} />
+                    <Checkbox id="gue_disability" onCheckedChange={(checked) => { updateGuest(index, "disability", checked) }} checked={gue.disability} disabled />
                     <div className="grid gap-1.5 leading-none">
                       <label
                         htmlFor="gue_disability"
@@ -116,20 +119,6 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                       </p>
                     </div>
                   </div>
-                  {
-                    !gue.is_saved
-                    &&
-                    <div className="flex items-center justify-end w-full space-x-8">
-                      <Button variant={'secondary'} onClick={() => deleteEntity('g', gue)}>Cancelar</Button>
-                      <Button variant={'default'} onClick={async () => {
-                        if (validarCpf(gue.cpf)) {
-                          await saveEntity('g', gue);
-                        } else {
-                          toast.error(`CPF Inválido para convidado(a) ${gue.name}`)
-                        }
-                      }}>Salvar</Button>
-                    </div>
-                  }
                 </CardContent>
               </Card>
             ))

@@ -49,7 +49,8 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                         onChange={(e) => updateChild(index, "name", e.target.value)}
                         value={chi.name}
                         id={"chi_name" + index}
-                        key={"chi_name" + index} />
+                        key={"chi_name" + index}
+                        disabled />
                       <LabeledInput
                         label={"CPF"}
                         onChange={(e) => {
@@ -59,7 +60,8 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                         }}
                         value={chi.cpf}
                         id={"chi_cpf" + index}
-                        key={"chi_cpf" + index} />
+                        key={"chi_cpf" + index}
+                        disabled />
                     </div>
                     <div className="flex gap-15">
                       <div className="flex flex-col w-80 gap-2">
@@ -68,6 +70,7 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                           date={new Date(chi.birth_date || '2000-01-01')}
                           setDate={(newDate) => updateChild(index, "birth_date", newDate)}
                           isChild={true}
+                          isDisabled
                         />
                       </div>
                       <FileUploadBlock
@@ -104,7 +107,7 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                       <></>
                   }
                   <div className="items-top flex space-x-2 mb-4">
-                    <Checkbox id="chi_disability" onCheckedChange={(checked) => { updateChild(index, "disability", checked) }} checked={chi.disability} />
+                    <Checkbox id="chi_disability" onCheckedChange={(checked) => { updateChild(index, "disability", checked) }} checked={chi.disability} disabled />
                     <div className="grid gap-1.5 leading-none">
                       <label
                         htmlFor="chi_disability"
@@ -118,7 +121,7 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                     </div>
                   </div>
                   <div className="items-top flex space-x-2">
-                    <Checkbox id="chi_has_not_cpf" onCheckedChange={(checked) => { updateChild(index, "has_not_cpf", checked) }} checked={chi.has_not_cpf} />
+                    <Checkbox id="chi_has_not_cpf" onCheckedChange={(checked) => { updateChild(index, "has_not_cpf", checked) }} checked={chi.has_not_cpf} disabled />
                     <div className="grid gap-1.5 leading-none">
                       <label
                         htmlFor="chi_has_not_cpf"
@@ -131,27 +134,6 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                       </p>
                     </div>
                   </div>
-                  {
-                    !chi.is_saved
-                    &&
-                    <div className="flex items-center justify-end w-full space-x-8">
-                      <Button variant={'secondary'} onClick={() => deleteEntity('c', chi)}>Cancelar</Button>
-                      <Button variant="default" onClick={async () => {
-                        const cpf = chi?.cpf || "";
-                        const hasNotCpf = !!chi?.has_not_cpf;
-
-                        if (validarCpf(cpf) && !hasNotCpf) {
-                          await saveEntity('c', chi);
-                        } else if (cpf.trim().length === 0 && hasNotCpf) {
-                          await saveEntity('c', chi);
-                        } else {
-                          toast.error(`CPF inválido para criança ${chi?.name || ''}`);
-                        }
-                      }}>
-                        Salvar
-                      </Button>
-                    </div>
-                  }
                 </CardContent>
               </Card>
             ))

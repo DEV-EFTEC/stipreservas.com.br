@@ -49,7 +49,8 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
                         onChange={(e) => updateDependent(index, "name", e.target.value)}
                         value={dep.name}
                         id={"dep_name" + index}
-                        key={"dep_name" + index} />
+                        key={"dep_name" + index}
+                        disabled />
                       <LabeledInput
                         label={"CPF"}
                         onChange={(e) => {
@@ -59,7 +60,8 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
                         }}
                         value={dep.cpf}
                         id={"dep_cpf" + index}
-                        key={"dep_cpf" + index} />
+                        key={"dep_cpf" + index}
+                        disabled />
                     </div>
                     <div className="flex gap-15">
                       <div className="flex flex-col w-80 gap-2">
@@ -67,6 +69,7 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
                         <DatePickerBirth
                           date={new Date(dep.birth_date || '2000-01-01')}
                           setDate={(newDate) => updateDependent(index, "birth_date", newDate)}
+                          isDisabled
                         />
                       </div>
                       <FileUploadBlock
@@ -103,7 +106,7 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
                       <></>
                   }
                   <div className="items-top flex space-x-2">
-                    <Checkbox id="dep_disability" onCheckedChange={(checked) => { updateDependent(index, "disability", checked) }} checked={dep.disability} />
+                    <Checkbox id="dep_disability" onCheckedChange={(checked) => { updateDependent(index, "disability", checked) }} checked={dep.disability} disabled />
                     <div className="grid gap-1.5 leading-none">
                       <label
                         htmlFor="dep_disability"
@@ -116,20 +119,7 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
                       </p>
                     </div>
                   </div>
-                  {
-                    !dep.is_saved
-                    &&
-                    <div className="flex items-center justify-end w-full space-x-8">
-                      <Button variant={'secondary'} onClick={() => deleteEntity('d', dep)}>Cancelar</Button>
-                      <Button variant={'default'} onClick={async () => {
-                        if (validarCpf(dep.cpf)) {
-                          await saveEntity('d', dep);
-                        } else {
-                          toast.error(`CPF Inválido para dependente ${dep.name}`)
-                        }
-                      }}>Salvar</Button>
-                    </div>
-                  }
+
                 </CardContent>
               </Card>
             ))

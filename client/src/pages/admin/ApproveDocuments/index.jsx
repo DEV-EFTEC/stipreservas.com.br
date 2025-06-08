@@ -9,7 +9,7 @@ import {
   CardContent
 } from "@/components/ui/card"
 import { useAuth } from "@/hooks/useAuth";
-import Aside from "@/components/Aside";
+import Aside from "@/components/admin/Aside";
 import { useBooking } from "@/hooks/useBooking";
 import { apiRequest } from "@/lib/api";
 import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
@@ -17,7 +17,8 @@ import { useNavigate } from "react-router-dom";
 import Dependents from "./Dependents";
 import Guests from "./Guests";
 import Children from "./Children";
-import { CircleCheck, CircleDashed, CircleX } from "lucide-react";
+import { checkBookingStatus } from "@/lib/checkBookingStatus";
+import { toast } from "sonner";
 
 export default function ApproveDocuments() {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ export default function ApproveDocuments() {
   const [selectedDependents, setSelectedDependents] = useState([]);
   const [selectedGuests, setSelectedGuests] = useState([]);
   const [selectedChildren, setSelectedChildren] = useState([]);
+  const [bookingStatus, setBookingStatus] = useState();
 
   const {
     list: dependents,
@@ -89,6 +91,30 @@ export default function ApproveDocuments() {
       children_age_max_quantity: children.length,
     });
   }, [dependents.length, guests.length, children.length]);
+
+  useEffect(() => {
+    const status = checkBookingStatus(booking);
+    setBookingStatus(status.status);
+    if (status.status === 'neutral') {
+      toast.info(status.message, {
+        description: (
+          <div>
+            {status.details.map((item, index) => (
+              <div key={index}>{item}</div>
+            ))}
+          </div>
+        )
+      });
+    } else if (status.status === 'approved') {
+      toast.success(status.message, {
+        description: "Está permitido o procedimento de aprovação da reserva."
+      });
+    } else if (status.status === 'refused') {
+      toast.error(status.message, {
+        description: "Está permitido o procedimento de recusa da reserva."
+      });
+    }
+  }, [booking]);
 
   async function handleSubmit() {
     await apiRequest("/bookings/create-participants-booking", {
@@ -270,7 +296,7 @@ export default function ApproveDocuments() {
             </>
           }
         </section>
-        <Aside action={handleSubmit} />
+        <Aside action={handleSubmit} status={bookingStatus} />
       </section>
     </>
   );
