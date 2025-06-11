@@ -13,5 +13,6 @@ router.get('/get-bookings', bookingController.findBookingsByUser);
 router.get('/get-booking-complete', bookingController.getBookingComplete);
 router.get('/get-participants', bookingController.getParticipants);
 router.delete('/delete-booking/:id', bookingController.deleteBooking);
+router.post('/approve-booking', bookingController.approveBooking);
 
 export default router;

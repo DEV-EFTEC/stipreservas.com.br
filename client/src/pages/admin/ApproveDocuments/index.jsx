@@ -114,7 +114,7 @@ export default function ApproveDocuments() {
         description: "Está permitido o procedimento de recusa da reserva."
       });
     }
-  }, [booking]);
+  }, [booking, dependents, guests, children]);
 
   async function handleSubmit() {
     await apiRequest("/bookings/create-participants-booking", {

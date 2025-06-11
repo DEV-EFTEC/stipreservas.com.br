@@ -18,20 +18,19 @@ export function checkBookingStatus(booking) {
 
   // Checa os filhos, convidados e dependentes
   const subGroups = ['children', 'guests', 'dependents'];
-
   subGroups.forEach(group => {
     const items = booking[group] || [];
     items.forEach((item, index) => {
       if (item.medical_report_status === 'neutral' && item.disability === true) {
-        issues.neutral.push(`${group}[${index}] - Laudo médico`);
+        issues.neutral.push(`${item.name} - Laudo médico`);
       } else if (item.medical_report_status === 'refused') {
-        issues.refused.push(`${group}[${index}] - Laudo médico`);
+        issues.refused.push(`${item.name} - Laudo médico`);
       }
 
       if (item.document_picture_status === 'neutral') {
-        issues.neutral.push(`${group}[${index}] - Documento com foto`);
+        issues.neutral.push(`${item.name} - Documento com foto`);
       } else if (item.document_picture_status === 'refused') {
-        issues.refused.push(`${group}[${index}] - Documento com foto`);
+        issues.refused.push(`${item.name} - Documento com foto`);
       }
     });
   });
