@@ -36,6 +36,7 @@ import "@/lib/setupPDF";
 import './index.css';
 import { SocketProvider } from './hooks/useSocket';
 import { BookingDetails as AdminBookingDetails } from './pages/admin/BookingDetails';
+import ApprovePage from './pages/admin/ApprovePage';
 
 let router = createBrowserRouter([
   {
@@ -223,6 +224,23 @@ let router = createBrowserRouter([
               <AdminSidebar />
               <AdminSidebarTrigger />
               <ApproveDocuments />
+              <Toaster richColors expand={true} />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/enviar-aprovacao/:id",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <ApprovePage />
               <Toaster richColors expand={true} />
             </BookingProvider>
           </AdminSidebarProvider>

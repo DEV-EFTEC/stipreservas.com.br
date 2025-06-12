@@ -21,7 +21,7 @@ export default function Aside({ action, status }) {
         )
       case 'approved':
         return (
-          <Button variant={'positive'}>Concluir aprovação</Button>
+          <Button variant={'positive'} onClick={action}>Concluir aprovação</Button>
         )
       case 'refused':
         return (

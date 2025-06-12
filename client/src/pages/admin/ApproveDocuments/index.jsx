@@ -93,8 +93,11 @@ export default function ApproveDocuments() {
   }, [dependents.length, guests.length, children.length]);
 
   useEffect(() => {
-    const status = checkBookingStatus(booking);
+    if (!booking) return;
+
+    const status = checkBookingStatus(booking, dependents, guests, children);
     setBookingStatus(status.status);
+
     if (status.status === 'neutral') {
       toast.info(status.message, {
         description: (
@@ -114,33 +117,22 @@ export default function ApproveDocuments() {
         description: "Está permitido o procedimento de recusa da reserva."
       });
     }
+
   }, [booking, dependents, guests, children]);
 
   async function handleSubmit() {
-    await apiRequest("/bookings/create-participants-booking", {
-      method: "POST",
+    await apiRequest(`/bookings/update-participants/${booking.id}`, {
+      method: "PUT",
       body: JSON.stringify({
-        dependents: dependents.map(({ id }) => ({ dependent_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
-        guests: guests.map(({ id }) => ({ guest_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
-        children: children.map(({ id }) => ({ child_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
-        holders: []
+        dependents: dependents.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
+        guests: guests.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
+        children: children.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
+        word_card_file_status: booking.word_card_file_status,
+        receipt_picture_status: booking.receipt_picture_status
       })
     });
 
-    const result = await apiRequest("/bookings/update-booking", {
-      method: "POST",
-      body: JSON.stringify({
-        id: booking.id,
-        url_receipt_picture: booking.url_receipt_picture,
-        url_word_card_file: booking.url_word_card_file,
-        dependents_quantity: dependents.length,
-        guests_quantity: guests.length,
-        children_age_max_quantity: children.length
-      })
-    });
-
-    saveBooking(result);
-    navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/escolher-quarto`);
+    navigate(`/admin/enviar-aprovacao/${booking.id}`);
   }
 
   const enumSaveEntity = {
@@ -199,7 +191,7 @@ export default function ApproveDocuments() {
         <section className="w-fit">
           <GlobalBreadcrumb />
           <div className="flex gap-12 items-end mb-8">
-            <Text heading="h1">Envio de Documentos</Text>
+            <Text heading="h1">Aprovação de Documentos</Text>
             <div className="flex items-center gap-2">
               <Label>Solicitação</Label>
               <Badge variant="">#{booking && booking.id.slice(0, 8)}</Badge>

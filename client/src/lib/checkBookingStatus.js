@@ -1,10 +1,10 @@
-export function checkBookingStatus(booking) {
+export function checkBookingStatus(booking, dependents = [], guests = [], children = []) {
   const issues = {
     neutral: [],
     refused: [],
   };
 
-  // Lista de campos principais
+  // Campos principais
   const mainFields = [
     { path: 'word_card_file_status', label: 'Carteira de Trabalho Digital' },
     { path: 'receipt_picture_status', label: 'Holerite recente' }
@@ -16,11 +16,9 @@ export function checkBookingStatus(booking) {
     else if (value === 'refused') issues.refused.push(field.label);
   });
 
-  // Checa os filhos, convidados e dependentes
-  const subGroups = ['children', 'guests', 'dependents'];
-  subGroups.forEach(group => {
-    const items = booking[group] || [];
-    items.forEach((item, index) => {
+  // Função auxiliar para verificar cada grupo
+  const checkGroup = (group, groupName) => {
+    group.forEach(item => {
       if (item.medical_report_status === 'neutral' && item.disability === true) {
         issues.neutral.push(`${item.name} - Laudo médico`);
       } else if (item.medical_report_status === 'refused') {
@@ -33,9 +31,12 @@ export function checkBookingStatus(booking) {
         issues.refused.push(`${item.name} - Documento com foto`);
       }
     });
-  });
+  };
 
-  // Decide qual cenário temos
+  checkGroup(children, 'children');
+  checkGroup(guests, 'guests');
+  checkGroup(dependents, 'dependents');
+
   if (issues.neutral.length === 0 && issues.refused.length === 0) {
     return { status: 'approved', message: 'Todos os documentos foram aprovados.' };
   }
@@ -48,11 +49,9 @@ export function checkBookingStatus(booking) {
     };
   }
 
-  if (issues.neutral.length > 0) {
-    return {
-      status: 'neutral',
-      message: 'Você esqueceu de revisar os seguintes documentos:',
-      details: issues.neutral,
-    };
-  }
+  return {
+    status: 'neutral',
+    message: 'Você esqueceu de revisar os seguintes documentos:',
+    details: issues.neutral,
+  };
 }
