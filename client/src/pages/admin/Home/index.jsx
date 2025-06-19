@@ -21,11 +21,26 @@ export function Home() {
   useEffect(() => {
     if (!socket) return;
 
-    socket.emit('join-room', 'admin');
-
     socket.on("new-booking-response", (data) => {
       setBookings(prevState => [data, ...prevState]);
       toast.info(`Nova solicitação do usuário: ${data.created_by_name}`);
+    });
+
+    socket.on("payment:confirmed", (data) => {
+      setBookings(prevState => {
+        const newBookings = prevState.map(ps => {
+          if (ps.id === data.id) {
+            return {
+              ...data
+            }
+          }
+
+          return ps;
+        });
+
+        return newBookings;
+      });
+      toast.success("Pagamento confirmado com sucesso!");
     });
 
     socket.on("cancelled-response", (data) => {

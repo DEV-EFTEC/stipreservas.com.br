@@ -15,6 +15,6 @@ export default (app) => {
     app.use('/children', auth, childrenRoutes);
     app.use('/dependents', auth, dependentsRoutes);
     app.use('/guests', auth, guestsRoutes);
-    app.use('/payments', auth, paymentsRoutes);
+    app.use('/payments', paymentsRoutes);
     app.use('/storage', auth, storageRoutes);
 }

@@ -11,6 +11,7 @@ import { useEffect } from "react";
 
 export default function Aside({ action, status }) {
   const { booking } = useBooking();
+  const { formatted } = calculateTotalPrice(booking);
   const navigate = useNavigate();
 
   function renderButton(status) {
@@ -106,7 +107,7 @@ export default function Aside({ action, status }) {
               <div className="ml-9">
                 {
                   booking ?
-                  <Text heading={"small"}>{calculateTotalPrice(booking)}</Text>
+                  <Text heading={"small"}>{formatted}</Text>
                   :
                   <Text heading={"small"}>Aguardando escolha dos quartos</Text>
                 }

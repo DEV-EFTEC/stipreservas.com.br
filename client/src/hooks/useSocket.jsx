@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { Toaster } from "sonner";
 
 const SocketContext = createContext({ socket: null });
 
@@ -17,6 +18,16 @@ export function SocketProvider({ children }) {
 
     setSocket(newSocket);
 
+    newSocket.on("connect", () => {
+      const user = localStorage.getItem("user");
+      const userId = user.id;
+      const isAdmin = user.role === 'admin' ? true : false;
+
+      if (userId && !isAdmin) {
+        newSocket.emit("join", { userId, isAdmin });
+      }
+    });
+
     return () => {
       newSocket.disconnect();
     };
@@ -25,6 +36,7 @@ export function SocketProvider({ children }) {
   return (
     <SocketContext.Provider value={{ socket }}>
       {children}
+      <Toaster richColors/>
     </SocketContext.Provider>
   );
 }

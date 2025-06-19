@@ -22,8 +22,6 @@ export async function uploadToStorage(fileBuffer, mimeType, info) {
       association_id
     } = info;
 
-    console.log(info)
-  
     if (!fileBuffer || !mimeType || !documents_association || !document_type || !user_id || !association_id) {
       throw new Error("Parâmetros de upload incompletos ou inválidos.");
     }

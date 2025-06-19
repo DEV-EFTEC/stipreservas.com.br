@@ -31,6 +31,7 @@ export function BookingDetails() {
   const booking_id = queryParams.get("booking_id");
   const navigate = useNavigate();
   const { saveBooking } = useBooking();
+  const [formatted, setFormatted] = useState(0);
 
   const [booking, setBooking] = useState();
 
@@ -40,6 +41,8 @@ export function BookingDetails() {
         method: "GET"
       });
       setBooking(response);
+      const result = calculateTotalPrice(response);
+      setFormatted(result.formatted);
     })()
   }, [])
 
@@ -337,7 +340,7 @@ export function BookingDetails() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-2xl font-bold text-zinc-900">
-                      {calculateTotalPrice(booking)}
+                      {formatted}
                     </p>
                   </CardContent>
                 </Card>

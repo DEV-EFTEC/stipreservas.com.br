@@ -68,7 +68,6 @@ let router = createBrowserRouter([
             <AssociateSidebar />
             <AssociateSidebarTrigger />
             <AssociateHome />
-            <Toaster richColors expand={true} />
           </BookingProvider>
         </AssociateSidebarProvider>
       </ProtectedRoute>
@@ -82,7 +81,6 @@ let router = createBrowserRouter([
           <AssociateSidebar />
           <AssociateSidebarTrigger />
           <AssociateProfile />
-          <Toaster richColors expand={true} />
         </AssociateSidebarProvider>
       </ProtectedRoute>
     )
@@ -110,7 +108,6 @@ let router = createBrowserRouter([
             <AssociateSidebar />
             <AssociateSidebarTrigger />
             <SendDocuments />
-            <Toaster richColors expand={true} />
           </BookingProvider>
         </AssociateSidebarProvider>
       </ProtectedRoute>
@@ -125,7 +122,6 @@ let router = createBrowserRouter([
             <AssociateSidebar />
             <AssociateSidebarTrigger />
             <GetRoom />
-            <Toaster richColors expand={true} />
           </BookingProvider>
         </AssociateSidebarProvider>
       </ProtectedRoute>
@@ -156,7 +152,6 @@ let router = createBrowserRouter([
             <AssociateSidebar />
             <AssociateSidebarTrigger />
             <BookingSettings />
-            <Toaster richColors expand={true} />
           </BookingProvider>
         </AssociateSidebarProvider>
       </ProtectedRoute>
@@ -191,7 +186,6 @@ let router = createBrowserRouter([
             <AdminSidebar />
             <AdminSidebarTrigger />
             <AdminHome />
-            <Toaster richColors expand={true} />
           </AdminSidebarProvider>
         </SocketProvider>
       </ProtectedRoute>
@@ -207,7 +201,6 @@ let router = createBrowserRouter([
               <AdminSidebar />
               <AdminSidebarTrigger />
               <AdminBookingDetails />
-              <Toaster richColors expand={true} />
             </BookingProvider>
           </AdminSidebarProvider>
         </SocketProvider>
@@ -224,7 +217,6 @@ let router = createBrowserRouter([
               <AdminSidebar />
               <AdminSidebarTrigger />
               <ApproveDocuments />
-              <Toaster richColors expand={true} />
             </BookingProvider>
           </AdminSidebarProvider>
         </SocketProvider>
@@ -241,7 +233,6 @@ let router = createBrowserRouter([
               <AdminSidebar />
               <AdminSidebarTrigger />
               <ApprovePage />
-              <Toaster richColors expand={true} />
             </BookingProvider>
           </AdminSidebarProvider>
         </SocketProvider>

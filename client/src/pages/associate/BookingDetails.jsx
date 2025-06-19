@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, ChevronRight, Users, X } from "lucide-react";
+import { Accessibility, ChevronRight, Copy, Eye, ScanQrCode, Users, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
@@ -37,6 +37,20 @@ export default function BookingDetails() {
   const { user } = useAuth();
 
   const [booking, setBooking] = useState();
+  const [payment, setPayment] = useState();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("payment:confirmed", (data) => {
+      setBooking(data.booking);
+      toast.success("Pagamento confirmado com sucesso!");
+    });
+
+    return () => {
+      socket.off("payment:confirmed");
+    };
+  }, [socket]);
 
   useEffect(() => {
     (async () => {
@@ -66,6 +80,33 @@ export default function BookingDetails() {
     } else {
       toast.error("Ocorreu um erro ao cancelar a solicitação.");
     }
+  }
+
+  async function handlePayBooking() {
+    const response = await apiRequest(`/payments/find-payment-by-booking?id=${booking.id}`, {
+      method: "GET"
+    });
+
+    setPayment(response);
+  }
+
+  async function handleCopy(pixCode) {
+    try {
+      await navigator.clipboard.writeText(pixCode);
+      setCopied(true);
+      toast.success("Código PIX copiado com sucesso!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Erro ao copiar:", err);
+    }
+  }
+
+  async function handleViewAuthorization() {
+
+  }
+
+  async function handleDownloadAuthorization () {
+
   }
 
   return (
@@ -349,6 +390,21 @@ export default function BookingDetails() {
             </section>
             <div className="relative w-[30%]">
               <div className={'fixed bottom-10 right-20 w-fit'}>
+                {
+                  payment
+                  &&
+                  <Card className={'w-[250px] gap-0 mb-5'}>
+                    <CardHeader>
+                      <CardTitle className={'text-sm text-zinc-500 mb-1 text-center'}>
+                        Leia o QR Code ou utilize a função "PIX copia e cola"
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <img src={`data:image/png;base64, ${payment.encodedImage}`} className="mb-1" />
+                      <Button onClick={handleCopy(payment.payload)} className={"w-full"}>PIX copia e cola <Copy /></Button>
+                    </CardContent>
+                  </Card>
+                }
                 <Card className={'w-[250px] gap-0'}>
                   <CardHeader>
                     <CardTitle className={'text-sm text-zinc-500 mb-1'}>
@@ -357,25 +413,38 @@ export default function BookingDetails() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-2xl font-bold text-zinc-900">
-                      {calculateTotalPrice(booking)}
+                      {calculateTotalPrice(booking).formatted}
                     </p>
                   </CardContent>
                 </Card>
                 {
                   booking.status === 'incomplete'
                   &&
-                  <Button className={'mt-4'} onClick={() => { navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/enviar-documentos`); saveBooking(booking); }}>Retomar solicitação de onde parou<ChevronRight /></Button>
+                  <Button className={'mt-4 w-full'} onClick={() => { navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/enviar-documentos`); saveBooking(booking); }}>Retomar solicitação de onde parou<ChevronRight /></Button>
                 }
                 {
                   booking.status === 'pending_approval'
                   &&
-                  <Button className={'mt-4'} variant={'destructive'} onClick={handleCancel}>Cancelar solicitação<X /></Button>
+                  <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleCancel}>Cancelar solicitação<X /></Button>
+                }
+                {
+                  booking.status === 'payment_pending'
+                  &&
+                  <Button className={'mt-4 w-full'} variant={'payment_pending'} onClick={handlePayBooking}>Realizar pagamento<ScanQrCode /></Button>
+                }
+                {
+                  booking.status === 'approved'
+                  &&
+                  <div>
+                    <Button className={'mt-4 w-full'} variant={'positive'} onClick={handleViewAuthorization}>Visualizar autorização<Eye /></Button>
+                    <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleDownloadAuthorization}>Baixar autorização<Eye /></Button>
+                  </div>
                 }
               </div>
             </div>
           </section>
         </section>
       }
-    </section>
+    </section >
   )
 }

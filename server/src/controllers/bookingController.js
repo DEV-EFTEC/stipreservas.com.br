@@ -135,11 +135,30 @@ export async function updateParticipantsBooking(req, res) {
 
 export async function approveBooking(req, res) {
   try {
-    const { booking_id } = req.body;
-    const result = await bookingService.approveBooking(booking_id);
+    const { booking_id, user_id, value } = req.body;
+    const result = await bookingService.approveBooking(booking_id, user_id, value);
     res.status(200).json(result);
   } catch (err) {
     logger.error("Error on updateParticipantsBooking", err);
+    res.status(500).json({ error: err.message });
+  }
+}
+
+export async function updateParticipants(req, res) {
+  try {
+    const { booking_id } = req.params;
+    const { children, guests, dependents, word_card_file_status, receipt_picture_status } = req.body;
+    const result = await bookingService.updateParticipants(
+      booking_id,
+      children,
+      guests,
+      dependents,
+      word_card_file_status,
+      receipt_picture_status
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    logger.error("Error on updateParticipants", err);
     res.status(500).json({ error: err.message });
   }
 }

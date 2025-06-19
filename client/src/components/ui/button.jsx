@@ -22,6 +22,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         positive:
           "bg-green-500 text-primary-foreground shadow-xs hover:bg-green-500/80",
+        payment_pending:
+          "bg-orange-500 text-primary-foreground shadow-xs hover:bg-orange-500/80",
         selected:
           "bg-teal-500 text-primary-foreground shadow-xs hover:bg-teal-500/80",
       },

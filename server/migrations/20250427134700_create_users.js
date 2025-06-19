@@ -131,7 +131,7 @@ export async function up(knex) {
     );
 
     CREATE TABLE payments (
-      id UUID DEFAULT uuid_generate_v4(),
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
       user_id UUID NOT NULL REFERENCES users(id),
       link TEXT NOT NULL,

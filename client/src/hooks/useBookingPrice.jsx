@@ -68,9 +68,10 @@ function calculateTotalPrice(booking) {
     total += range.length * Number(booking.holders[0].associate_role == 'partner' ? room.partner_guest_fee_per_day : room.contributor_guest_fee_per_day);
   });
 
-  console.log(total)
-
-  return Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total);
+  return {
+    formatted: Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total),
+    brute: total
+  };
 }
 
 // Exemplo de hook React que usa a função pura

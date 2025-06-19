@@ -5,6 +5,7 @@ import * as dependentsModel from "#models/dependentsModel.js";
 import * as guestsModel from "#models/guestsModel.js";
 import * as childrenModel from "#models/childrenModel.js";
 import * as holderModel from "#models/holderModel.js";
+import * as paymentService from "#services/paymentService.js";
 import _ from "lodash";
 import dotenv from "dotenv";
 
@@ -166,16 +167,16 @@ export async function updateParticipantsBooking(
   return await Promise.all(tasks);
 }
 
-export async function approveBooking(id) {
+export async function approveBooking(id, user_id, value) {
   const booking = await bookingModel.findBookingById(id);
-  const user = await userModel.findUserById(booking.created_by);
+  const user = await userModel.findUserById(user_id);
   const { data, error } = await resend.emails.send({
     from: "STIP reservas <contato@eftecnologia.com>",
     to: [user.email],
-    subject: "Sua reserva foi aprovada!",
+    subject: "Sua solicitação de reserva foi aprovada!",
     html: `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html dir="ltr" lang="en">
+    <html dir="ltr" lang="pt">
       <head>
         <link
           rel="preload"
@@ -250,12 +251,12 @@ export async function approveBooking(id) {
                 </p>
                 <p
                   style="font-size:14px;color:rgb(0,0,0);line-height:24px;margin-top:16px;margin-bottom:16px">
-                  <strong>Alan</strong> (<a
-                    href="mailto:alan.turing@example.com"
+                  <strong>${user.name.split(" ")[0]}</strong> (<a
+                    href="mailto:${user.email}"
                     style="color:rgb(37,99,235);text-decoration-line:none"
                     target="_blank"
-                    >alan.turing@example.com</a
-                  >) has invited you to the <strong>Enigma</strong> team on<!-- -->
+                    >${user.email}</a
+                  >) sua solicitação de reserva <strong>#${booking.id.slice(0, 8)}</strong> foi aprovada!<!-- -->
                   <strong>Vercel</strong>.
                 </p>
                 <table
@@ -340,7 +341,7 @@ export async function approveBooking(id) {
                   style="font-size:14px;color:rgb(0,0,0);line-height:24px;margin-top:16px;margin-bottom:16px">
                   ou copie e cole essa URL no seu navegador:<!-- -->
                   <a
-                    href=${process.env.CLIENT_URL+"/associado/home"}
+                    href=${process.env.CLIENT_URL + "/associado/home"}
                     style="color:rgb(37,99,235);text-decoration-line:none"
                     target="_blank"
                     >${process.env.CLIENT_URL}</a
@@ -353,8 +354,68 @@ export async function approveBooking(id) {
         <!--/$-->
       </body>
     </html>
-    `
+    `,
   });
 
-  return data;
+  if (data) {
+    const booking = await bookingModel.approveBooking(id);
+    const payment = await paymentService.createPayment(
+      id,
+      user_id,
+      value,
+      booking.expires_at.toISOString().split('T')[0]
+    );
+
+    return { booking, payment };
+  } else {
+    return error;
+  }
+}
+
+export async function updateParticipants(
+  booking_id,
+  children,
+  guests,
+  dependents,
+  word_card_file_status,
+  receipt_picture_status
+) {
+  const tasks = [];
+
+  if (children.length > 0) {
+    const childrenUpdates = children.map((child) =>
+      childrenModel.updateChild(child.id, {
+        document_picture_status: child.document_picture_status,
+        medical_report_status: child.medical_report_status,
+      })
+    );
+    tasks.push(...childrenUpdates);
+  }
+
+  if (guests.length > 0) {
+    const guestsUpdates = guests.map((guest) =>
+      guestsModel.updateGuest(guest.id, {
+        document_picture_status: guest.document_picture_status,
+        medical_report_status: guest.medical_report_status,
+      })
+    );
+    tasks.push(...guestsUpdates);
+  }
+
+  if (dependents.length > 0) {
+    const dependentsUpdates = dependents.map((dep) =>
+      dependentsModel.updateDependent(dep.id, {
+        document_picture_status: dep.document_picture_status,
+        medical_report_status: dep.medical_report_status,
+      })
+    );
+    tasks.push(...dependentsUpdates);
+  }
+
+  await bookingModel.updateBooking(booking_id, {
+    word_card_file_status: word_card_file_status,
+    receipt_picture_status: receipt_picture_status,
+  });
+
+  return await Promise.all(tasks);
 }

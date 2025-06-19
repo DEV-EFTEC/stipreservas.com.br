@@ -366,7 +366,7 @@ export default function FinishBook() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-2xl font-bold text-zinc-900">
-                      {calculateTotalPrice(booking)}
+                      {calculateTotalPrice(booking).formatted}
                     </p>
                   </CardContent>
                 </Card>
