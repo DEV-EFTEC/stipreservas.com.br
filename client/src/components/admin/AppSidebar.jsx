@@ -81,7 +81,7 @@ const data = {
   projects: [
     {
       name: "Configurações",
-      url: "/associado/config",
+      url: "/admin/config",
       icon: Settings,
     },
   ],

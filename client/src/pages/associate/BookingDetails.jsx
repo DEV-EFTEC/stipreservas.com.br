@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, ChevronRight, Copy, Eye, ScanQrCode, Users, X } from "lucide-react";
+import { Accessibility, ChevronRight, Copy, Download, Eye, ScanQrCode, Users, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
@@ -25,6 +25,7 @@ import { useBooking } from "@/hooks/useBooking";
 import { calculateTotalPrice } from "@/hooks/useBookingPrice";
 import { useSocket } from "@/hooks/useSocket";
 import { toast } from "sonner";
+import html2pdf from 'html2pdf.js';
 
 export default function BookingDetails() {
   const location = useLocation();
@@ -105,8 +106,137 @@ export default function BookingDetails() {
 
   }
 
-  async function handleDownloadAuthorization () {
+  function handleDownloadAuthorization() {
+    const htmlString = `<div style="padding: 0; font-family: 'DM Sans', Arial, sans-serif; color: #333; background-color: #fff;page-break-inside: avoid;">
+  <h1 style="font-size: 28px; color: #00598a; margin-bottom: 8px;">STIP Reservas</h1>
+  <h2 style="font-size: 20px; margin-bottom: 24px; color: #111;">Autorização #A8374U</h2>
 
+  <div>
+    <h3
+      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
+      Informações Gerais
+    </h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;page-break-inside: avoid;">
+      <tbody>
+        <tr>
+          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Titular</th>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">Jeremias Seles de Almeida</td>
+        </tr>
+        <tr>
+          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Documento</th>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">79668010</td>
+        </tr>
+        <tr>
+          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Empresa</th>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">PANI. MERC. AHU LTDA</td>
+        </tr>
+        <tr>
+          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Período</th>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">21/06/2025 à 22/06/2025</td>
+        </tr>
+        <tr>
+          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Quarto(s)</th>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">13</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <h3
+      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
+      Acompanhantes
+    </h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;page-break-inside: avoid;">
+      <thead>
+        <tr style="background-color: #f8f8f8; font-weight: bold;">
+          <th style="padding: 8px 10px; border: 1px solid #ddd;">#</th>
+          <th style="padding: 8px 10px; border: 1px solid #ddd;">Nome</th>
+          <th style="padding: 8px 10px; border: 1px solid #ddd;">Nº Documento</th>
+          <th style="padding: 8px 10px; border: 1px solid #ddd;">Estadia</th>
+          <th style="padding: 8px 10px; border: 1px solid #ddd;">Tipo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">1</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">Clemilda dos Santos Silva</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">919104399-91</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">2 dias</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">Dependente</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">2</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">Gabriel Santos de Almeida</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">139626939-80</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">2 dias</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">Dependente</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">3</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">Laura Mariana da Silva</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">155144439-90</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">2 dias</td>
+          <td style="padding: 8px 10px; border: 1px solid #ddd;">Convidado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <h3
+      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
+      IMPORTANTE: Termos & Condições
+    </h3>
+    <ol style="margin-bottom: 8px; padding-left: 0; text-indent: 0;list-style-type:decimal;page-break-inside: avoid;">
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">1. A autorização terá validade das 8h do primeiro dia até as 17h do
+        último dia informado;</li>
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">2. Não será permitida a entrada de pessoas não cadastradas na
+        autorização;</li>
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">3. O desrespeito às normas resultará na perda do direito de uso da
+        colônia de férias;</li>
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">4. Pulseiras de identificação são obrigatórias. Perda = R$
+        3,00/unidade;</li>
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">5. É proibida a entrada com animais de estimação;</li>
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">6. Cancelamentos até 1 dia antes do check-in (baixa temporada)
+        permitem reembolso;</li>
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">7. Cancelamentos até 3 dias antes do check-in (alta temporada)
+        permitem reembolso;</li>
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">8. Check-in: das 8h às 18h;</li>
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">9. Check-out: até 17h;</li>
+      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">10. Cancelamento somente via plataforma STIP Reservas.</li>
+    </ol>
+  </div>
+
+  <div>
+    <h3
+      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
+      ATENÇÃO! É necessário levar:
+    </h3>
+    <ul style="margin-left: 1.5rem; margin-top: 8px; list-style-type: disc;page-break-inside: avoid;">
+      <li style="margin-bottom: 8px; line-height: 1.5;page-break-inside: avoid;">Roupa de cama e itens de higiene pessoal;</li>
+      <li style="margin-bottom: 8px; line-height: 1.5;">Detergente, esponja e pano de prato;</li>
+      <li style="margin-bottom: 8px; line-height: 1.5;">A limpeza do quarto é de responsabilidade do hóspede;</li>
+      <li style="margin-bottom: 8px; line-height: 1.5;">Cuide do kit de limpeza disponibilizado.</li>
+    </ul>
+  </div>
+
+  <div>
+    <footer style="margin-top: 40px; font-size: 12px; color: #666; text-align: center;page-break-inside: avoid; padding: 10px;">
+      <p style="page-break-inside: avoid;">Documento gerado eletronicamente via STIP Reservas em 2025.</p>
+    </footer>
+  </div>
+</div>`
+
+    const opt = {
+      margin: 0.5,
+      filename: 'autorizacao-reserva.pdf',
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 1, scrollY: 0 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(htmlString).save();
   }
 
   return (
@@ -436,8 +566,7 @@ export default function BookingDetails() {
                   booking.status === 'approved'
                   &&
                   <div>
-                    <Button className={'mt-4 w-full'} variant={'positive'} onClick={handleViewAuthorization}>Visualizar autorização<Eye /></Button>
-                    <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleDownloadAuthorization}>Baixar autorização<Eye /></Button>
+                    <Button className={'mt-4 w-full'} onClick={handleDownloadAuthorization}>Baixar autorização<Download /></Button>
                   </div>
                 }
               </div>
@@ -445,6 +574,6 @@ export default function BookingDetails() {
           </section>
         </section>
       }
-    </section >
+    </section>
   )
 }

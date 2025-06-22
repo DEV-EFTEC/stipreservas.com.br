@@ -37,6 +37,7 @@ import './index.css';
 import { SocketProvider } from './hooks/useSocket';
 import { BookingDetails as AdminBookingDetails } from './pages/admin/BookingDetails';
 import ApprovePage from './pages/admin/ApprovePage';
+import Settings from './pages/admin/Settings';
 
 let router = createBrowserRouter([
   {
@@ -233,6 +234,22 @@ let router = createBrowserRouter([
               <AdminSidebar />
               <AdminSidebarTrigger />
               <ApprovePage />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/config",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <Settings />
             </BookingProvider>
           </AdminSidebarProvider>
         </SocketProvider>

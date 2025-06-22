@@ -6,6 +6,7 @@ import dependentsRoutes from './dependents.routes.js';
 import guestsRoutes from './guests.routes.js';
 import paymentsRoutes from './payment.routes.js';
 import storageRoutes from './storage.routes.js';
+import periodsRoutes from './periods.routes.js';
 import auth from '#middlewares/auth.js';
 
 export default (app) => {
@@ -17,4 +18,5 @@ export default (app) => {
     app.use('/guests', auth, guestsRoutes);
     app.use('/payments', paymentsRoutes);
     app.use('/storage', auth, storageRoutes);
+    app.use('/periods', auth, periodsRoutes);
 }
