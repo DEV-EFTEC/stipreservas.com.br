@@ -15,5 +15,6 @@ router.get(
   paymentController.findPaymentByBooking
 );
 router.get("/update-status/:id", auth, paymentController.updatePaymentStatus);
+router.post("/refund", paymentAuth, paymentController.refund);
 
 export default router;

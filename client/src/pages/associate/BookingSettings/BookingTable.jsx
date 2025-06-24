@@ -43,7 +43,7 @@ export default function BookingTable({ title, people, rooms, onChangeRoom, onCha
         </TableHeader>
         <TableBody>
           {people.map(person => (
-            <TableRow key={person.id}>
+            <TableRow key={person.id + person.name}>
               <TableCell className="w-1/5">{person.name}</TableCell>
               <TableCell className="w-1/5">{person.cpf}</TableCell>
               <TableCell className="w-1/5">

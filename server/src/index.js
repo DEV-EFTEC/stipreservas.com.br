@@ -19,7 +19,7 @@ const io = new SocketIOServer(httpServer, {
   },
 });
 
-app.set(io);
+app.set("io", io);
 
 function fatalHandler(err) {
   logger.error(err, { FATAL: true });

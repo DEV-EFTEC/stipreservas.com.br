@@ -37,3 +37,14 @@ export async function updatePeriod(req, res) {
     res.status(500).json({ error: "Erro ao atualizar dependents" });
   }
 }
+
+export async function isHighSeason(req, res) {
+  try {
+    const { date } = req.body;
+    const period = await periodService.isHighSeason(date);
+    res.status(200).json(period);
+  } catch (err) {
+    logger.error("Error on createdependents", { err });
+    res.status(500).json({ error: "Erro ao atualizar dependents" });
+  }
+}

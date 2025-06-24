@@ -19,3 +19,7 @@ export async function updatePeriod(id, data) {
 export async function deletePeriod(id) {
   return db("high_season_periods").where({ id }).delete();
 }
+
+export async function isHighSeason(today) {
+  return db("high_season_periods").where("start_date", "<=", today).andWhere("end_date", ">=", today).first();
+}

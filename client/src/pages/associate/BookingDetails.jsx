@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, ChevronRight, Copy, Download, Eye, ScanQrCode, Users, X } from "lucide-react";
+import { Accessibility, ChevronRight, Copy, Download, Eye, Info, ScanQrCode, Users, X, XCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
@@ -26,6 +26,7 @@ import { calculateTotalPrice } from "@/hooks/useBookingPrice";
 import { useSocket } from "@/hooks/useSocket";
 import { toast } from "sonner";
 import html2pdf from 'html2pdf.js';
+import { Alert } from "@/components/ui/alert";
 
 export default function BookingDetails() {
   const location = useLocation();
@@ -39,6 +40,8 @@ export default function BookingDetails() {
 
   const [booking, setBooking] = useState();
   const [payment, setPayment] = useState();
+  const [isHighSeason, setIsHighSeason] = useState(true);
+  const [isDisabledRefund, setIsDisabledRefund] = useState(true);
 
   useEffect(() => {
     if (!socket) return;
@@ -60,6 +63,37 @@ export default function BookingDetails() {
       });
       setBooking(response);
     })()
+  }, [])
+
+  useEffect(() => {
+    if (!booking) return;
+    (async () => {
+      const { is_high_season } = await apiRequest(`/periods/is-high-season`, {
+        method: "POST",
+        body: JSON.stringify({
+          date: booking.check_in
+        })
+      })
+      setIsHighSeason(is_high_season);
+      const now = new Date();
+      const checkIn = new Date(booking.check_in);
+      const diffDays = Math.ceil((checkIn.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (is_high_season) {
+        if (diffDays <= 3) {
+          setIsDisabledRefund(true);
+        } else {
+          setIsDisabledRefund(false);
+        }
+      } else {
+        if (diffDays <= 1) {
+          setIsDisabledRefund(true);
+        } else {
+          setIsDisabledRefund(false);
+        }
+      }
+
+    })();
   }, [])
 
   async function handleCancel() {
@@ -102,8 +136,8 @@ export default function BookingDetails() {
     }
   }
 
-  async function handleViewAuthorization() {
-
+  async function handleGetRefund() {
+    
   }
 
   function handleDownloadAuthorization() {
@@ -563,10 +597,18 @@ export default function BookingDetails() {
                   <Button className={'mt-4 w-full'} variant={'payment_pending'} onClick={handlePayBooking}>Realizar pagamento<ScanQrCode /></Button>
                 }
                 {
+                  isHighSeason &&
+                  <Alert variant={'destructive'} className={'w-[250px]'}>
+                    <Info />
+                    Lembre-se: Estamos em alta temporada.<br />Não haverá reembolsos por conta da alta demanda.
+                  </Alert>
+                }
+                {
                   booking.status === 'approved'
                   &&
-                  <div>
+                  <div className="w-[250px]">
                     <Button className={'mt-4 w-full'} onClick={handleDownloadAuthorization}>Baixar autorização<Download /></Button>
+                    <Button className={'mt-4 w-full'} onClick={handleDownloadAuthorization} variant={"destructive"} disabled={isDisabledRefund}>Cancelar e solicitar reembolso<XCircle /></Button>
                   </div>
                 }
               </div>

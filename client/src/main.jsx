@@ -6,7 +6,6 @@ import {
 } from "react-router";
 import { AuthProvider } from './hooks/useAuth';
 import { BookingProvider } from './hooks/useBooking';
-import { Toaster } from './components/ui/sonner';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import { SidebarProvider as AssociateSidebarProvider, SidebarTrigger as AssociateSidebarTrigger } from './components/ui/sidebar';

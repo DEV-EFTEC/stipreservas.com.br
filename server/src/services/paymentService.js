@@ -113,3 +113,18 @@ export async function getCustomerIdByUser(id) {
 export async function updatePaymentByAsaasPaymentId(id, status) {
   return paymentModel.updatePaymentByAsaasPaymentId(id, status);
 }
+
+export async function refundPayment(booking_id) {
+  try {
+    const { asaas_payment_id, user_id } =
+      await paymentModel.findPaymentByBooking(booking_id);
+
+    const refund = await apiAsaas(`/payments/${asaas_payment_id}/refund`, {
+      method: "POST",
+    });
+
+    return { ...refund, user_id };
+  } catch (err) {
+    return logger.error(err);
+  }
+}
