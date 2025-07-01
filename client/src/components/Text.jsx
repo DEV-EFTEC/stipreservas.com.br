@@ -1,4 +1,4 @@
-export default function Text({ children, heading }) {
+export default function Text({ children, heading, ...props }) {
   function returnTag() {
     switch (heading) {
       case 'h1':

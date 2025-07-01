@@ -21,6 +21,10 @@ const badgeVariants = cva(
           "border-transparent bg-yellow-400 text-black [a&]:hover:bg-yellow-400/90",
         refused:
           "border-transparent bg-red-700 text-red-50 [a&]:hover:bg-red-400/90",
+        refunded:
+          "border-transparent bg-teal-400 text-teal-50 [a&]:hover:bg-teal-400/90",
+        refund_solicitation:
+          "border-transparent bg-teal-600 text-teal-50 [a&]:hover:bg-teal-400/90",
         expired:
           "border-transparent bg-gray-500 text-white [a&]:hover:bg-gray-500/90",
         closed:

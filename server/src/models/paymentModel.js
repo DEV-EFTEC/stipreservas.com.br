@@ -11,6 +11,7 @@ export async function findPaymentsByUser(created_by) {
 }
 
 export async function findPaymentByBooking(booking_id) {
+  console.log(db("payments").where({ booking_id }).select("*").first())
   return db("payments").where({ booking_id }).select("*").first();
 }
 

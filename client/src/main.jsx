@@ -13,7 +13,7 @@ import { SidebarProvider as AdminSidebarProvider, SidebarTrigger as AdminSidebar
 
 import { AppSidebar as AssociateSidebar } from './components/associate/AppSidebar';
 import { AppSidebar as AdminSidebar } from './components/admin/AppSidebar';
-import { Home as AssociateHome } from './pages/associate/Home';
+import { Home as AssociateHome } from './pages/associate/Home/index';
 import { Profile as AssociateProfile } from './pages/associate/Profile.jsx';
 import { Home as AdminHome } from './pages/admin/Home/index';
 
@@ -37,6 +37,7 @@ import { SocketProvider } from './hooks/useSocket';
 import { BookingDetails as AdminBookingDetails } from './pages/admin/BookingDetails';
 import ApprovePage from './pages/admin/ApprovePage';
 import Settings from './pages/admin/Settings';
+import { DrawSettings } from './pages/admin/DrawSettings';
 
 let router = createBrowserRouter([
   {
@@ -249,6 +250,22 @@ let router = createBrowserRouter([
               <AdminSidebar />
               <AdminSidebarTrigger />
               <Settings />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/sorteios",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <DrawSettings />
             </BookingProvider>
           </AdminSidebarProvider>
         </SocketProvider>

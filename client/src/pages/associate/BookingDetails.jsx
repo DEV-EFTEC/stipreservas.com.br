@@ -51,8 +51,21 @@ export default function BookingDetails() {
       toast.success("Pagamento confirmado com sucesso!");
     });
 
+    socket.on("payment:refund-solicitation", (data) => {
+      setBooking(prevState => (
+        {
+          ...prevState,
+          status: data.booking_status
+        }
+      ));
+      toast.success("O reembolso via Pix foi solicitado com sucesso.", {
+        description: "O valor será devolvido diretamente à sua conta em até 3 dias úteis."
+      });
+    })
+
     return () => {
       socket.off("payment:confirmed");
+      socket.off("payment:refund-solicitation");
     };
   }, [socket]);
 
@@ -67,34 +80,33 @@ export default function BookingDetails() {
 
   useEffect(() => {
     if (!booking) return;
+
     (async () => {
-      const { is_high_season } = await apiRequest(`/periods/is-high-season`, {
-        method: "POST",
-        body: JSON.stringify({
-          date: booking.check_in
-        })
-      })
-      setIsHighSeason(is_high_season);
-      const now = new Date();
-      const checkIn = new Date(booking.check_in);
-      const diffDays = Math.ceil((checkIn.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      try {
+        const { is_high_period } = await apiRequest(`/periods/is-high-season`, {
+          method: "POST",
+          body: JSON.stringify({
+            date: booking.check_in
+          })
+        });
 
-      if (is_high_season) {
-        if (diffDays <= 3) {
-          setIsDisabledRefund(true);
+        setIsHighSeason(is_high_period);
+        console.log(is_high_period)
+
+        const now = new Date();
+        const checkIn = new Date(booking.check_in);
+        const diffDays = Math.ceil((checkIn.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (is_high_period) {
+          setIsDisabledRefund(diffDays <= 3);
         } else {
-          setIsDisabledRefund(false);
+          setIsDisabledRefund(diffDays <= 1);
         }
-      } else {
-        if (diffDays <= 1) {
-          setIsDisabledRefund(true);
-        } else {
-          setIsDisabledRefund(false);
-        }
+      } catch (err) {
+        console.error("Erro ao verificar período de alta temporada:", err);
       }
-
     })();
-  }, [])
+  }, [booking]);
 
   async function handleCancel() {
     const result = await apiRequest(`/bookings/update-booking`, {
@@ -137,7 +149,17 @@ export default function BookingDetails() {
   }
 
   async function handleGetRefund() {
-    
+    const response = await apiRequest(`/payments/refund`, {
+      method: "POST",
+      body: JSON.stringify({
+        booking_id: booking_id
+      })
+    });
+    if (response) {
+      toast.success("Solicitação de reembolso enviada com sucesso!")
+    } else {
+      toast.error("Algo deu errado. Tente novamente mais tarde.")
+    }
   }
 
   function handleDownloadAuthorization() {
@@ -596,19 +618,25 @@ export default function BookingDetails() {
                   &&
                   <Button className={'mt-4 w-full'} variant={'payment_pending'} onClick={handlePayBooking}>Realizar pagamento<ScanQrCode /></Button>
                 }
-                {
+                {/* {
                   isHighSeason &&
                   <Alert variant={'destructive'} className={'w-[250px]'}>
                     <Info />
                     Lembre-se: Estamos em alta temporada.<br />Não haverá reembolsos por conta da alta demanda.
                   </Alert>
-                }
+                } */}
                 {
                   booking.status === 'approved'
                   &&
                   <div className="w-[250px]">
                     <Button className={'mt-4 w-full'} onClick={handleDownloadAuthorization}>Baixar autorização<Download /></Button>
-                    <Button className={'mt-4 w-full'} onClick={handleDownloadAuthorization} variant={"destructive"} disabled={isDisabledRefund}>Cancelar e solicitar reembolso<XCircle /></Button>
+                    {
+                      !isHighSeason
+                        ?
+                        <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleCancel}>Cancelar solicitação<X /></Button>
+                        :
+                        <Button className={'mt-4 w-full'} onClick={handleGetRefund} variant={"destructive"} disabled={isDisabledRefund}>Cancelar e solicitar reembolso<XCircle /></Button>
+                    }
                   </div>
                 }
               </div>

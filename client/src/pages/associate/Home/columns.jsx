@@ -6,11 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { enumStatus } from "@/lib/enumStatus";
 
-const enumAssociateRole = {
-  "partner": "Sócio",
-  "contributor": "Contribuinte"
-}
-
 export const columns = [
   {
     accessorKey: "id",
@@ -25,23 +20,12 @@ export const columns = [
     )
   },
   {
-    accessorKey: "created_by_name",
-    header: "Titular",
-  },
-  {
-    accessorKey: "created_by_associate_role",
-    header: "Associação",
-    cell: ({ row }) => (
-      <Badge variant={row.original.created_by_associate_role}>
-        {enumAssociateRole[row.original.created_by_associate_role]}
-      </Badge>
-    )
-  },
-  {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <Badge variant={row.original.status}>{enumStatus[row.original.status]}</Badge>
+      <Badge variant={row.original.status}>
+        {enumStatus[row.original.status]}
+      </Badge>
     )
   },
   {
@@ -63,20 +47,16 @@ export const columns = [
     accessorKey: "actions",
     header: "Ações",
     cell: ({ row }) => {
-      const navigate = useNavigate(); // AGORA dentro do componente (correto!)
+      const navigate = useNavigate();
 
       return (
         <>
-          {
-            row.original.status === 'pending_approval'
-            &&
-            <Button
-              variant={'outline'}
-              onClick={() => navigate(`/admin/solicitacao/${row.original.id}?booking_id=${row.original.id}`)}
-            >
-              Ver solicitação
-            </Button>
-          }
+          <Button
+            variant={'outline'}
+            onClick={() => navigate(`/associado/solicitacao/${row.original.id.slice(0, 8)}?booking_id=${row.original.id}`)}
+          >
+            Ver detalhes
+          </Button>
         </>
       );
     }

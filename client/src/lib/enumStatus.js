@@ -6,5 +6,7 @@ export const enumStatus = {
   "approved": "Aprovado",
   "payment_pending": "Pagamento pendente",
   "cancelled": "Cancelado",
-  "incomplete": "Incompleta"
+  "incomplete": "Incompleta",
+  "refunded": "Reembolsado",
+  "refund_solicitation": "Reembolso solicitado"
 }

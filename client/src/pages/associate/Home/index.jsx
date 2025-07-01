@@ -7,42 +7,37 @@ import { AlertCircleIcon, PlusIcon } from "lucide-react";
 import { toast } from "sonner";
 import { apiRequest } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 import Text from "@/components/Text";
 import GlobalBreadcrumb from "@/components/associate/GlobalBreadcrumb";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
 
 export function Home() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { booking, removeBooking } = useBooking();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [bookings, setBookings] = useState([]);
+  const [paginationData, setPaginationData] = useState();
 
   useEffect(() => {
     if (loading) return;
 
     async function fetchBookings() {
       try {
-        const result = await apiRequest(`/bookings/get-bookings?user_id=${user.id}`, {
+        const result = await apiRequest(`/bookings/get-bookings?user_id=${user.id}&page=${page}&limit=${limit}`, {
           method: "GET"
         });
-        setBookings(result);
+        setBookings(result.data);
+        setPaginationData(result.pagination);
       } catch (err) {
         console.error("Erro ao buscar reservas:", err.message);
       }
     }
 
     fetchBookings();
-  }, [loading]);
+  }, [loading, page]);
 
   function handleCancel() {
     apiRequest(`/bookings/delete-booking/${booking.id}`, {
@@ -63,17 +58,6 @@ export function Home() {
         state: { participants: result }
       });
     }
-  }
-
-  const enumStatus = {
-    "pending_approval": "Aprovação pendente",
-    "refused": "Recusado",
-    "expired": "Expirado",
-    "closed": "Encerrado",
-    "approved": "Aprovado",
-    "payment_pending": "Pagamento pendente",
-    "cancelled": "Cancelado",
-    "incomplete": "Incompleta"
   }
 
   return (
@@ -98,35 +82,21 @@ export function Home() {
           </AlertDescription>
         </Alert>
       }
-      <Table className={"w-full"}>
-        <TableCaption>Uma lista com as suas reservas recentes.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Cód.</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Entrada</TableHead>
-            <TableHead>Saída</TableHead>
-            <TableHead>Solicitação criada em</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {bookings.map((booking) => (
-            <TableRow key={booking.id}>
-              <TableCell className="font-medium">#{booking.id.slice(0, 8)}</TableCell>
-              <TableCell>
-                <Badge variant={booking.status}>{enumStatus[booking.status]}</Badge>
-              </TableCell>
-              <TableCell>{format(booking.check_in, "dd/MM/yyyy")}</TableCell>
-              <TableCell>{format(booking.check_out, "dd/MM/yyyy")}</TableCell>
-              <TableCell>{format(booking.utc_created_on, "dd/MM/yyyy 'às' HH:mm")}</TableCell>
-              <TableCell className={"w-min"}>
-                <Button variant={"outline"} size={"sm"} onClick={() => navigate(`/associado/solicitacao/${booking.id.slice(0, 8)}?booking_id=${booking.id}`)}>Ver detalhes</Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <DataTable
+        columns={columns}
+        data={bookings}
+        nextPage={() => setPage(prevState => prevState + 1)}
+        previousPage={
+          () => setPage(prevState => {
+            if (prevState > 1) {
+              return prevState - 1
+            } else {
+              return 1
+            }
+          })
+        }
+        pagination={paginationData}
+      />
     </section>
   )
 }

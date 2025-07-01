@@ -1,0 +1,36 @@
+/* Seu arquivo CSS (e.g., global.css, index.css, app.css) */
+
+/* Estilos para o Cabeçalho H2 */
+#editor_toolbar h2 {
+  font-size: 1.8rem; /* Ajuste o tamanho da fonte */
+  font-weight: bold;
+  margin-top: 1.5em; /* Espaçamento acima */
+  margin-bottom: 0.8em; /* Espaçamento abaixo */
+  color: #2c3e50; /* Cor do texto */
+}
+
+/* Estilos para Listas Não Ordenadas (bullets) */
+#editor_toolbar ul {
+  list-style-type: disc; /* Marcadores de disco (bolinhas) */
+  margin-left: 1.5em; /* Recuo à esquerda para alinhar os marcadores */
+  padding-left: 0; /* Remove padding padrão que pode causar espaçamento extra */
+  margin-bottom: 0.5em; /* Espaçamento abaixo da lista */
+}
+
+/* Estilos para Listas Ordenadas (numeradas) */
+#editor_toolbar ol {
+  list-style-type: decimal; /* Marcadores numéricos */
+  margin-left: 1.5em;
+  padding-left: 0;
+  margin-bottom: 0.5em;
+}
+
+/* Estilos para Itens de Lista */
+#editor_toolbar li {
+  margin-bottom: 0.25em; /* Espaçamento entre itens da lista */
+}
+
+/* Você pode adicionar estilos para parágrafos para controlá-los também */
+#editor_toolbar p {
+  margin-bottom: 1em; /* Espaçamento entre parágrafos */
+}

@@ -100,7 +100,7 @@ export async function up(knex) {
     );
 
     CREATE TABLE booking_rooms (
-      id UUID DEFAULT uuid_generate_v4(),
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       room_id UUID NOT NULL REFERENCES rooms(id),
       booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
       check_in DATE NOT NULL,

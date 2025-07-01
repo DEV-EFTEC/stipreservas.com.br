@@ -16,6 +16,7 @@ export function Home() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [bookings, setBookings] = useState([]);
+  const [paginationData, setPaginationData] = useState([]);
   const { socket } = useSocket();
 
   useEffect(() => {
@@ -70,6 +71,7 @@ export function Home() {
     (async () => {
       const result = await apiRequest(`/bookings/get-all-bookings?page=${page}&limit=${limit}&user_type=${user.role}`, { method: 'GET' });
       setBookings(result.data);
+      setPaginationData(result.pagination);
     })();
   }, [page]);
 
@@ -79,7 +81,21 @@ export function Home() {
       <div className="flex w-full justify-between items-center mb-10">
         <Text heading={'h1'}>Últimas solicitações</Text>
       </div>
-      <DataTable data={bookings} columns={columns} />
+      <DataTable
+        columns={columns}
+        data={bookings}
+        nextPage={() => setPage(prevState => prevState + 1)}
+        previousPage={
+          () => setPage(prevState => {
+            if (prevState > 1) {
+              return prevState - 1
+            } else {
+              return 1
+            }
+          })
+        }
+        pagination={paginationData}
+      />
     </section >
   )
 }

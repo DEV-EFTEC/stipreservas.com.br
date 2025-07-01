@@ -6,10 +6,12 @@ export async function findBookingById(id) {
   return db("bookings").where({ id }).first();
 }
 
-export async function findBookingsByUser(userId) {
+export async function findBookingsByUser(userId, limit, offset) {
   return db("bookings")
     .where("created_by", "=", userId)
-    .orderBy("utc_created_on", "desc");
+    .orderBy("utc_created_on", "desc")
+    .limit(limit)
+    .offset(offset);
 }
 
 export async function createBooking(data) {
@@ -91,12 +93,16 @@ export async function bookingCount() {
   return db("bookings").count();
 }
 
+export async function bookingCountByUser(created_by) {
+  return db("bookings").where({ created_by }).count();
+}
+
 export async function approveBooking(id) {
   const [updatedBooking] = await db("bookings")
     .where({ id })
     .update({
       expires_at: db.raw(`"utc_created_on" + interval '2 days'`),
-      status: 'payment_pending'
+      status: "payment_pending",
     })
     .returning("*");
 

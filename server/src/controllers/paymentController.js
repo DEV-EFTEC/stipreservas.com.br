@@ -81,7 +81,7 @@ export async function bookingPaided(req, res) {
       status: body.payment.status,
     };
 
-    console.log(payment)
+    console.log(payment);
 
     io.to(`user:${payment.user_id}`).emit("payment:confirmed", message);
     io.to("admin").emit("admin:payment:confirmed", message);
@@ -96,18 +96,21 @@ export async function bookingPaided(req, res) {
 export async function refund(req, res) {
   const { booking_id } = req.body;
 
+  const io = req.app.get("io");
+
   try {
     const refund = await paymentService.refundPayment(booking_id);
 
     const message = {
       ...refund,
       booking_id,
+      booking_status: 'refunded'
     };
 
     io.to(`user:${refund.user_id}`).emit("payment:refused", message);
     io.to("admin").emit("admin:payment:refused", message);
 
-    res.status(200).json({});
+    res.status(200).json(message);
   } catch (err) {
     logger.error("Error on refundPayment", { err });
     res.status(500).json({ error: "Erro em refundPayment" });

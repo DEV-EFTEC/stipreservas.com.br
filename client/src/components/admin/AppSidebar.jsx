@@ -80,6 +80,11 @@ const data = {
   ],
   projects: [
     {
+      name: "Sorteios",
+      url: "/admin/sorteios",
+      icon: Settings,
+    },
+    {
       name: "Configurações",
       url: "/admin/config",
       icon: Settings,

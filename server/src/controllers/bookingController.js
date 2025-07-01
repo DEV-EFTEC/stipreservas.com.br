@@ -18,8 +18,8 @@ export async function findBookingById(req, res) {
 
 export async function findBookingsByUser(req, res) {
   try {
-    const { user_id } = req.query;
-    const result = await bookingService.findBookingsByUser(user_id);
+    const { user_id, page, limit } = req.query;
+    const result = await bookingService.findBookingsByUser(user_id, page, limit);
 
     if (!result)
       return res.status(404).json({ message: "Nenhuma reserva encontrada." });

@@ -1,4 +1,5 @@
 import * as paymentModel from "#models/paymentModel.js";
+import * as bookingModel from "#models/bookingModel.js";
 import * as userModel from "#models/userModel.js";
 import { apiAsaas } from "#lib/asaas.js";
 import logger from "#core/logger.js";
@@ -122,6 +123,9 @@ export async function refundPayment(booking_id) {
     const refund = await apiAsaas(`/payments/${asaas_payment_id}/refund`, {
       method: "POST",
     });
+
+    paymentModel.updatePaymentByAsaasPaymentId(asaas_payment_id, { status_role: "refund_solicitation" });
+    bookingModel.updateBooking(booking_id, { status: "refund_solicitation" });
 
     return { ...refund, user_id };
   } catch (err) {

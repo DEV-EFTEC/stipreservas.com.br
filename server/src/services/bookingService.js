@@ -23,9 +23,26 @@ export async function getBookingByUser(userId) {
   return bookings || [];
 }
 
-export async function findBookingsByUser(userId) {
-  const bookings = await bookingModel.findBookingsByUser(userId);
-  return bookings || [];
+export async function findBookingsByUser(userId, page, limit) {
+  const newPage = parseInt(page) || 1;
+  const newLimit = parseInt(limit) || 10;
+  const offset = (page - 1) * limit;
+
+  const bookings = await bookingModel.findBookingsByUser(
+    userId,
+    newLimit,
+    offset
+  );
+  const [{ count }] = await bookingModel.bookingCountByUser(userId);
+  return {
+    data: bookings,
+    pagination: {
+      total: parseInt(count),
+      page: newPage,
+      limit: newLimit,
+      total_pages: Math.ceil(count / newLimit),
+    },
+  };
 }
 
 export async function createBooking(bookingData) {
@@ -174,187 +191,100 @@ export async function approveBooking(id, user_id, value) {
     from: "STIP reservas <contato@eftecnologia.com>",
     to: [user.email],
     subject: "Sua solicitação de reserva foi aprovada!",
-    html: `
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html dir="ltr" lang="pt">
-      <head>
-        <link
-          rel="preload"
-          as="image"
-          href="https://react-email-demo-8xz019qmh-resend.vercel.app/static/vercel-logo.png" />
-        <link
-          rel="preload"
-          as="image"
-          href="https://react-email-demo-8xz019qmh-resend.vercel.app/static/vercel-user.png" />
-        <link
-          rel="preload"
-          as="image"
-          href="https://react-email-demo-8xz019qmh-resend.vercel.app/static/vercel-arrow.png" />
-        <link
-          rel="preload"
-          as="image"
-          href="https://react-email-demo-8xz019qmh-resend.vercel.app/static/vercel-team.png" />
-        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-        <meta name="x-apple-disable-message-reformatting" />
-        <!--$-->
-      </head>
-      <body
-        style='margin-left:auto;margin-right:auto;margin-top:auto;margin-bottom:auto;background-color:rgb(255,255,255);padding-left:0.5rem;padding-right:0.5rem;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"'>
-        <div
-          style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0"
-          data-skip-in-text="true">
-          Join Alan on Vercel
-          <div>
+    html: `<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reserva Aprovada</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #00598a;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header img {
+        height: 50px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+      }
+      p {
+        font-size: 14px;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        margin: 20px 0;
+        background-color: #00bcff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #ffffff50;
+        text-align: center;
+      }
+      a {
+          color: #00bcff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://firebasestorage.googleapis.com/v0/b/stip-reservas.firebasestorage.app/o/documents%2Femail-items%2Fstip-reservas-logo.png?alt=media&token=022056f8-a52b-4e41-bf07-8391264d5463" alt="Logo Sindicato" />
+      </div>
 
-          </div>
-        </div>
-        <table
-          align="center"
-          width="100%"
-          border="0"
-          cellpadding="0"
-          cellspacing="0"
-          role="presentation"
-          style="margin-left:auto;margin-right:auto;margin-top:40px;margin-bottom:40px;max-width:465px;border-radius:0.25rem;border-width:1px;border-color:rgb(234,234,234);border-style:solid;padding:20px">
-          <tbody>
-            <tr style="width:100%">
-              <td>
-                <table
-                  align="center"
-                  width="100%"
-                  border="0"
-                  cellpadding="0"
-                  cellspacing="0"
-                  role="presentation"
-                  style="margin-top:32px">
-                  <tbody>
-                    <tr>
-                      <td>
-                        <img
-                          alt="Vercel Logo"
-                          height="37"
-                          src="https://react-email-demo-8xz019qmh-resend.vercel.app/static/vercel-logo.png"
-                          style="margin-left:auto;margin-right:auto;margin-top:0px;margin-bottom:0px;display:block;outline:none;border:none;text-decoration:none"
-                          width="40" />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <h1
-                  style="margin-left:0px;margin-right:0px;margin-top:30px;margin-bottom:30px;padding:0px;text-align:center;font-weight:400;font-size:24px;color:rgb(0,0,0)">
-                  Sua reserva foi aprovada!
-                </h1>
-                <p
-                  style="font-size:14px;color:rgb(0,0,0);line-height:24px;margin-top:16px;margin-bottom:16px">
-                  Hello
-                  <!-- -->${user.name}<!-- -->,
-                </p>
-                <p
-                  style="font-size:14px;color:rgb(0,0,0);line-height:24px;margin-top:16px;margin-bottom:16px">
-                  <strong>${user.name.split(" ")[0]}</strong> (<a
-                    href="mailto:${user.email}"
-                    style="color:rgb(37,99,235);text-decoration-line:none"
-                    target="_blank"
-                    >${user.email}</a
-                  >) sua solicitação de reserva <strong>#${booking.id.slice(0, 8)}</strong> foi aprovada!<!-- -->
-                  <strong>Vercel</strong>.
-                </p>
-                <table
-                  align="center"
-                  width="100%"
-                  border="0"
-                  cellpadding="0"
-                  cellspacing="0"
-                  role="presentation">
-                  <tbody>
-                    <tr>
-                      <td>
-                        <table
-                          align="center"
-                          width="100%"
-                          border="0"
-                          cellpadding="0"
-                          cellspacing="0"
-                          role="presentation">
-                          <tbody style="width:100%">
-                            <tr style="width:100%">
-                              <td align="right" data-id="__react-email-column">
-                                <img
-                                  alt="alanturing&#x27;s profile picture"
-                                  height="64"
-                                  src="https://react-email-demo-8xz019qmh-resend.vercel.app/static/vercel-user.png"
-                                  style="border-radius:9999px;display:block;outline:none;border:none;text-decoration:none"
-                                  width="64" />
-                              </td>
-                              <td align="center" data-id="__react-email-column">
-                                <img
-                                  alt="Arrow indicating invitation"
-                                  height="9"
-                                  src="https://react-email-demo-8xz019qmh-resend.vercel.app/static/vercel-arrow.png"
-                                  style="display:block;outline:none;border:none;text-decoration:none"
-                                  width="12" />
-                              </td>
-                              <td align="left" data-id="__react-email-column">
-                                <img
-                                  alt="Enigma team logo"
-                                  height="64"
-                                  src="https://react-email-demo-8xz019qmh-resend.vercel.app/static/vercel-team.png"
-                                  style="border-radius:9999px;display:block;outline:none;border:none;text-decoration:none"
-                                  width="64" />
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <table
-                  align="center"
-                  width="100%"
-                  border="0"
-                  cellpadding="0"
-                  cellspacing="0"
-                  role="presentation"
-                  style="margin-top:32px;margin-bottom:32px;text-align:center">
-                  <tbody>
-                    <tr>
-                      <td>
-                        <a
-                          href="https://vercel.com"
-                          style="border-radius:0.25rem;background-color:rgb(0,0,0);padding-left:1.25rem;padding-right:1.25rem;padding-top:0.75rem;padding-bottom:0.75rem;text-align:center;font-weight:600;font-size:12px;color:rgb(255,255,255);text-decoration-line:none;line-height:100%;text-decoration:none;display:inline-block;max-width:100%;mso-padding-alt:0px;padding:12px 20px 12px 20px"
-                          target="_blank"
-                          ><span
-                            ><!--[if mso]><i style="mso-font-width:500%;mso-text-raise:18" hidden>&#8202;&#8202;</i><![endif]--></span
-                          ><span
-                            style="max-width:100%;display:inline-block;line-height:120%;mso-padding-alt:0px;mso-text-raise:9px"
-                            >Join the team</span
-                          ><span
-                            ><!--[if mso]><i style="mso-font-width:500%" hidden>&#8202;&#8202;&#8203;</i><![endif]--></span
-                          ></a
-                        >
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <p
-                  style="font-size:14px;color:rgb(0,0,0);line-height:24px;margin-top:16px;margin-bottom:16px">
-                  ou copie e cole essa URL no seu navegador:<!-- -->
-                  <a
-                    href=${process.env.CLIENT_URL + "/associado/home"}
-                    style="color:rgb(37,99,235);text-decoration-line:none"
-                    target="_blank"
-                    >${process.env.CLIENT_URL}</a
-                  >
-                </p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <!--/$-->
-      </body>
-    </html>
-    `,
+      <h1>Sua reserva foi aprovada!</h1>
+
+      <p>Olá <strong>${user.name}</strong>,</p>
+
+      <p>
+        A sua solicitação de reserva <strong>#${booking.id.slice(0, 8)}</strong> foi
+        <strong>aprovada</strong> com sucesso. Você já pode se preparar para aproveitar sua estadia em nossa sede!
+      </p>
+
+      <p>
+        Você pode visualizar os detalhes da sua reserva acessando a área do associado:
+      </p>
+
+      <p style="text-align: center">
+        <a href="${process.env.CLIENT_URL}/associado/home" class="button">Ver minha reserva</a>
+      </p>
+
+      <p>
+        Se o botão acima não funcionar, copie e cole o seguinte link no seu navegador:<br />
+        <a href="${process.env.CLIENT_URL}/associado/home">${process.env.CLIENT_URL}/associado/home</a>
+      </p>
+
+      <div class="footer">
+        Esta é uma mensagem automática. Por favor, não responda este e-mail.
+      </div>
+    </div>
+  </body>
+</html>
+`,
   });
 
   if (data) {
@@ -363,7 +293,7 @@ export async function approveBooking(id, user_id, value) {
       id,
       user_id,
       value,
-      booking.expires_at.toISOString().split('T')[0]
+      booking.expires_at.toISOString().split("T")[0]
     );
 
     return { booking, payment };
