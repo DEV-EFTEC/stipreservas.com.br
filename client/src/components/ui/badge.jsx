@@ -45,6 +45,12 @@ const badgeVariants = cva(
           "border-transparent bg-blue-700 text-white [a&]:hover:bg-secondary/90",
         contributor:
           "border-transparent bg-purple-600 text-white [a&]:hover:bg-secondary/90",
+        not_initiated:
+          "border-transparent bg-gray-600 text-white [a&]:hover:bg-secondary/90",
+        in_progress:
+          "border-transparent bg-amber-600 text-white [a&]:hover:bg-secondary/90",
+        concluded:
+          "border-transparent bg-teal-600 text-white [a&]:hover:bg-secondary/90",
       },
     },
     defaultVariants: {

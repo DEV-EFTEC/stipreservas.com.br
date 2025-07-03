@@ -38,7 +38,6 @@ export function DrawSettings() {
   const [paginationData, setPaginationData] = useState([]);
   const [color, setColor] = useState("#aabbcc");
   const [color2, setColor2] = useState("#cccccc");
-  const [colorEnable, setColorEnable] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [openStartDate, setOpenStartDate] = useState(false);
@@ -48,15 +47,15 @@ export function DrawSettings() {
   const [openDrawDate, setOpenDrawDate] = useState(false);
   const [drawDate, setDrawDate] = useState(undefined);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const result = await apiRequest(`/draws/get-all?page=${page}&limit=${limit}`, {
-  //       method: "GET",
-  //     })
-  //     setDraws(result.data);
-  //     setPaginationData(result.pagination);
-  //   })()
-  // }, [page])
+  useEffect(() => {
+    (async () => {
+      const result = await apiRequest(`/draws/get-all?page=${page}&limit=${limit}`, {
+        method: "GET",
+      })
+      setDraws(result.data);
+      setPaginationData(result.pagination);
+    })()
+  }, [page]);
 
   async function handleSave() {
     try {
@@ -166,8 +165,7 @@ export function DrawSettings() {
                     <AlertDialogTitle>Visualizar prévia</AlertDialogTitle>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction>Continue</AlertDialogAction>
+                    <AlertDialogCancel>Fechar</AlertDialogCancel>
                   </AlertDialogFooter>
                   <section className="p-8 rounded-lg" style={{ background: `linear-gradient(135deg, ${color}, ${color2})` }}>
                     <div className="flex justify-center mb-6">
@@ -187,12 +185,12 @@ export function DrawSettings() {
               </AlertDialog>
             </section>
           </div>
-          <div className="max-w-[45%] flex-column space-y-8">
+          <div className="max-w-[45%] min-w-[45%] flex-column space-y-8">
             {
               draws.length > 0
                 ?
                 draws.map(d => (
-                  <StatusCard status={d.status} title={d.title} content={d.description} start_date={d.start_date} end_date={d.end_date} utc_created_on={d.utc_created_on} color={d.color} color2={d.color_2} />
+                  <StatusCard status={d.status} title={d.title} content={d.description} start_date={d.start_date} end_date={d.end_date} utc_created_on={d.utc_created_on} color={d.color} color2={d.color_2} draw_date={d.draw_date}/>
                 ))
                 :
                 <p className="text-primary/80 text-center">Não foram encontrados sorteios cadastrados.</p>

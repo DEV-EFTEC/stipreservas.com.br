@@ -2,8 +2,8 @@ import knex from "knex";
 import knexConfig from "../../knexfile.js";
 const db = knex(knexConfig.development);
 
-export async function findBookingById(id) {
-  return db("bookings").where({ id }).first();
+export async function getDrawById(id) {
+  return db("draws").where({ id }).first();
 }
 
 export async function createDraw(data) {
@@ -12,15 +12,12 @@ export async function createDraw(data) {
   return draw;
 }
 
-export async function updateBooking(id, data) {
-  const [updated] = await db("bookings")
-    .where({ id })
-    .update(data)
-    .returning("*");
+export async function updateDraw(id, data) {
+  const [updated] = await db("draws").where({ id }).update(data).returning("*");
   return updated;
 }
 
-export async function deleteBooking(id) {
+export async function deleteDraw(id) {
   return db.transaction(async (trx) => {
     await trx("guests_bookings").where({ booking_id: id }).delete();
     await trx("children_bookings").where({ booking_id: id }).delete();
@@ -31,24 +28,21 @@ export async function deleteBooking(id) {
   });
 }
 
-export async function getAllBookings(limit, offset) {
-  return db("bookings")
-    .select(
-      "bookings.*",
-      "users.name as created_by_name",
-      "users.associate_role as created_by_associate_role"
-    )
-    .where("status", "<>", "incomplete")
-    .leftJoin("users", "bookings.created_by", "users.id")
-    .orderBy("bookings.utc_created_on", "desc")
+export async function getAllDraws(limit, offset) {
+  return db("draws")
+    .select("*")
+    .orderBy("draws.utc_created_on", "desc")
     .limit(limit)
     .offset(offset);
 }
 
-export async function bookingCount() {
-  return db("bookings").count();
+export async function drawCount() {
+  return db("draws").count();
 }
 
-export async function bookingCountByUser(created_by) {
-  return db("bookings").where({ created_by }).count();
+export async function getDrawByDate(start_date, end_date) {
+  return db("draws")
+    .select("*")
+    .where("start_date", ">=", start_date)
+    .andWhere("end_date", "<=", end_date);
 }

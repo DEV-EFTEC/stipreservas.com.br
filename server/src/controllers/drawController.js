@@ -1,13 +1,13 @@
 import * as drawService from "../services/drawService.js";
 import logger from "#core/logger.js";
 
-export async function findDrawById(req, res) {
+export async function getDrawById(req, res) {
   try {
-    const { id } = req.query;
-    const result = await drawService.findDrawById(id);
+    const { id } = req.params;
+    const result = await drawService.getDrawById(id);
 
     if (!result)
-      return res.status(404).json({ message: "Nenhuma reserva encontrada." });
+      return res.status(404).json({ message: "Nenhum sorteio encontrado." });
 
     res.status(200).json(result);
   } catch (err) {
@@ -26,20 +26,20 @@ export async function createDraw(req, res) {
   }
 }
 
-export async function updateBooking(req, res) {
+export async function updateDraw(req, res) {
   try {
-    const updatedBooking = await drawService.updateBooking(req.body);
-    res.status(200).json(updatedBooking);
+    const updatedDraw = await drawService.updateDraw(req.body);
+    res.status(200).json(updatedDraw);
   } catch (err) {
     logger.error("Erro em updateStatus", { err });
     res.status(400).json({ error: err.message });
   }
 }
 
-export async function deleteBooking(req, res) {
+export async function deleteDraw(req, res) {
   try {
     const { id } = req.params;
-    const result = await drawService.deleteBooking(id);
+    const result = await drawService.deleteDraw(id);
     res.status(200).json(result);
   } catch (err) {
     logger.error("Error on updateParticipants", { err });
@@ -47,13 +47,28 @@ export async function deleteBooking(req, res) {
   }
 }
 
-export async function getAllBookings(req, res) {
+export async function getDraws(req, res) {
   try {
-    const { user_type, page, limit } = req.query;
-    const result = await drawService.getAllBookings(user_type, page, limit);
+    const { page, limit } = req.query;
+    const result = await drawService.getAllDraws( page, limit);
     res.status(200).json(result);
   } catch (err) {
     logger.error("Error on getAllBookings", { err });
+    res.status(500).json({ error: err.message });
+  }
+}
+
+export async function getDrawByDate(req, res) {
+  try {
+    const { start_date, end_date } = req.query;
+    const result = await drawService.getDrawByDate(start_date, end_date);
+
+    if (!result)
+      return res.status(404).json({ message: "Nenhum sorteio encontrado." });
+
+    res.status(200).json(result);
+  } catch (err) {
+    logger.error("Error on findBookingById", { err });
     res.status(500).json({ error: err.message });
   }
 }
