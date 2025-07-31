@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -17,34 +19,72 @@ import {
 import { Link } from "react-router-dom"
 import StipLogo from "./assets/StipLogo"
 import SedePraia from "./assets/SedePraia.jpg"
+import SedePraiaFachada from "./assets/SedePraiaFachada.jpg"
 
 export default function UnionBeachHeadquarters() {
   return (
     <div className="flex flex-col min-h-screen bg-zinc-50">
-      {/* Header */}
       <header className="bg-sky-900 text-white shadow-lg">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <StipLogo />
             </div>
-            <nav className="hidden md:flex space-x-6">
-              <Link href="#processo" className="hover:text-sky-200 transition-colors">
+
+            <div className="hidden md:flex items-center space-x-6">
+              <nav className="flex space-x-6">
+                <Link href="#processo" className="hover:text-sky-200 transition-colors">
+                  Processo
+                </Link>
+                <Link href="#sorteios" className="hover:text-sky-200 transition-colors">
+                  Sorteios
+                </Link>
+                <Link href="#contato" className="hover:text-sky-200 transition-colors">
+                  Contato
+                </Link>
+              </nav>
+              <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold ml-4" size="sm">
+                Login
+              </Button>
+            </div>
+
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-sky-800"
+                onClick={() => {
+                  const mobileMenu = document.getElementById("mobile-menu")
+                  mobileMenu?.classList.toggle("hidden")
+                }}
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </Button>
+            </div>
+          </div>
+
+          <div id="mobile-menu" className="hidden md:hidden mt-4 pb-4 border-t border-sky-800">
+            <nav className="flex flex-col space-y-3 mt-4">
+              <Link href="#processo" className="hover:text-sky-200 transition-colors py-2">
                 Processo
               </Link>
-              <Link href="#sorteios" className="hover:text-sky-200 transition-colors">
+              <Link href="#sorteios" className="hover:text-sky-200 transition-colors py-2">
                 Sorteios
               </Link>
-              <Link href="#contato" className="hover:text-sky-200 transition-colors">
+              <Link href="#contato" className="hover:text-sky-200 transition-colors py-2">
                 Contato
               </Link>
+              <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold mt-4 w-full" size="sm">
+                Login
+              </Button>
             </nav>
           </div>
         </div>
       </header>
 
       <main className="flex-1">
-        {/* Hero Section */}
         <section className="bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 text-white py-20">
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -89,7 +129,6 @@ export default function UnionBeachHeadquarters() {
           </div>
         </section>
 
-        {/* Registration Notice */}
         <section className="bg-amber-50 border-l-4 border-amber-400 py-8">
           <div className="container mx-auto px-4">
             <div className="flex items-start space-x-4">
@@ -105,7 +144,200 @@ export default function UnionBeachHeadquarters() {
           </div>
         </section>
 
-        {/* Process Section */}
+        <section className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4">Conheça Nossa Sede Praia</h2>
+              <p className="text-xl text-zinc-600 max-w-3xl mx-auto">
+                Localizada em um dos pontos mais privilegiados do litoral, nossa sede oferece toda a infraestrutura
+                necessária para momentos inesquecíveis com sua família.
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4">
+                  <MapPin className="h-6 w-6 text-sky-900 mt-1 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-xl font-semibold text-zinc-900 mb-2">Localização Privilegiada</h3>
+                    <p className="text-zinc-600 mb-3">
+                      Rua Olinda, 76, Balneário de Shangri-lá
+                      <br />
+                      Pontal do Paraná, PR - CEP: 83255-000
+                    </p>
+                    <p className="text-zinc-600">
+                      Situada a apenas uma quadra da praia, com fácil acesso e estacionamento disponível para todos os
+                      hóspedes.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <Waves className="h-6 w-6 text-sky-900 mt-1 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-xl font-semibold text-zinc-900 mb-2">Infraestrutura</h3>
+                    <p className="text-zinc-600">
+                      O prédio conta com 25 apartamentos, cada um com um beliche e uma cama de casal, ventilador de teto, guarda-roupa e frigobar. A cozinha coletiva dispõem de 6 cooktops de quatro bocas, forno elétrico e microondas. As famílias também podem desfrutar, nas acomodações, de mesas e banquetas.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <Users className="h-6 w-6 text-sky-900 mt-1 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-xl font-semibold text-zinc-900 mb-2">Capacidade</h3>
+                    <p className="text-zinc-600">
+                      25 quartos totalmente equipados, acomodando em torno de 108 pessoas, garantindo conforto e privacidade para
+                      todas as famílias.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative">
+                <img
+                  src={SedePraiaFachada}
+                  alt="Fachada da Sede Praia do Sindicato"
+                  className="rounded-lg shadow-xl"
+                />
+                <div className="absolute top-4 right-4 bg-sky-900 text-white px-3 py-2 rounded-lg">
+                  <span className="text-sm font-semibold">1 quadra de distância da praia</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="border-sky-200 hover:shadow-lg transition-shadow text-center">
+                <CardContent className="p-6">
+                  <div className="bg-sky-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <Waves className="h-8 w-8 text-sky-900" />
+                  </div>
+                  <h4 className="font-semibold text-zinc-900 mb-2">Acesso Direto à Praia</h4>
+                  <p className="text-zinc-600 text-sm">Apenas 1 quadra de distância</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-sky-200 hover:shadow-lg transition-shadow text-center">
+                <CardContent className="p-6">
+                  <div className="bg-sky-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg className="h-8 w-8 text-sky-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h4 className="font-semibold text-zinc-900 mb-2">Estacionamento</h4>
+                  <p className="text-zinc-600 text-sm">Vagas para todos os hóspedes</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-sky-200 hover:shadow-lg transition-shadow text-center">
+                <CardContent className="p-6">
+                  <div className="bg-sky-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg className="h-8 w-8 text-sky-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"
+                      />
+                    </svg>
+                  </div>
+                  <h4 className="font-semibold text-zinc-900 mb-2">Área de Lazer</h4>
+                  <p className="text-zinc-600 text-sm">Aproveite momentos de lazer com nossas piscinas, ideais tanto para adultos quanto para os pequenos.</p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-sky-200 hover:shadow-lg transition-shadow text-center">
+                <CardContent className="p-6">
+                  <div className="bg-sky-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg className="h-8 w-8 text-sky-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
+                    </svg>
+                  </div>
+                  <h4 className="font-semibold text-zinc-900 mb-2">Segurança 24h</h4>
+                  <p className="text-zinc-600 text-sm">Portaria e monitoramento</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="mt-16 bg-zinc-50 rounded-lg p-8">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-zinc-900 mb-4">Como Chegar</h3>
+                <p className="text-zinc-600">
+                  Fácil acesso pela PR-412 (Rodovia Eng. Darci Gomes de Morais), com sinalização clara e vias pavimentadas.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="bg-sky-900 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
+                      1
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-zinc-900">Rodovia PR-412 (Eng. Darci Gomes de Morais)</h4>
+                      <p className="text-zinc-600 text-sm">Siga pela rodovia até a altura da Av. Sebastião Caboto.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="bg-sky-900 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
+                      2
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-zinc-900">Av. Sebastião Caboto</h4>
+                      <p className="text-zinc-600 text-sm">Vire à direita na Rua Luiz da Silveira, depois à esquerda na Av. Sebastião Caboto.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="bg-sky-900 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
+                      3
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-zinc-900">Rua Olinda</h4>
+                      <p className="text-zinc-600 text-sm">Vire à direita na Rua Olinda e siga até o número 278.</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 p-4 bg-white rounded-lg border border-sky-200">
+                    <div className="flex items-center space-x-3">
+                      <MapPin className="h-5 w-5 text-sky-900" />
+                      <div>
+                        <p className="font-semibold text-zinc-900">Endereço Completo:</p>
+                        <p className="text-zinc-600">Rua Olinda, 76, Balneário de Shangri-lá</p>
+                        <p className="text-zinc-600">Pontal do Paraná, PR - CEP: 83255-000</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d899.3823163362722!2d-48.416747!3d-25.620554!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94db9598e3537969%3A0x42b62cd193d3314b!2sStip!5e0!3m2!1spt-BR!2sbr!4v1753986777281!5m2!1spt-BR!2sbr" width="100%" height="450" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+                  <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
+                    <a href="https://maps.app.goo.gl/XHXvD9vnztUMrE9p6" target="_blank">
+                      <Button className="bg-white text-sky-900 hover:bg-zinc-100">
+                        <MapPin className="mr-2 h-4 w-4" />
+                        Ver no Google Maps
+                      </Button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="processo" className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
@@ -116,7 +348,6 @@ export default function UnionBeachHeadquarters() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Step 1 */}
               <Card className="border-sky-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
@@ -137,7 +368,6 @@ export default function UnionBeachHeadquarters() {
                 </CardContent>
               </Card>
 
-              {/* Step 2 */}
               <Card className="border-sky-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
@@ -158,7 +388,6 @@ export default function UnionBeachHeadquarters() {
                 </CardContent>
               </Card>
 
-              {/* Step 3 */}
               <Card className="border-sky-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
@@ -179,7 +408,6 @@ export default function UnionBeachHeadquarters() {
                 </CardContent>
               </Card>
 
-              {/* Step 4 */}
               <Card className="border-sky-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
@@ -200,7 +428,6 @@ export default function UnionBeachHeadquarters() {
                 </CardContent>
               </Card>
 
-              {/* Step 5 */}
               <Card className="border-sky-200 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
@@ -221,7 +448,6 @@ export default function UnionBeachHeadquarters() {
                 </CardContent>
               </Card>
 
-              {/* Final Step */}
               <Card className="border-green-200 bg-green-50 hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
@@ -245,7 +471,6 @@ export default function UnionBeachHeadquarters() {
           </div>
         </section>
 
-        {/* Raffles Section */}
         <section id="sorteios" className="py-20 bg-gradient-to-r from-amber-50 to-orange-50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -368,7 +593,6 @@ export default function UnionBeachHeadquarters() {
           </div>
         </section>
 
-        {/* Contact Section */}
         <section id="contato" className="py-20 bg-sky-900 text-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -453,14 +677,12 @@ export default function UnionBeachHeadquarters() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-zinc-900 text-zinc-300 py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-4">
-                <Waves className="h-6 w-6 text-sky-400" />
-                <span className="text-xl font-bold text-white">Sede Praia do Sindicato</span>
+                <StipLogo />
               </div>
               <p className="text-zinc-400">
                 Proporcionando momentos únicos de lazer e descanso para nossos associados e suas famílias.
@@ -487,11 +709,11 @@ export default function UnionBeachHeadquarters() {
               <div className="space-y-2">
                 <p className="flex items-center">
                   <Phone className="h-4 w-4 mr-2" />
-                  WhatsApp: (11) 99999-9999
+                  WhatsApp: (41) 99152-0296
                 </p>
                 <p className="flex items-center">
                   <MapPin className="h-4 w-4 mr-2" />
-                  Sede Praia - Litoral SP
+                  Rua Olinda, 76, Balneário de Shangri-lá, Pontal do Paraná - PR
                 </p>
               </div>
             </div>
@@ -499,7 +721,7 @@ export default function UnionBeachHeadquarters() {
 
           <div className="border-t border-zinc-700 mt-8 pt-8 text-center">
             <p className="text-zinc-400">
-              © {new Date().getFullYear()} Sede Praia do Sindicato. Todos os direitos reservados.
+              © {new Date().getFullYear()} STIP reservas. Todos os direitos reservados.
             </p>
           </div>
         </div>
