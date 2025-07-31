@@ -4,10 +4,12 @@ import roomRoutes from "./room.routes.js";
 import childrenRoutes from "./children.routes.js";
 import dependentsRoutes from "./dependents.routes.js";
 import guestsRoutes from "./guests.routes.js";
-import paymentsRoutes from "./payment.routes.js";
+import paymentsBookingsRoutes from "./payments-bookings.routes.js";
+import paymentsDrawsRoutes from "./payments-draws.routes.js";
 import storageRoutes from "./storage.routes.js";
 import periodsRoutes from "./periods.routes.js";
 import drawsRoutes from "./draws.routes.js";
+import calendarRoutes from "./calendar.routes.js";
 import auth from "#middlewares/auth.js";
 
 export default (app) => {
@@ -17,8 +19,10 @@ export default (app) => {
   app.use("/children", auth, childrenRoutes);
   app.use("/dependents", auth, dependentsRoutes);
   app.use("/guests", auth, guestsRoutes);
-  app.use("/payments", paymentsRoutes);
+  app.use("/payments-bookings", paymentsBookingsRoutes);
+  app.use("/payments-draws", paymentsDrawsRoutes);
   app.use("/storage", auth, storageRoutes);
   app.use("/draws", auth, drawsRoutes);
   app.use("/periods", auth, periodsRoutes);
+  app.use("/calendar", auth, calendarRoutes);
 };

@@ -19,7 +19,11 @@ export async function findBookingById(req, res) {
 export async function findBookingsByUser(req, res) {
   try {
     const { user_id, page, limit } = req.query;
-    const result = await bookingService.findBookingsByUser(user_id, page, limit);
+    const result = await bookingService.findBookingsByUser(
+      user_id,
+      page,
+      limit
+    );
 
     if (!result)
       return res.status(404).json({ message: "Nenhuma reserva encontrada." });
@@ -136,10 +140,49 @@ export async function updateParticipantsBooking(req, res) {
 export async function approveBooking(req, res) {
   try {
     const { booking_id, user_id, value } = req.body;
-    const result = await bookingService.approveBooking(booking_id, user_id, value);
+    const result = await bookingService.approveBooking(
+      booking_id,
+      user_id,
+      value
+    );
+
+    const io = req.app.get("io");
+
+    const message = {
+      booking_id,
+      status: result.status
+    }
+
+    io.to(`user:${user_id}`).emit("booking:approved", message);
+
     res.status(200).json(result);
   } catch (err) {
-    logger.error("Error on updateParticipantsBooking", err);
+    logger.error("Error on approveBooking", err);
+    res.status(500).json({ error: err.message });
+  }
+}
+
+export async function refuseBooking(req, res) {
+  try {
+    const { booking_id, user_id, justification } = req.body;
+    const result = await bookingService.refuseBooking(
+      booking_id,
+      user_id,
+      justification
+    );
+
+    const io = req.app.get("io");
+
+    const message = {
+      booking_id,
+      status: result.status
+    }
+
+    io.to(`user:${user_id}`).emit("booking:refused", message);
+
+    res.status(200).json(result);
+  } catch (err) {
+    logger.error("Error on refuseBooking", err);
     res.status(500).json({ error: err.message });
   }
 }
@@ -147,7 +190,13 @@ export async function approveBooking(req, res) {
 export async function updateParticipants(req, res) {
   try {
     const { booking_id } = req.params;
-    const { children, guests, dependents, word_card_file_status, receipt_picture_status } = req.body;
+    const {
+      children,
+      guests,
+      dependents,
+      word_card_file_status,
+      receipt_picture_status,
+    } = req.body;
     const result = await bookingService.updateParticipants(
       booking_id,
       children,

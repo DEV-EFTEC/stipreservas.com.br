@@ -8,5 +8,8 @@ export const enumStatus = {
   "cancelled": "Cancelado",
   "incomplete": "Incompleta",
   "refunded": "Reembolsado",
-  "refund_solicitation": "Reembolso solicitado"
+  "refund_solicitation": "Reembolso solicitado",
+  "drawn": "Sorteado",
+  "not_drawn": "Não sorteado",
+  "awaiting_draw": "Aguardando sorteio",
 }

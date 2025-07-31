@@ -1,0 +1,130 @@
+[
+  {
+    "id": "alloc_3",
+    "room_id": 21,
+    "draw_apply_id": "app_2",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-09",
+    "utc_created_on": "2025-07-08T22:39:04.300Z"
+  },
+  {
+    "id": "alloc_6",
+    "room_id": 23,
+    "draw_apply_id": "app_5",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-09",
+    "utc_created_on": "2025-07-08T22:39:04.303Z"
+  },
+  {
+    "id": "alloc_9",
+    "room_id": 26,
+    "draw_apply_id": "app_8",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-12",
+    "utc_created_on": "2025-07-08T22:39:04.303Z"
+  },
+  {
+    "id": "alloc_11",
+    "room_id": 21,
+    "draw_apply_id": "app_10",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-12",
+    "utc_created_on": "2025-07-08T22:39:04.303Z"
+  },
+  {
+    "id": "alloc_13",
+    "room_id": 19,
+    "draw_apply_id": "app_12",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-10",
+    "utc_created_on": "2025-07-08T22:39:04.303Z"
+  },
+  {
+    "id": "alloc_18",
+    "room_id": 24,
+    "draw_apply_id": "app_17",
+    "check_in": "2025-07-08",
+    "check_out": "2025-07-10",
+    "utc_created_on": "2025-07-08T22:39:04.303Z"
+  },
+  {
+    "id": "alloc_24",
+    "room_id": 18,
+    "draw_apply_id": "app_23",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-10",
+    "utc_created_on": "2025-07-08T22:39:04.304Z"
+  },
+  {
+    "id": "alloc_26",
+    "room_id": 13,
+    "draw_apply_id": "app_25",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-11",
+    "utc_created_on": "2025-07-08T22:39:04.304Z"
+  },
+  {
+    "id": "alloc_32",
+    "room_id": 22,
+    "draw_apply_id": "app_31",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-11",
+    "utc_created_on": "2025-07-08T22:39:04.304Z"
+  },
+  {
+    "id": "alloc_37",
+    "room_id": 23,
+    "draw_apply_id": "app_36",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-12",
+    "utc_created_on": "2025-07-08T22:39:04.305Z"
+  },
+  {
+    "id": "alloc_40",
+    "room_id": 15,
+    "draw_apply_id": "app_39",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-11",
+    "utc_created_on": "2025-07-08T22:39:04.305Z"
+  },
+  {
+    "id": "alloc_43",
+    "room_id": 17,
+    "draw_apply_id": "app_42",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-11",
+    "utc_created_on": "2025-07-08T22:39:04.305Z"
+  },
+  {
+    "id": "alloc_45",
+    "room_id": 27,
+    "draw_apply_id": "app_44",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-12",
+    "utc_created_on": "2025-07-08T22:39:04.305Z"
+  },
+  {
+    "id": "alloc_47",
+    "room_id": 31,
+    "draw_apply_id": "app_46",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-10",
+    "utc_created_on": "2025-07-08T22:39:04.305Z"
+  },
+  {
+    "id": "alloc_49",
+    "room_id": 34,
+    "draw_apply_id": "app_48",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-11",
+    "utc_created_on": "2025-07-08T22:39:04.305Z"
+  },
+  {
+    "id": "alloc_55",
+    "room_id": 32,
+    "draw_apply_id": "app_54",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-10",
+    "utc_created_on": "2025-07-08T22:39:04.305Z"
+  }
+]

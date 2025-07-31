@@ -24,8 +24,9 @@ async function createPaymentLink(
   customer_id,
   value,
   due_date,
-  booking_id,
-  user_id
+  action_id,
+  user_id,
+  table
 ) {
   try {
     const { id } = await apiAsaas("/lean/payments", {
@@ -38,14 +39,30 @@ async function createPaymentLink(
       }),
     });
 
-    paymentModel.createPayment({
-      asaas_customer_id: customer_id,
-      price: value,
-      booking_id,
-      user_id,
-      asaas_payment_id: id,
-      link: "",
-    });
+    const mock =
+      table === "payments_bookings"
+        ? {
+            asaas_customer_id: customer_id,
+            price: value,
+            booking_id: action_id,
+            user_id,
+            asaas_payment_id: id,
+            link: "",
+          }
+        : {
+            asaas_customer_id: customer_id,
+            price: value,
+            draw_id: action_id,
+            user_id,
+            asaas_payment_id: id,
+            link: "",
+          };
+
+    paymentModel.createPayment(table, mock);
+
+    console.log({
+      table
+    })
 
     return id;
   } catch (err) {
@@ -60,7 +77,8 @@ async function findPaymentById(id) {
   });
 }
 
-export async function createPayment(booking_id, user_id, value, due_date) {
+export async function createPayment(table, mock) {
+  const { booking_id, user_id, value, due_date } = mock;
   const user = await paymentModel.findCustomerIdByUser(user_id);
 
   try {
@@ -70,7 +88,8 @@ export async function createPayment(booking_id, user_id, value, due_date) {
         value,
         due_date.split("T")[0],
         booking_id,
-        user_id
+        user_id,
+        table
       );
       const payment = await findPaymentById(payment_id);
 
@@ -82,7 +101,8 @@ export async function createPayment(booking_id, user_id, value, due_date) {
         value,
         due_date,
         booking_id,
-        user_id
+        user_id,
+        table
       );
       const payment = await findPaymentById(payment_id);
 
@@ -93,12 +113,12 @@ export async function createPayment(booking_id, user_id, value, due_date) {
   }
 }
 
-export async function updatePaymentStatus(id, status) {
-  return paymentModel.updatePaymentStatus(id, status);
+export async function updatePaymentStatus(id, table, status) {
+  return paymentModel.updatePaymentStatus(id, table, status);
 }
 
-export async function findPaymentsByUser(id) {
-  return paymentModel.findPaymentsByUser(id);
+export async function findPaymentsByUser(id, table) {
+  return paymentModel.findPaymentsByUser(id, table);
 }
 
 export async function findPaymentByBooking(id) {
@@ -107,25 +127,33 @@ export async function findPaymentByBooking(id) {
   return findPaymentById(payment.asaas_payment_id);
 }
 
+export async function findPaymentByDraw(id) {
+  const payment = await paymentModel.findPaymentByDraw(id);
+
+  return findPaymentById(payment.asaas_payment_id);
+}
+
 export async function getCustomerIdByUser(id) {
   return paymentModel.findCustomerIdByUser(id);
 }
 
-export async function updatePaymentByAsaasPaymentId(id, status) {
-  return paymentModel.updatePaymentByAsaasPaymentId(id, status);
+export async function updatePaymentByAsaasPaymentId(id, table, status) {
+  return paymentModel.updatePaymentByAsaasPaymentId(id, table, status);
 }
 
-export async function refundPayment(booking_id) {
+export async function refundPayment(id, table) {
   try {
     const { asaas_payment_id, user_id } =
-      await paymentModel.findPaymentByBooking(booking_id);
+      await paymentModel.findPaymentByBooking(id);
 
     const refund = await apiAsaas(`/payments/${asaas_payment_id}/refund`, {
       method: "POST",
     });
 
-    paymentModel.updatePaymentByAsaasPaymentId(asaas_payment_id, { status_role: "refund_solicitation" });
-    bookingModel.updateBooking(booking_id, { status: "refund_solicitation" });
+    paymentModel.updatePaymentByAsaasPaymentId(asaas_payment_id, table, {
+      status_role: "refund_solicitation",
+    });
+    bookingModel.updateBooking(id, { status: "refund_solicitation" });
 
     return { ...refund, user_id };
   } catch (err) {

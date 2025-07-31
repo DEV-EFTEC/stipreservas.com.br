@@ -32,8 +32,8 @@ export default function CreateBooking() {
   const { saveBooking } = useBooking();
   const navigate = useNavigate();
   const [date, setDate] = useState({
-    from: addDays(new Date(), 7),
-    to: addDays(new Date(), 13),
+    from: null,
+    to: null,
   });
   const [partnerPresence, setPartnerPresence] = useState(true);
 
@@ -83,7 +83,7 @@ export default function CreateBooking() {
           children: []
         })
       });
-      saveBooking({...result, holders});
+      saveBooking({ ...result, holders });
       navigate(`/associado/criar-reserva/${result.id.slice(0, 8)}/enviar-documentos`);
     }
   }
@@ -93,7 +93,7 @@ export default function CreateBooking() {
       {
         !loading
         &&
-        <section className="flex w-full p-20 justify-between">
+        <section className="w-full xl:p-20 pr-2 overflow-y-auto">
           <section className="w-full">
             <GlobalBreadcrumb />
             <div className="flex flex-col space-y-4 mb-6">
@@ -101,9 +101,9 @@ export default function CreateBooking() {
               <Text heading={"h2"}>Informações do titular</Text>
             </div>
             <Form {...form}>
-              <form className="space-y-8 rounded-xl w-xl">
+              <form className="space-y-8 rounded-xl">
                 <div className="flex flex-col space-y-8">
-                  <div className="flex justify-between gap-15">
+                  <div className="flex justify-between space-y-4 flex-wrap sm:flex-nowrap sm:space-y-0 sm:space-x-4">
                     <FormField
                       control={form.control}
                       name="name"
@@ -189,7 +189,7 @@ export default function CreateBooking() {
                 </div>
               </form>
             </Form>
-            <Aside action={form.handleSubmit(onSubmit)} />
+            <Aside action={form.handleSubmit(onSubmit)} isDisabled={date.from === null ? true : false} />
           </section>
         </section>
       }

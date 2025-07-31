@@ -11,10 +11,10 @@ import "#jobs/expireBookings.js";
 dotenv.config();
 
 const app = express();
-const httpServer = createServer(app); // criar servidor HTTP
+const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "*", // ou defina as origens permitidas
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -29,15 +29,12 @@ function fatalHandler(err) {
 process.on("uncaughtException", fatalHandler);
 process.on("unhandledRejection", fatalHandler);
 
-// middlewares
 app.use(requestLogger);
 app.use(cors);
 app.use(express.json());
 
-// rotas
 routes(app);
 
-// socket.io handlers
 io.on("connection", (socket) => {
   logger.info(`Usuário conectado: ${socket.id}`);
 
@@ -52,7 +49,7 @@ io.on("connection", (socket) => {
 
   socket.on("new-booking", (data) => {
     logger.info("Nova reserva recebida:", data.userId);
-    io.to("admin").emit("new-booking-response", data); // ✅ envia para todos os outros
+    io.to("admin").emit("new-booking-response", data);
   });
 
   socket.on("join", (data) => {
@@ -68,12 +65,10 @@ io.on("connection", (socket) => {
     const { booking_id } = data;
     logger.info(`Reserva cancelada: ${booking_id}`);
 
-    // Notifica apenas a sala dessa reserva
     io.to("admin").emit("cancelled-response", booking_id);
   });
 });
 
-// iniciar servidor HTTP com WebSocket
 httpServer.listen(process.env.API_HTTP_PORT, () => {
   logger.info(
     `Servidor HTTP+WebSocket rodando em http://localhost:${process.env.API_HTTP_PORT}`

@@ -38,3 +38,11 @@ export async function getChildrenByBooking(booking_id) {
 export async function updateChildByBooking({child_id, check_in, check_out, room_id, booking_id}) {
   return db('children_bookings').where({ booking_id, child_id }).update({ check_in, check_out, room_id });
 }
+
+export async function updateChildByDraw({child_id, check_in, check_out, room_id, draw_apply_id}) {
+  return db('children_draw_applies').where({ draw_apply_id, child_id }).update({ check_in, check_out, room_id });
+}
+
+export async function createChildByDraw(data) {
+  return db('children_draw_applies').insert(data).onConflict(['child_id', 'draw_apply_id']).ignore();
+}

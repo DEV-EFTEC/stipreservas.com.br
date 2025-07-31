@@ -1,12 +1,509 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "./components/ui/button";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  MapPin,
+  Phone,
+  Users,
+  CreditCard,
+  FileCheck,
+  Gift,
+  Waves,
+  Calendar,
+  CheckCircle,
+  MessageCircle,
+  Smartphone,
+} from "lucide-react"
+import { Link } from "react-router-dom"
+import StipLogo from "./assets/StipLogo"
+import SedePraia from "./assets/SedePraia.jpg"
 
-export default function App() {
-  const navigate = useNavigate();
-
+export default function UnionBeachHeadquarters() {
   return (
-    <section>
-      <Button onClick={() => navigate("/signin")}>Go to login</Button>
-    </section>
+    <div className="flex flex-col min-h-screen bg-zinc-50">
+      {/* Header */}
+      <header className="bg-sky-900 text-white shadow-lg">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <StipLogo />
+            </div>
+            <nav className="hidden md:flex space-x-6">
+              <Link href="#processo" className="hover:text-sky-200 transition-colors">
+                Processo
+              </Link>
+              <Link href="#sorteios" className="hover:text-sky-200 transition-colors">
+                Sorteios
+              </Link>
+              <Link href="#contato" className="hover:text-sky-200 transition-colors">
+                Contato
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 text-white py-20">
+          <div className="container mx-auto px-4">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <Badge className="bg-sky-600 hover:bg-sky-600 text-white">Exclusivo para Associados</Badge>
+                <h2 className="text-4xl md:text-5xl font-bold leading-tight">Sua Sede na Praia Está Te Esperando</h2>
+                <p className="text-xl text-sky-100 leading-relaxed">
+                  Desfrute de momentos únicos na nossa sede praia com toda a família. Faça sua reserva de forma simples
+                  e segura, com pagamento via Pix e participe dos nossos sorteios de alta temporada.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button size="lg" className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold" asChild>
+                    <Link href="#contato">
+                      <MessageCircle className="mr-2 h-5 w-5" />
+                      Contatar via WhatsApp
+                    </Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white text-white hover:bg-white hover:text-sky-900 bg-transparent"
+                    asChild
+                  >
+                    <Link href="#processo">Ver Como Funciona</Link>
+                  </Button>
+                </div>
+              </div>
+              <div className="relative">
+                <img
+                  src={SedePraia}
+                  alt="Sede Praia do Sindicato"
+                  className="rounded-lg shadow-2xl"
+                />
+                <div className="absolute -bottom-6 -left-6 bg-white text-sky-900 p-4 rounded-lg shadow-lg">
+                  <div className="flex items-center space-x-2">
+                    <Users className="h-5 w-5" />
+                    <span className="font-semibold">Exclusivo Associados</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Registration Notice */}
+        <section className="bg-amber-50 border-l-4 border-amber-400 py-8">
+          <div className="container mx-auto px-4">
+            <div className="flex items-start space-x-4">
+              <Smartphone className="h-6 w-6 text-amber-600 mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-amber-800 mb-2">Importante: Cadastro Obrigatório via WhatsApp</h3>
+                <p className="text-amber-700">
+                  Para se cadastrar e ter acesso ao sistema de reservas, é necessário entrar em contato conosco via
+                  WhatsApp para comprovar a assistência sindical e receber o link da página de cadastro.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Process Section */}
+        <section id="processo" className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4">Como Fazer Sua Reserva</h2>
+              <p className="text-xl text-zinc-600 max-w-3xl mx-auto">
+                Processo simples e seguro em 5 etapas para garantir sua estadia na sede praia
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Step 1 */}
+              <Card className="border-sky-200 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-sky-900 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                      1
+                    </div>
+                    <CardTitle className="text-sky-900">Informações Pessoais</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-zinc-600">
+                    Insira as informações necessárias como RG do titular e documentos dos acompanhantes.
+                  </CardDescription>
+                  <div className="mt-4 flex items-center text-sm text-zinc-500">
+                    <FileCheck className="h-4 w-4 mr-2" />
+                    Documentação obrigatória
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Step 2 */}
+              <Card className="border-sky-200 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-sky-900 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                      2
+                    </div>
+                    <CardTitle className="text-sky-900">Escolha do Quarto</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-zinc-600">
+                    Selecione o quarto desejado e o período de permanência para cada membro da família.
+                  </CardDescription>
+                  <div className="mt-4 flex items-center text-sm text-zinc-500">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Disponibilidade em tempo real
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Step 3 */}
+              <Card className="border-sky-200 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-sky-900 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                      3
+                    </div>
+                    <CardTitle className="text-sky-900">Envio da Solicitação</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-zinc-600">
+                    Envie sua solicitação de reserva com todos os dados preenchidos para análise.
+                  </CardDescription>
+                  <div className="mt-4 flex items-center text-sm text-zinc-500">
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Confirmação automática
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Step 4 */}
+              <Card className="border-sky-200 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-sky-900 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                      4
+                    </div>
+                    <CardTitle className="text-sky-900">Aprovação Administrativa</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-zinc-600">
+                    Nossa equipe analisa a documentação e aprova sua solicitação para liberação do pagamento.
+                  </CardDescription>
+                  <div className="mt-4 flex items-center text-sm text-zinc-500">
+                    <Users className="h-4 w-4 mr-2" />
+                    Análise em até 24h
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Step 5 */}
+              <Card className="border-sky-200 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-sky-900 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                      5
+                    </div>
+                    <CardTitle className="text-sky-900">Pagamento via Pix</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-zinc-600">
+                    Após aprovação, realize o pagamento de forma rápida e segura através do Pix.
+                  </CardDescription>
+                  <div className="mt-4 flex items-center text-sm text-zinc-500">
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Pagamento instantâneo
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Final Step */}
+              <Card className="border-green-200 bg-green-50 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center">
+                      <CheckCircle className="h-4 w-4" />
+                    </div>
+                    <CardTitle className="text-green-800">Autorização e Acesso</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-green-700">
+                    Receba sua autorização e aproveite sua estadia na sede praia com toda tranquilidade!
+                  </CardDescription>
+                  <div className="mt-4 flex items-center text-sm text-green-600">
+                    <Waves className="h-4 w-4 mr-2" />
+                    Pronto para curtir!
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Raffles Section */}
+        <section id="sorteios" className="py-20 bg-gradient-to-r from-amber-50 to-orange-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <Badge className="bg-amber-500 hover:bg-amber-500 text-white mb-4">Alta Demanda</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4">
+                Sistema de Sorteios por Alta Demanda
+              </h2>
+              <p className="text-xl text-zinc-600 max-w-3xl mx-auto">
+                Devido ao número limitado de quartos e alta procura, utilizamos um sistema de sorteios para determinar
+                quais associados poderão fazer suas reservas durante períodos de alta demanda.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+              <Card className="border-amber-200 bg-white hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <Users className="h-12 w-12 text-amber-500 mb-4" />
+                  <CardTitle className="text-amber-800">Quartos Limitados</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>
+                    Nossa sede possui número limitado de acomodações, tornando necessário um processo justo de seleção
+                    durante períodos de alta procura.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+
+              <Card className="border-amber-200 bg-white hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <Gift className="h-12 w-12 text-amber-500 mb-4" />
+                  <CardTitle className="text-amber-800">Sistema Justo</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>
+                    O sorteio garante que todos os associados tenham chances iguais de acesso às acomodações,
+                    independentemente da ordem de solicitação.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+
+              <Card className="border-amber-200 bg-white hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <Calendar className="h-12 w-12 text-amber-500 mb-4" />
+                  <CardTitle className="text-amber-800">1 Quarto por Associado</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>
+                    Cada associado tem direito a reservar apenas 1 quarto por período, garantindo que mais famílias
+                    possam usufruir da sede.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="text-center mt-12">
+              <div className="bg-white rounded-lg p-8 shadow-lg max-w-4xl mx-auto">
+                <h3 className="text-2xl font-bold text-zinc-900 mb-6">Como Funciona o Sistema de Sorteios?</h3>
+
+                <div className="grid md:grid-cols-2 gap-8 text-left">
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
+                        1
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-zinc-900">Período de Inscrições</h4>
+                        <p className="text-zinc-600 text-sm">Associados se inscrevem durante o período determinado</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
+                        2
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-zinc-900">Sorteio Transparente</h4>
+                        <p className="text-zinc-600 text-sm">Realização do sorteio com todos os inscritos</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
+                        3
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-zinc-900">Contemplados Notificados</h4>
+                        <p className="text-zinc-600 text-sm">Associados sorteados são comunicados via WhatsApp</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mt-0.5">
+                        4
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-zinc-900">Processo de Reserva</h4>
+                        <p className="text-zinc-600 text-sm">Contemplados seguem o processo normal de reserva</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex items-start space-x-3">
+                    <Gift className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-amber-800 mb-2">Importante</h4>
+                      <p className="text-amber-700 text-sm">
+                        O sorteio é aplicado apenas em períodos de alta demanda quando o número de solicitações excede a
+                        capacidade disponível. Em períodos normais, as reservas seguem o processo padrão por ordem de
+                        chegada.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section id="contato" className="py-20 bg-sky-900 text-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Entre em Contato Conosco</h2>
+              <p className="text-xl text-sky-100 max-w-3xl mx-auto">
+                Para se cadastrar e ter acesso ao sistema de reservas, entre em contato via WhatsApp. Nossa equipe está
+                pronta para ajudar você!
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-8">
+                <div className="flex items-start space-x-4">
+                  <MessageCircle className="h-8 w-8 text-sky-300 mt-1" />
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">WhatsApp Oficial</h3>
+                    <p className="text-sky-100 mb-4">
+                      Entre em contato para comprovar assistência sindical e receber o link de cadastro.
+                    </p>
+                    <Button className="bg-green-600 hover:bg-green-700 text-white" asChild>
+                      <Link href="https://wa.me/5511999999999" target="_blank">
+                        <Phone className="mr-2 h-4 w-4" />
+                        Contatar via WhatsApp
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <MapPin className="h-8 w-8 text-sky-300 mt-1" />
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">Localização</h3>
+                    <p className="text-sky-100">
+                      Nossa sede praia está localizada em um dos pontos mais privilegiados da costa, oferecendo toda a
+                      infraestrutura necessária para sua família.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <Calendar className="h-8 w-8 text-sky-300 mt-1" />
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">Horário de Atendimento</h3>
+                    <p className="text-sky-100">
+                      Segunda a Sexta: 8h às 18h
+                      <br />
+                      Sábados: 8h às 14h
+                      <br />
+                      Domingos e Feriados: Fechado
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8">
+                <h3 className="text-2xl font-bold mb-6">Informações Importantes</h3>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-400 mt-0.5" />
+                    <span className="text-sky-100">Cadastro obrigatório via WhatsApp</span>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-400 mt-0.5" />
+                    <span className="text-sky-100">Comprovação de assistência sindical necessária</span>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-400 mt-0.5" />
+                    <span className="text-sky-100">Pagamento seguro via Pix</span>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-400 mt-0.5" />
+                    <span className="text-sky-100">Sorteios exclusivos na alta temporada</span>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-400 mt-0.5" />
+                    <span className="text-sky-100">Aprovação administrativa em até 24h</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-zinc-900 text-zinc-300 py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div>
+              <div className="flex items-center space-x-3 mb-4">
+                <Waves className="h-6 w-6 text-sky-400" />
+                <span className="text-xl font-bold text-white">Sede Praia do Sindicato</span>
+              </div>
+              <p className="text-zinc-400">
+                Proporcionando momentos únicos de lazer e descanso para nossos associados e suas famílias.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-white font-semibold mb-4">Links Rápidos</h4>
+              <div className="space-y-2">
+                <Link href="#processo" className="block hover:text-sky-400 transition-colors">
+                  Como Reservar
+                </Link>
+                <Link href="#sorteios" className="block hover:text-sky-400 transition-colors">
+                  Sorteios
+                </Link>
+                <Link href="#contato" className="block hover:text-sky-400 transition-colors">
+                  Contato
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-white font-semibold mb-4">Contato</h4>
+              <div className="space-y-2">
+                <p className="flex items-center">
+                  <Phone className="h-4 w-4 mr-2" />
+                  WhatsApp: (11) 99999-9999
+                </p>
+                <p className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Sede Praia - Litoral SP
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-zinc-700 mt-8 pt-8 text-center">
+            <p className="text-zinc-400">
+              © {new Date().getFullYear()} Sede Praia do Sindicato. Todos os direitos reservados.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }

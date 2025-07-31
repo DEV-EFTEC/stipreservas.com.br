@@ -143,7 +143,7 @@ function Sidebar({
       <div
         data-slot="sidebar"
         className={cn(
-          "bg-sky-900 bg-zinc-50 flex h-full w-(--sidebar-width) flex-col",
+          "bg-sky-900 flex h-full w-(--sidebar-width) flex-col",
           className
         )}
         {...props}>
@@ -159,7 +159,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sky-900 bg-zinc-50 w-(--sidebar-width) p-0 [&>button]:hidden"
+          className="bg-sky-900 w-(--sidebar-width) p-0 [&>button]:hidden"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE

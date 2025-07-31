@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays, eachDayOfInterval, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { enumStatus } from "@/lib/enumStatus";
 import {
@@ -22,6 +22,7 @@ import { enumAssociateRole } from "@/lib/enumAssociateRole";
 import { Button } from "@/components/ui/button";
 import { calculateTotalPrice } from "@/hooks/useBookingPrice";
 import { useBooking } from "@/hooks/useBooking";
+import LexicalViewer from "@/components/lexical-viewer";
 
 export function BookingDetails() {
   const { user } = useAuth();
@@ -73,19 +74,31 @@ export function BookingDetails() {
                   <CardTitle>Resumo da Solicitação</CardTitle>
                   <CardDescription>Aqui estão as informações básicas da solicitação</CardDescription>
                 </CardHeader>
-                <CardContent className={'flex justify-between space-x-6'}>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Solicitação</p>
-                    <Badge className={'w-full'}>#{booking && booking.id.slice(0, 8)}</Badge>
+                <CardContent className={'flex flex-col space-y-6'}>
+                  <div className="flex justify-between space-x-6">
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Solicitação</p>
+                      <Badge className={'w-full'}>#{booking && booking.id.slice(0, 8)}</Badge>
+                    </div>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Status</p>
+                      <Badge className={'w-full'} variant={booking.status}>{enumStatus[booking.status]}</Badge>
+                    </div>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Criada em</p>
+                      <Badge className={'w-full'} variant={'secondary'}>{format(booking.utc_created_on, "dd/MM/yyyy 'às' HH:mm")}</Badge>
+                    </div>
                   </div>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Status</p>
-                    <Badge className={'w-full'} variant={booking.status}>{enumStatus[booking.status]}</Badge>
-                  </div>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Criada em</p>
-                    <Badge className={'w-full'} variant={'secondary'}>{format(booking.utc_created_on, "dd/MM/yyyy 'às' HH:mm")}</Badge>
-                  </div>
+                  {
+                    booking.status === 'refused'
+                    &&
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Justificativa da recusa</p>
+                      <Badge className={'w-full'} variant={'secondary'}>
+                        <LexicalViewer jsonContent={booking.justification} styles={"text-black max-w-none text-sm text-center"} />
+                      </Badge>
+                    </div>
+                  }
                 </CardContent>
               </Card>
               <Card>
@@ -103,7 +116,7 @@ export function BookingDetails() {
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Diária(s)</p>
-                    <Badge variant="secondary" className={'w-full'}>{differenceInDays(booking.check_out, booking.check_in)} dia(s)</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{eachDayOfInterval({start: new Date(booking.check_out), end: new Date(booking.check_in)}).length} dia(s)</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Quarto(s)</p>

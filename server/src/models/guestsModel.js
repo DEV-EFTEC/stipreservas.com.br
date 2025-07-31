@@ -38,3 +38,11 @@ export async function getGuestsByBooking(booking_id) {
 export async function updateGuestsByBooking({guest_id, check_in, check_out, room_id, booking_id}) {
   return db('guests_bookings').where({ booking_id, guest_id }).update({ check_in, check_out, room_id });
 }
+
+export async function updateGuestsByDraw({guest_id, draw_apply_id}) {
+  return db('guests_draw_applies').where({ draw_apply_id, guest_id }).update({ check_in, check_out, room_id });
+}
+
+export async function createGuestByDraw(data) {
+  return db('guests_draw_applies').insert(data).onConflict(['guest_id', 'draw_apply_id']).ignore();
+}

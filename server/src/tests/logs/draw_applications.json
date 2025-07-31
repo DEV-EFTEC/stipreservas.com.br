@@ -1,0 +1,387 @@
+[
+  {
+    "id": "app_2",
+    "draw_id": "draw_1",
+    "created_by": "Antônio",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-09"
+  },
+  {
+    "id": "app_2",
+    "draw_id": "draw_1",
+    "created_by": "Antônio",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-09"
+  },
+  {
+    "id": "app_4",
+    "draw_id": "draw_1",
+    "created_by": "Beatriz",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-13"
+  },
+  {
+    "id": "app_5",
+    "draw_id": "draw_1",
+    "created_by": "Carlos",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-09"
+  },
+  {
+    "id": "app_5",
+    "draw_id": "draw_1",
+    "created_by": "Carlos",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-09"
+  },
+  {
+    "id": "app_7",
+    "draw_id": "draw_1",
+    "created_by": "Daniella",
+    "check_in": "2025-07-12",
+    "check_out": "2025-07-16"
+  },
+  {
+    "id": "app_8",
+    "draw_id": "draw_1",
+    "created_by": "Emanuel",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-12"
+  },
+  {
+    "id": "app_8",
+    "draw_id": "draw_1",
+    "created_by": "Emanuel",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-12"
+  },
+  {
+    "id": "app_10",
+    "draw_id": "draw_1",
+    "created_by": "Fernanda",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-12"
+  },
+  {
+    "id": "app_10",
+    "draw_id": "draw_1",
+    "created_by": "Fernanda",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-12"
+  },
+  {
+    "id": "app_12",
+    "draw_id": "draw_1",
+    "created_by": "Geraldo",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_12",
+    "draw_id": "draw_1",
+    "created_by": "Geraldo",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_14",
+    "draw_id": "draw_1",
+    "created_by": "Hillary",
+    "check_in": "2025-07-12",
+    "check_out": "2025-07-18"
+  },
+  {
+    "id": "app_15",
+    "draw_id": "draw_1",
+    "created_by": "Ivan",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-15"
+  },
+  {
+    "id": "app_16",
+    "draw_id": "draw_1",
+    "created_by": "Joana",
+    "check_in": "2025-07-12",
+    "check_out": "2025-07-16"
+  },
+  {
+    "id": "app_17",
+    "draw_id": "draw_1",
+    "created_by": "Kevin",
+    "check_in": "2025-07-08",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_17",
+    "draw_id": "draw_1",
+    "created_by": "Kevin",
+    "check_in": "2025-07-08",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_19",
+    "draw_id": "draw_1",
+    "created_by": "Laura",
+    "check_in": "2025-07-08",
+    "check_out": "2025-07-13"
+  },
+  {
+    "id": "app_20",
+    "draw_id": "draw_1",
+    "created_by": "Manoel",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-14"
+  },
+  {
+    "id": "app_21",
+    "draw_id": "draw_1",
+    "created_by": "Natalie",
+    "check_in": "2025-07-12",
+    "check_out": "2025-07-13"
+  },
+  {
+    "id": "app_22",
+    "draw_id": "draw_1",
+    "created_by": "Osvaldo",
+    "check_in": "2025-07-08",
+    "check_out": "2025-07-14"
+  },
+  {
+    "id": "app_23",
+    "draw_id": "draw_1",
+    "created_by": "Pietra",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_23",
+    "draw_id": "draw_1",
+    "created_by": "Pietra",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_25",
+    "draw_id": "draw_1",
+    "created_by": "Quinn",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_25",
+    "draw_id": "draw_1",
+    "created_by": "Quinn",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_27",
+    "draw_id": "draw_1",
+    "created_by": "Rosanna",
+    "check_in": "2025-07-08",
+    "check_out": "2025-07-14"
+  },
+  {
+    "id": "app_28",
+    "draw_id": "draw_1",
+    "created_by": "Samuel",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-16"
+  },
+  {
+    "id": "app_29",
+    "draw_id": "draw_1",
+    "created_by": "Tatiana",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-16"
+  },
+  {
+    "id": "app_30",
+    "draw_id": "draw_1",
+    "created_by": "Ulisses",
+    "check_in": "2025-07-12",
+    "check_out": "2025-07-15"
+  },
+  {
+    "id": "app_31",
+    "draw_id": "draw_1",
+    "created_by": "Vanessa",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_31",
+    "draw_id": "draw_1",
+    "created_by": "Vanessa",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_33",
+    "draw_id": "draw_1",
+    "created_by": "Wallace",
+    "check_in": "2025-07-08",
+    "check_out": "2025-07-15"
+  },
+  {
+    "id": "app_34",
+    "draw_id": "draw_1",
+    "created_by": "Xandra",
+    "check_in": "2025-07-12",
+    "check_out": "2025-07-18"
+  },
+  {
+    "id": "app_35",
+    "draw_id": "draw_1",
+    "created_by": "Yago",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-16"
+  },
+  {
+    "id": "app_36",
+    "draw_id": "draw_1",
+    "created_by": "Zoe",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-12"
+  },
+  {
+    "id": "app_36",
+    "draw_id": "draw_1",
+    "created_by": "Zoe",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-12"
+  },
+  {
+    "id": "app_38",
+    "draw_id": "draw_1",
+    "created_by": "Arnaldo",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-16"
+  },
+  {
+    "id": "app_39",
+    "draw_id": "draw_1",
+    "created_by": "Bruna",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_39",
+    "draw_id": "draw_1",
+    "created_by": "Bruna",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_41",
+    "draw_id": "draw_1",
+    "created_by": "Cedric",
+    "check_in": "2025-07-11",
+    "check_out": "2025-07-16"
+  },
+  {
+    "id": "app_42",
+    "draw_id": "draw_1",
+    "created_by": "Denise",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_42",
+    "draw_id": "draw_1",
+    "created_by": "Denise",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_44",
+    "draw_id": "draw_1",
+    "created_by": "Emilio",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-12"
+  },
+  {
+    "id": "app_44",
+    "draw_id": "draw_1",
+    "created_by": "Emilio",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-12"
+  },
+  {
+    "id": "app_46",
+    "draw_id": "draw_1",
+    "created_by": "Fabiana",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_46",
+    "draw_id": "draw_1",
+    "created_by": "Fabiana",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_48",
+    "draw_id": "draw_1",
+    "created_by": "Gilberto",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_48",
+    "draw_id": "draw_1",
+    "created_by": "Gilberto",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-11"
+  },
+  {
+    "id": "app_50",
+    "draw_id": "draw_1",
+    "created_by": "Heloisa",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-17"
+  },
+  {
+    "id": "app_51",
+    "draw_id": "draw_1",
+    "created_by": "Italo",
+    "check_in": "2025-07-07",
+    "check_out": "2025-07-14"
+  },
+  {
+    "id": "app_52",
+    "draw_id": "draw_1",
+    "created_by": "Jaqueline",
+    "check_in": "2025-07-10",
+    "check_out": "2025-07-17"
+  },
+  {
+    "id": "app_53",
+    "draw_id": "draw_1",
+    "created_by": "Kaua",
+    "check_in": "2025-07-12",
+    "check_out": "2025-07-17"
+  },
+  {
+    "id": "app_54",
+    "draw_id": "draw_1",
+    "created_by": "Lorena",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_54",
+    "draw_id": "draw_1",
+    "created_by": "Lorena",
+    "check_in": "2025-07-09",
+    "check_out": "2025-07-10"
+  },
+  {
+    "id": "app_56",
+    "draw_id": "draw_1",
+    "created_by": "Mason",
+    "check_in": "2025-07-12",
+    "check_out": "2025-07-18"
+  }
+]

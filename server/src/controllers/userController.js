@@ -35,6 +35,16 @@ export async function findUserById(req, res) {
   }
 }
 
+export async function findUserByCpf(req, res) {
+  try {
+    const result = await userService.findUserByCpf(req.body.cpf);
+    res.status(201).json(result);
+  } catch (err) {
+    logger.error('Error creating user', { err });
+    res.status(400).json({ error: err.message });
+  }
+}
+
 export async function updateUser(req, res) {
   try {
     const { id } = req.params;

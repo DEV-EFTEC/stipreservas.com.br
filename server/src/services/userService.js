@@ -27,6 +27,10 @@ export async function findUserById(id) {
   return userModel.findUserById(id);
 }
 
+export async function findUserByCpf(cpf) {
+  return userModel.findUserByCpf(cpf);
+}
+
 export async function updateUser(id, data) {
   return userModel.updateUser(id, data);
 }

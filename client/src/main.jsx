@@ -35,9 +35,28 @@ import "@/lib/setupPDF";
 import './index.css';
 import { SocketProvider } from './hooks/useSocket';
 import { BookingDetails as AdminBookingDetails } from './pages/admin/BookingDetails';
+import { DrawDetails as AdminDrawDetails } from './pages/admin/DrawDetails';
 import ApprovePage from './pages/admin/ApprovePage';
 import Settings from './pages/admin/Settings';
 import { DrawSettings } from './pages/admin/DrawSettings';
+import CreateDrawApply from './pages/associate/Draw/CreateDrawApply';
+import SendDocumentsDraw from './pages/associate/Draw/SendDocuments';
+import FinishApplyDraw from './pages/associate/Draw/FinishApplyDraw';
+import { RaffleWithParticipants } from './pages/admin/RaffleWithParticipants';
+import { Run } from './pages/admin/Run';
+import { CalendarMode } from './pages/admin/CalendarMode';
+import RefusePage from './pages/admin/RefusePage';
+import ListDependents from './pages/associate/Escorts/ListDependents';
+import ListGuests from './pages/associate/Escorts/ListGuests';
+import ApproveDocumentsDraw from './pages/admin/ApproveDocumentsDraw';
+import ApprovePageDraw from './pages/admin/ApprovePageDraw';
+import RefusePageDraw from './pages/admin/RefusePageDraw';
+import { AssociateProvider } from './hooks/useAssociate';
+import CreateBookingAdmin from './pages/admin/CreateBookingAdmin';
+import SendDocumentsAdmin from './pages/admin/SendDocumentsAdmin';
+import GetRoomAdmin from './pages/admin/GetRoomAdmin';
+import FinishBookAdmin from './pages/admin/FinishBookAdmin';
+import BookingSettingsAdmin from './pages/admin/BookingSettingsAdmin';
 
 let router = createBrowserRouter([
   {
@@ -64,13 +83,15 @@ let router = createBrowserRouter([
     path: "/associado/home",
     element: (
       <ProtectedRoute role={"associate"}>
-        <AssociateSidebarProvider>
-          <BookingProvider>
-            <AssociateSidebar />
-            <AssociateSidebarTrigger />
-            <AssociateHome />
-          </BookingProvider>
-        </AssociateSidebarProvider>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <AssociateHome />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
       </ProtectedRoute>
     )
   },
@@ -90,13 +111,15 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva",
     element: (
       <ProtectedRoute role={"associate"}>
-        <AssociateSidebarProvider>
-          <BookingProvider>
-            <AssociateSidebar />
-            <AssociateSidebarTrigger />
-            <CreateBooking />
-          </BookingProvider>
-        </AssociateSidebarProvider>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <CreateBooking />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
       </ProtectedRoute>
     )
   },
@@ -104,13 +127,15 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva/:id/enviar-documentos",
     element: (
       <ProtectedRoute role={"associate"}>
-        <AssociateSidebarProvider>
-          <BookingProvider>
-            <AssociateSidebar />
-            <AssociateSidebarTrigger />
-            <SendDocuments />
-          </BookingProvider>
-        </AssociateSidebarProvider>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <SendDocuments />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
       </ProtectedRoute>
     )
   },
@@ -118,13 +143,15 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva/:id/escolher-quarto",
     element: (
       <ProtectedRoute role={"associate"}>
-        <AssociateSidebarProvider>
-          <BookingProvider>
-            <AssociateSidebar />
-            <AssociateSidebarTrigger />
-            <GetRoom />
-          </BookingProvider>
-        </AssociateSidebarProvider>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <GetRoom />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
       </ProtectedRoute>
     )
   },
@@ -148,13 +175,15 @@ let router = createBrowserRouter([
     path: "/associado/criar-reserva/:id/organizar-reserva",
     element: (
       <ProtectedRoute role={"associate"}>
-        <AssociateSidebarProvider>
-          <BookingProvider>
-            <AssociateSidebar />
-            <AssociateSidebarTrigger />
-            <BookingSettings />
-          </BookingProvider>
-        </AssociateSidebarProvider>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <BookingSettings />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
       </ProtectedRoute>
     )
   },
@@ -168,6 +197,86 @@ let router = createBrowserRouter([
               <AssociateSidebar />
               <AssociateSidebarTrigger />
               <BookingDetails />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/sorteio/:id/participar",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <CreateDrawApply />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/sorteio/:id/enviar-documentos",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <SendDocumentsDraw />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/sorteio/:id/finalizar-inscricao",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <FinishApplyDraw />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/acompanhantes/dependentes",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <ListDependents />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/acompanhantes/convidados",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <ListGuests />
             </BookingProvider>
           </AssociateSidebarProvider>
         </SocketProvider>
@@ -225,6 +334,22 @@ let router = createBrowserRouter([
     )
   },
   {
+    path: "/admin/sorteio/aprovar-documentacao/:id",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <ApproveDocumentsDraw />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
     path: "/admin/enviar-aprovacao/:id",
     element: (
       <ProtectedRoute role={"admin"}>
@@ -234,6 +359,54 @@ let router = createBrowserRouter([
               <AdminSidebar />
               <AdminSidebarTrigger />
               <ApprovePage />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/enviar-recusa/:id",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <RefusePage />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/sorteio/enviar-aprovacao/:id",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <ApprovePageDraw />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/sorteio/enviar-recusa/:id",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <RefusePageDraw />
             </BookingProvider>
           </AdminSidebarProvider>
         </SocketProvider>
@@ -266,6 +439,158 @@ let router = createBrowserRouter([
               <AdminSidebar />
               <AdminSidebarTrigger />
               <DrawSettings />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/sorteios/inscritos",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <RaffleWithParticipants />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/sorteios/run",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <Run />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/sorteio/inscricao/:id",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <AdminDrawDetails />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/calendario",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <CalendarMode />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/criar-reserva",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AssociateProvider>
+                <AdminSidebar />
+                <AdminSidebarTrigger />
+                <CreateBookingAdmin />
+              </AssociateProvider>
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/criar-reserva/:id/enviar-documentos",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AssociateProvider>
+                <AdminSidebar />
+                <AdminSidebarTrigger />
+                <SendDocumentsAdmin />
+              </AssociateProvider>
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/criar-reserva/:id/escolher-quarto",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AssociateProvider>
+                <AdminSidebar />
+                <AdminSidebarTrigger />
+                <GetRoomAdmin />
+              </AssociateProvider>
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/criar-reserva/:id/finalizar-reserva",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AssociateProvider>
+                <AdminSidebar />
+                <AdminSidebarTrigger />
+                <FinishBookAdmin />
+              </AssociateProvider>
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/criar-reserva/:id/organizar-reserva",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <BookingSettingsAdmin />
             </BookingProvider>
           </AdminSidebarProvider>
         </SocketProvider>

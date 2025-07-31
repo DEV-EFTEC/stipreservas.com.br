@@ -40,7 +40,7 @@ export default function LexicalViewerCard({ jsonContent }) {
     <LexicalComposer initialConfig={initialConfig}>
       <ReadOnlyStatePlugin initialJson={jsonContent} />
       <RichTextPlugin
-        contentEditable={<ContentEditable className="text-foreground/70 text-md line-clamp-2" />}
+        contentEditable={<ContentEditable className="text-md line-clamp-2" />}
         placeholder={null}
       />
       <HistoryPlugin />

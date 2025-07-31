@@ -16,6 +16,7 @@ export default function GetRoom() {
   const [userType, setUserType] = useState();
   const [selectedRoomsCapacity, setSelectedRoomsCapacity] = useState(0);
   const [peopleCapacity, setPeopleCapacity] = useState(0);
+  const [isUpdate, setIsUpdate] = useState(false);
   const { booking } = useBooking();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -26,12 +27,34 @@ export default function GetRoom() {
     setUserType(user.associate_role);
 
     if (booking) {
-      const qtd = (booking.partner_presence ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity;
-      setPeopleCapacity(qtd);
-      (async () => {
-        const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}&booking_id=${booking.id}`);
-        setRooms(response);
-      })()
+      if (!booking.rooms || booking.rooms.length < 1) {
+        const qtd = (booking.partner_presence ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity;
+        setPeopleCapacity(qtd);
+        (async () => {
+          const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}&booking_id=${booking.id}`);
+          setRooms(response);
+        })()
+        console.log('no has room')
+      } else {
+        const qtd = (booking.partner_presence ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity;
+        setPeopleCapacity(qtd);
+        (async () => {
+          const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}&booking_id=${booking.id}`);
+
+          const newResult = response.map(r => {
+            const isInBooking = booking.rooms.some(br => br.id === r.id);
+            return {
+              ...r,
+              is_selected: isInBooking
+            };
+          });
+
+          setRooms(newResult);
+          setIsUpdate(true);
+        })()
+
+        console.log('has room')
+      }
     }
   }, [booking])
 
@@ -92,7 +115,11 @@ export default function GetRoom() {
     if (selectedRoomsCapacity < peopleCapacity) {
       toast.warning("Você não selecionou quartos suficientes pela quantidade total de pessoas na reserva.")
     } else {
-      navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/organizar-reserva?booking_id=${booking.id}`);
+      if (isUpdate) {
+        navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/finalizar-reserva?booking_id=${booking.id}`);
+      } else {
+        navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/organizar-reserva?booking_id=${booking.id}`);
+      }
     }
   }
 
@@ -117,6 +144,7 @@ export default function GetRoom() {
                 canSelectMore={selectedRoomsCapacity < peopleCapacity}
                 onSelect={() => handleSelectRoom(room)}
                 onUnselect={() => handleUnselectRoom(room)}
+                isUpdate={false}
               />
             ))
           }

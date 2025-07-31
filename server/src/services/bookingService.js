@@ -188,7 +188,7 @@ export async function approveBooking(id, user_id, value) {
   const booking = await bookingModel.findBookingById(id);
   const user = await userModel.findUserById(user_id);
   const { data, error } = await resend.emails.send({
-    from: "STIP reservas <contato@eftecnologia.com>",
+    from: "STIP reservas <contato@eftrack.com.br>",
     to: [user.email],
     subject: "Sua solicitação de reserva foi aprovada!",
     html: `<!DOCTYPE html>
@@ -289,14 +289,132 @@ export async function approveBooking(id, user_id, value) {
 
   if (data) {
     const booking = await bookingModel.approveBooking(id);
-    const payment = await paymentService.createPayment(
-      id,
-      user_id,
-      value,
-      booking.expires_at.toISOString().split("T")[0]
-    );
+    const payment = await paymentService.createPayment("payments_bookings", {
+      booking_id: id,
+      user_id: user_id,
+      value: value,
+      due_date: booking.expires_at.toISOString().split("T")[0],
+    });
 
     return { booking, payment };
+  } else {
+    return error;
+  }
+}
+
+export async function refuseBooking(id, user_id, justification) {
+  const booking = await bookingModel.findBookingById(id);
+  const user = await userModel.findUserById(user_id);
+  const { data, error } = await resend.emails.send({
+    from: "STIP reservas <contato@eftrack.com.br>",
+    to: [user.email],
+    subject: "Sua solicitação de reserva foi recusada",
+    html: `<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reserva recusada</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #00598a;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header img {
+        height: 50px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+      }
+      p {
+        font-size: 14px;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        margin: 20px 0;
+        background-color: #00bcff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #ffffff50;
+        text-align: center;
+      }
+      a {
+          color: #00bcff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://firebasestorage.googleapis.com/v0/b/stip-reservas.firebasestorage.app/o/documents%2Femail-items%2Fstip-reservas-logo.png?alt=media&token=022056f8-a52b-4e41-bf07-8391264d5463" alt="Logo Sindicato" />
+      </div>
+
+      <h1>Infelizmente sua solicitação não foi aprovada.</h1>
+
+      <p>Olá <strong>${user.name}</strong>,</p>
+
+      <p>
+        A sua solicitação de reserva <strong>#${booking.id.slice(0, 8)}</strong> foi
+        <strong>recusada</strong>. Deixamos uma justificativa para que você possa realizar a alteração para que sua reserva seja aprovada.
+      </p>
+
+      <p>
+        Você tem 24 horas após o envio dessa mensagem para realizar as alterações necessárias, após esse período sua solicitação será cancelada automaticamente e você terá de iniciar uma nova solicitação.
+      </p>
+
+      <p>
+        Você pode visualizar os detalhes da sua reserva acessando a área do associado:
+      </p>
+
+      <p style="text-align: center">
+        <a href="${process.env.CLIENT_URL}/associado/home" class="button">Ver minha reserva</a>
+      </p>
+
+      <p>
+        Se o botão acima não funcionar, copie e cole o seguinte link no seu navegador:<br />
+        <a href="${process.env.CLIENT_URL}/associado/home">${process.env.CLIENT_URL}/associado/home</a>
+      </p>
+
+      <div class="footer">
+        Esta é uma mensagem automática. Por favor, não responda este e-mail.
+      </div>
+    </div>
+  </body>
+</html>
+`,
+  });
+
+  if (data) {
+    const booking = await bookingModel.refuseBooking(id);
+
+    await bookingModel.updateBooking(id, { justification });
+
+    return { booking };
   } else {
     return error;
   }

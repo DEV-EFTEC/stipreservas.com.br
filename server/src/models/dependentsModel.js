@@ -55,3 +55,11 @@ export async function getDependetByParcialName(partialName, created_by) {
 export async function updateDependentsByBooking({dependent_id, check_in, check_out, room_id, booking_id}) {
   return db('dependents_bookings').where({ booking_id, dependent_id }).update({ check_in, check_out, room_id });
 }
+
+export async function updateDependentsByDraw({dependent_id, check_in, check_out, room_id, draw_apply_id}) {
+  return db('dependents_draw_applies').where({ draw_apply_id, dependent_id }).update({ check_in, check_out, room_id });
+}
+
+export async function createDependentByDraw(data) {
+  return db('dependents_draw_applies').insert(data).onConflict(['dependent_id', 'draw_apply_id']).ignore();
+}

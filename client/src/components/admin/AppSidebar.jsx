@@ -9,7 +9,9 @@ import {
   Frame,
   GalleryVerticalEnd,
   Map,
+  PartyPopper,
   PieChart,
+  Plus,
   Settings,
   Settings2,
   SquareTerminal,
@@ -48,12 +50,12 @@ const data = {
           url: "/admin/solicitacoes",
         },
         {
-          title: "Editar solicitação",
-          url: "/admin/solicitacao/editar",
+          title: "Criar solicitação",
+          url: "/admin/criar-reserva",
         },
         {
           title: "Agenda",
-          url: "/admin/solicitacoes/agenda",
+          url: "/admin/calendario",
         }
       ],
     },
@@ -77,13 +79,28 @@ const data = {
         }
       ],
     },
+    {
+      title: "Sorteios",
+      url: "/admin/sorteios",
+      icon: PartyPopper,
+      isActive: true,
+      items: [
+        {
+          title: "Ver inscrições",
+          url: "/admin/sorteios/inscritos",
+        },
+        {
+          title: "Sorteador",
+          url: "/admin/sorteios/run",
+        },
+        {
+          title: "Gerenciar",
+          url: "/admin/sorteios",
+        },
+      ],
+    },
   ],
   projects: [
-    {
-      name: "Sorteios",
-      url: "/admin/sorteios",
-      icon: Settings,
-    },
     {
       name: "Configurações",
       url: "/admin/config",

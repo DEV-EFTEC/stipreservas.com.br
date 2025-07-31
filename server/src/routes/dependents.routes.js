@@ -7,6 +7,7 @@ router.post('/', dependentsController.createDependent);
 router.patch('/update-dependent/:id', dependentsController.updateDependent);
 router.get('/get-dependent', dependentsController.findDependentById);
 router.get('/get-dependents', dependentsController.findDependentsByUser);
+router.post('/get-dependents', dependentsController.findDependentsByUserAdmin);
 router.get('/delete-dependent', dependentsController.deleteDependent);
 router.post('/create-dependent-booking', dependentsController.createDependentByBooking);
 

@@ -18,7 +18,8 @@ export default function RoomCard({
   isSelected,
   onSelect,
   onUnselect,
-  canSelectMore
+  canSelectMore,
+  isUpdate
 }) {
   const bookingFee = userType === "partner" ? room.partner_booking_fee_per_day : room.contributor_booking_fee_per_day;
   const guestFee = userType === "partner" ? room.partner_guest_fee_per_day : room.contributor_guest_fee_per_day;
@@ -69,12 +70,12 @@ export default function RoomCard({
         {room.preferential ? (
           <AlertDialog>
             {isSelected ? (
-              <Button variant="selected" className="w-full" onClick={onUnselect}>
+              <Button variant="selected" className="w-full" onClick={onUnselect} disabled={isUpdate}>
                 Cancelar seleção
               </Button>
             ) : (
               <AlertDialogTrigger asChild>
-                <Button className="w-full" onClick={onSelect} disabled={!canSelectMore}>
+                <Button className="w-full" onClick={onSelect} disabled={!canSelectMore || isUpdate}>
                   Selecionar
                 </Button>
               </AlertDialogTrigger>
@@ -92,11 +93,11 @@ export default function RoomCard({
             </AlertDialogContent>
           </AlertDialog>
         ) : isSelected ? (
-          <Button variant="selected" className="w-full" onClick={onUnselect}>
+          <Button variant="selected" className="w-full" onClick={onUnselect} disabled={isUpdate}>
             Cancelar seleção
           </Button>
         ) : (
-          <Button className="w-full" onClick={onSelect} disabled={!canSelectMore}>
+          <Button className="w-full" onClick={onSelect} disabled={!canSelectMore || isUpdate}>
             Selecionar
           </Button>
         )}

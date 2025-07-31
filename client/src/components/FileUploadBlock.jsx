@@ -24,7 +24,8 @@ export function FileUploadBlock({
   documentsAssociation,
   documentType,
   setFile,
-  value
+  value,
+  allowEdit = true
 }) {
   const [preview, setPreview] = useState(value);
   const [fileName, setFileName] = useState("");
@@ -33,6 +34,7 @@ export function FileUploadBlock({
   const [isLoading, setIsLoading] = useState(false);
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
   const viewerContainerRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const { user } = useAuth();
 
@@ -67,14 +69,14 @@ export function FileUploadBlock({
         const imgData = canvas.toDataURL();
         setPreview(imgData);
         setIsImage(false);
-        setIsLoading(false); // fim do loading
+        setIsLoading(false);
       };
       fileReader.readAsArrayBuffer(file);
     } else {
       const localPreviewUrl = URL.createObjectURL(file);
       setPreview(localPreviewUrl);
       setIsImage(true);
-      setIsLoading(false); // fim do loading
+      setIsLoading(false);
     }
 
     const documentUrl = await sendDocument(
@@ -141,31 +143,56 @@ export function FileUploadBlock({
       </div>
 
       {isLoading ? (
-        <Skeleton className="w-80 h-14 rounded-md" />
+        <Skeleton className="w-full h-14 rounded-md" />
       ) : preview ? (
-        <div
-          className="flex items-center border rounded-md px-3 py-2 gap-3 w-80 bg-white cursor-pointer"
-          onClick={() => {
-            setShowModal(true);
-            setIsPreviewLoaded(false); // força mostrar o skeleton
-          }}
-        >
-          <div className="w-10 h-10 flex-shrink-0 overflow-hidden rounded-md border">
-            {isImage ? (
-              <img
-                src={preview}
-                alt="Preview"
-                className="object-cover w-full h-full"
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-                PDF
-              </div>
-            )}
+        <div className="relative w-full">
+          <div
+            className="flex items-center border rounded-md px-3 py-2 gap-3 bg-white cursor-pointer truncate"
+            onClick={() => {
+              setShowModal(true);
+              setIsPreviewLoaded(false);
+            }}
+          >
+            <div className="w-10 h-10 flex-shrink-0 overflow-hidden rounded-md border">
+              {isImage ? (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
+                  PDF
+                </div>
+              )}
+            </div>
+            <p className="text-sm text-gray-700 truncate">
+              {value ? getFileNameFromFirebaseUrl(value) : fileName}
+            </p>
           </div>
-          <span className="text-sm text-gray-700 truncate">
-            {value ? getFileNameFromFirebaseUrl(value) : fileName}
-          </span>
+
+          {allowEdit && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute top-3 right-1 text-xs text-sky-600 bg-white"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                Editar
+              </Button>
+              <Input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleFileChange}
+                accept="image/*,application/pdf"
+              />
+            </>
+          )}
         </div>
       ) : (
         <Input
@@ -173,6 +200,7 @@ export function FileUploadBlock({
           id={id}
           onChange={handleFileChange}
           accept="image/*,application/pdf"
+          className={'w-full'}
         />
       )}
 

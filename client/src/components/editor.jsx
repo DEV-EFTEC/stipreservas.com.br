@@ -35,7 +35,7 @@ function SavePlugin({ onSave }) {
   );
 }
 
-export default function LexicalEditor({ initialJson, onSave, setContent }) {
+export default function LexicalEditor({ initialJson, setContent }) {
   const initialConfig = {
     namespace: "MyEditor",
     theme: {
@@ -71,7 +71,6 @@ export default function LexicalEditor({ initialJson, onSave, setContent }) {
             if (setContent) setContent(json);
           }}
         />
-        <SavePlugin onSave={onSave} />
       </LexicalComposer>
     </div>
   );

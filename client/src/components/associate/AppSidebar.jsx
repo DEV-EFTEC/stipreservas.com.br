@@ -2,16 +2,7 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
   Settings,
-  Settings2,
   SquareTerminal,
   Users,
 } from "lucide-react"
@@ -53,22 +44,22 @@ const data = {
       ],
     },
     {
-      title: "Pessoas",
-      url: "/associado/p",
+      title: "Acompanhantes",
+      url: "/associado/acompanhantes",
       icon: Users,
       isActive: true,
       items: [
         {
           title: "Dependentes",
-          url: "/associado/p/dependentes",
+          url: "/associado/acompanhantes/dependentes",
         },
         {
           title: "Convidados",
-          url: "/associado/p/convidados",
+          url: "/associado/acompanhantes/convidados",
         },
         {
           title: "Crianças",
-          url: "/associado/p/criancas"
+          url: "/associado/acompanhantes/criancas"
         }
       ],
     },

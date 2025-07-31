@@ -12,6 +12,17 @@ export async function getAll(req, res) {
   }
 }
 
+export async function getDefaultRoom(req, res) {
+  try {
+    const result = await roomService.getDefaultRoom();
+    res.status(200).json(result);
+  } catch (err) {
+    logger.error('Error on getAll', { err });
+    res.status(500).json({ error: 'Erro ao buscar rooms' });
+  }
+}
+
+
 export async function createRoom(req, res) {
   try {
     await roomService.createRoom(req.body);

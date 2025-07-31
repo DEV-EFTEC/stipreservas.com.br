@@ -21,6 +21,7 @@ import {
 import { Accessibility, Check, Users } from "lucide-react";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
+import { enumStatus } from "@/lib/enumStatus";
 
 export default function FinishBook() {
   const location = useLocation();
@@ -42,17 +43,6 @@ export default function FinishBook() {
       setBooking(response);
     })()
   }, []);
-
-  const enumStatus = {
-    "pending_approval": "Aprovação pendente",
-    "refused": "Recusado",
-    "expired": "Expirado",
-    "closed": "Encerrado",
-    "approved": "Aprovado",
-    "payment_pending": "Pagamento pendente",
-    "cancelled": "Cancelado",
-    "incomplete": "Incompleto"
-  }
 
   async function handleSubmit() {
     const result = await apiRequest(`/bookings/update-booking`, {
@@ -371,9 +361,12 @@ export default function FinishBook() {
                   </CardContent>
                 </Card>
                 {
-                  booking.status === 'incomplete'
-                  &&
+                  booking.status === 'incomplete' ||
+                  booking.status === 'refused'
+                  ?
                   <Button className={'mt-4 w-full'} onClick={handleSubmit} variant={'positive'}>Finalizar reserva<Check /></Button>
+                  :
+                  <></>
                 }
               </div>
             </div>

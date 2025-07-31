@@ -46,6 +46,10 @@ export function DrawSettings() {
   const [endDate, setEndDate] = useState(undefined);
   const [openDrawDate, setOpenDrawDate] = useState(false);
   const [drawDate, setDrawDate] = useState(undefined);
+  const [openEndDatePeriod, setOpenEndDatePeriod] = useState(false);
+  const [endDatePeriod, setEndDatePeriod] = useState(undefined);
+  const [openStartDatePeriod, setOpenStartDatePeriod] = useState(false);
+  const [startDatePeriod, setStartDatePeriod] = useState(undefined);
 
   useEffect(() => {
     (async () => {
@@ -68,6 +72,8 @@ export function DrawSettings() {
           color_2: color2,
           start_date: startDate,
           end_date: endDate,
+          start_period_date: startDatePeriod,
+          end_period_date: endDatePeriod,
           draw_date: drawDate,
           created_by: user.id
         })
@@ -124,7 +130,7 @@ export function DrawSettings() {
             <section>
               <Text heading={"h3"} className="font-medium">Datas</Text>
               <Text heading={"small"} className="font-medium">Aqui é onde as datas referentes ao sorteio são configuradas. Configure aqui a data de início e fim das inscrições e a data em que o sorteio serpa realizado.</Text>
-              <section className="flex justify-between mt-2">
+              <section className="flex justify-between mt-2 flex-wrap space-y-4">
                 <InputCalendar
                   label={"Data inicial"}
                   date={startDate}
@@ -145,6 +151,20 @@ export function DrawSettings() {
                   open={openDrawDate}
                   setDate={setDrawDate}
                   setOpen={setOpenDrawDate}
+                />
+                <InputCalendar
+                  label={"Data inicial disponível para estadia"}
+                  date={startDatePeriod}
+                  open={openStartDatePeriod}
+                  setDate={setStartDatePeriod}
+                  setOpen={setOpenStartDatePeriod}
+                />
+                <InputCalendar
+                  label={"Data final para estadia"}
+                  date={endDatePeriod}
+                  open={openEndDatePeriod}
+                  setDate={setEndDatePeriod}
+                  setOpen={setOpenEndDatePeriod}
                 />
               </section>
             </section>
@@ -178,6 +198,7 @@ export function DrawSettings() {
                         <li>Data de início das inscrições: {startDate && format(startDate, 'dd/MM/yyyy')}</li>
                         <li>Data final das inscrições: {endDate && format(endDate, 'dd/MM/yyyy')}</li>
                         <li>Data do sorteio: {drawDate && format(drawDate, 'dd/MM/yyyy')}</li>
+                        <li>Período disponível para estadia: {startDatePeriod && format(startDatePeriod, 'dd/MM/yyyy')} à {endDatePeriod && format(endDatePeriod, 'dd/MM/yyyy')}</li>
                       </ul>
                     </section>
                   </section>
@@ -190,7 +211,7 @@ export function DrawSettings() {
               draws.length > 0
                 ?
                 draws.map(d => (
-                  <StatusCard status={d.status} title={d.title} content={d.description} start_date={d.start_date} end_date={d.end_date} utc_created_on={d.utc_created_on} color={d.color} color2={d.color_2} draw_date={d.draw_date}/>
+                  <StatusCard draw={d} setDraws={setDraws}/>
                 ))
                 :
                 <p className="text-primary/80 text-center">Não foram encontrados sorteios cadastrados.</p>

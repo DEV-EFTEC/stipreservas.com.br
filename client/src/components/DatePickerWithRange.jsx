@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { differenceInCalendarDays, format, addDays } from "date-fns";
+import { differenceInCalendarDays, format, addDays, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { CalendarIcon, X } from "lucide-react";
 
@@ -15,18 +15,28 @@ import { toast } from "sonner";
 
 export default function DatePickerWithRange({ className, date, setDate, associate_role }) {
   const diasMax = associate_role === "partner" ? 10 : 7;
-  const dataMinima = addDays(new Date(), 7); // mínimo 7 dias de antecedência
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.getMonth();
+  const year = today.getFullYear();
+
+  const liberaMesSeguinte = day >= 10;
+
+  const mesLiberado = liberaMesSeguinte ? month + 1 : month;
+  const anoLiberado = liberaMesSeguinte && month === 11 ? year + 1 : year;
+
+  const inicioMesLiberado = new Date(anoLiberado, mesLiberado, 1);
+  const dataMinima = addDays(inicioMesLiberado, 7);
+  const dataMaxima = endOfMonth(inicioMesLiberado);
+  const defaultMonth = inicioMesLiberado;
 
   const handleSelect = (range) => {
-    // Seleção inicial
     if (!range?.from) {
       setDate({ from: undefined, to: undefined });
       return;
     }
 
-    // Apenas o from selecionado
     if (range.from && !range.to) {
-      // Validar se a data está dentro do mínimo de antecedência
       if (range.from < dataMinima) {
         toast.warning("As reservas devem ser feitas com pelo menos 7 dias de antecedência.");
         setDate({ from: undefined, to: undefined });
@@ -37,14 +47,13 @@ export default function DatePickerWithRange({ className, date, setDate, associat
       return;
     }
 
-    // Valida o intervalo
     const diff = differenceInCalendarDays(range.to, range.from);
 
     if (diff <= diasMax - 1) {
       setDate(range);
     } else {
       toast.error(`Seu tipo de cadastro permite reservas de até ${diasMax} dias.`);
-      setDate({ from: range.to, to: undefined }); // recomeça seleção
+      setDate({ from: range.to, to: undefined });
     }
   };
 
@@ -84,12 +93,12 @@ export default function DatePickerWithRange({ className, date, setDate, associat
             <Calendar
               initialFocus
               mode="range"
-              defaultMonth={date?.from}
+              defaultMonth={defaultMonth}
               selected={date}
               onSelect={handleSelect}
-              numberOfMonths={2}
+              numberOfMonths={1}
               locale={ptBR}
-              disabled={(day) => day < dataMinima}
+              disabled={(day) => day < dataMinima || day > dataMaxima}
             />
             <Button
               variant="ghost"

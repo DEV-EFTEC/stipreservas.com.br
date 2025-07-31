@@ -31,6 +31,7 @@ export default function ApproveDocuments() {
   const [selectedGuests, setSelectedGuests] = useState([]);
   const [selectedChildren, setSelectedChildren] = useState([]);
   const [bookingStatus, setBookingStatus] = useState();
+  const [finalPath, setFinalPath] = useState('');
 
   const {
     list: dependents,
@@ -112,13 +113,15 @@ export default function ApproveDocuments() {
       toast.success(status.message, {
         description: "Está permitido o procedimento de aprovação da reserva."
       });
+      setFinalPath(`/admin/enviar-aprovacao/${booking.id}`);
     } else if (status.status === 'refused') {
       toast.error(status.message, {
         description: "Está permitido o procedimento de recusa da reserva."
       });
+      setFinalPath(`/admin/enviar-recusa/${booking.id}`);
     }
 
-  }, [booking, dependents, guests, children]);
+  }, [booking]);
 
   async function handleSubmit() {
     await apiRequest(`/bookings/update-participants/${booking.id}`, {
@@ -132,7 +135,9 @@ export default function ApproveDocuments() {
       })
     });
 
-    navigate(`/admin/enviar-aprovacao/${booking.id}`);
+    alert(finalPath)
+
+    navigate(finalPath);
   }
 
   const enumSaveEntity = {

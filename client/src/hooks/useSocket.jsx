@@ -24,7 +24,7 @@ export function SocketProvider({ children }) {
       const userId = user.id;
       const isAdmin = user.role === 'admin' ? true : false;
 
-      if (userId && !isAdmin) {
+      if (userId) {
         newSocket.emit("join", { userId, isAdmin });
       }
     });
@@ -36,15 +36,34 @@ export function SocketProvider({ children }) {
     });
 
     newSocket.on("admin:payment:confirmed", (data) => {
+      console.log(data)
       toast.success("Pagamento confirmado!", {
-        description: `A reserva ${data.booking_id} teve o pagamento confirmado.`
-      })
+        description: `A reserva ${data.booking.id} teve o pagamento confirmado.`
+      });
     });
 
     newSocket.on("payment:refund", (data) => {
       toast.info("Reembolso!", {
         description: `A reserva ${data.booking_id} foi cancelada e foi solicitado o reembolso.`
       })
+    });
+
+    newSocket.on("booking:approved", (data) => {
+      toast.info("Aprovado!", {
+        description: `A solicitação ${data.booking_id} foi aprovada com sucesso! Realize o pagamento.`
+      })
+    });
+
+    newSocket.on("booking:refused", (data) => {
+      toast.info("Recusado.", {
+        description: `Infelizmente a solicitação ${data.booking_id} foi recusada. Veja os detalhes da solicitação para ver a justificativa.`
+      })
+    });
+
+    newSocket.on("payment:confirmed", (data) => {
+      toast.success("Pagamento confirmado!", {
+        description: `A reserva ${data.booking.id} teve o pagamento confirmado.`
+      });
     });
 
     return () => {

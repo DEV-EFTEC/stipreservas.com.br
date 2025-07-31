@@ -26,7 +26,7 @@ export default function Aside({ action, status }) {
         )
       case 'refused':
         return (
-          <Button variant={'destructive'}>Concluir reprovação</Button>
+          <Button variant={'destructive'} onClick={action}>Concluir reprovação</Button>
         )
     }
   }

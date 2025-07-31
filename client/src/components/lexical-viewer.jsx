@@ -21,13 +21,13 @@ function ReadOnlyStatePlugin({ initialJson }) {
   return null;
 }
 
-export default function LexicalViewer({ jsonContent }) {
+export default function LexicalViewer({ jsonContent, styles = "prose text-white max-w-none" }) {
   const initialConfig = {
     namespace: 'Viewer',
     onError: (error) => {
       console.error('Lexical Error:', error);
     },
-    editorState: null, // será carregado no plugin
+    editorState: null,
     editable: false,
     nodes: [
       HeadingNode,
@@ -41,7 +41,7 @@ export default function LexicalViewer({ jsonContent }) {
     <LexicalComposer initialConfig={initialConfig}>
       <ReadOnlyStatePlugin initialJson={jsonContent} />
       <RichTextPlugin
-        contentEditable={<ContentEditable className="prose text-white max-w-none" id="editor_toolbar" />}
+        contentEditable={<ContentEditable className={styles} id="editor_toolbar" />}
         placeholder={null}
       />
       <HistoryPlugin />

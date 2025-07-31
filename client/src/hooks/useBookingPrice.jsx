@@ -1,10 +1,13 @@
 function getDateRange(startDate, endDate) {
   const dates = [];
   const current = new Date(startDate);
-  while (current < endDate) {
+  const end = new Date(endDate);
+
+  while (current <= end) {
     dates.push(current.toISOString().slice(0, 10));
     current.setDate(current.getDate() + 1);
   }
+
   return dates;
 }
 
@@ -23,12 +26,10 @@ function calculateTotalPrice(booking) {
   let total = 0;
   const roomOccupancy = {};
 
-  // Inicializa o mapa de ocupação dos quartos
   booking.rooms.forEach((room) => {
     roomOccupancy[room.id] = new Set();
   });
 
-  // Marca ocupação do quarto baseado na estadia da pessoa
   function addPersonToRoom(person) {
     const roomId = person.room_id;
     const room = booking.rooms.find(r => r.id === roomId);
@@ -44,22 +45,15 @@ function calculateTotalPrice(booking) {
     addPersonToRoom(booking.holders[0]);
   }
 
-  // Dependentes ocupam quarto
   booking.dependents?.forEach(dep => addPersonToRoom(dep));
 
-  // Convidados ocupam quarto (mas pagam à parte)
   booking.guests?.forEach(guest => addPersonToRoom(guest));
 
-  // Crianças não ocupam nem pagam (mudar se necessário)
-  // booking.children?.forEach(child => addPersonToRoom(child));
-
-  // Calcula diária dos quartos baseados em dias únicos ocupados
   Object.entries(roomOccupancy).forEach(([roomId, dates]) => {
     const room = booking.rooms.find(r => r.id === roomId);
     total += dates.size * Number(booking.holders[0].associate_role == 'partner' ? room.partner_booking_fee_per_day : room.contributor_booking_fee_per_day);
   });
 
-  // Calcula valor dos convidados por dia
   booking.guests?.forEach((guest) => {
     const room = booking.rooms.find(r => r.id === guest.room_id);
     if (!room || !guest.check_in || !guest.check_out) return;
@@ -74,7 +68,6 @@ function calculateTotalPrice(booking) {
   };
 }
 
-// Exemplo de hook React que usa a função pura
 import { useMemo } from "react";
 
 function useBookingPrice(booking) {

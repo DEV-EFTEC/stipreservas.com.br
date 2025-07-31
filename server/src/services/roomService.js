@@ -5,6 +5,10 @@ export async function getAllRooms() {
   return roomModel.findAllRooms();
 }
 
+export async function getDefaultRoom() {
+  return roomModel.findDefaultRoom();
+}
+
 export async function createRoom(data) {
   return roomModel.createRoom(data);
 }

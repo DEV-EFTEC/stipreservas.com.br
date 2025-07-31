@@ -48,8 +48,19 @@ export async function findChildById(req, res) {
 
 export async function findChildrenByUser(req, res) {
   try {
-    const { id } = req.query;
+    const { id } = req.user;
     const children = await childrenService.findChildrenByUser(id);
+    res.status(200).json(children);
+  } catch (err) {
+    logger.error('Error on createChildren', { err });
+    res.status(500).json({ error: 'Erro ao criar children' });
+  }
+}
+
+export async function findChildrenByUserAdmin(req, res) {
+  try {
+    const { user } = req.body;
+    const children = await childrenService.findChildrenByUser(user.id);
     res.status(200).json(children);
   } catch (err) {
     logger.error('Error on createChildren', { err });

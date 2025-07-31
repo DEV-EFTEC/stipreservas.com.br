@@ -51,6 +51,12 @@ const badgeVariants = cva(
           "border-transparent bg-amber-600 text-white [a&]:hover:bg-secondary/90",
         concluded:
           "border-transparent bg-teal-600 text-white [a&]:hover:bg-secondary/90",
+        drawn:
+          "border-transparent bg-pink-400 text-white [a&]:hover:bg-secondary/90",
+        not_drawn:
+          "border-transparent bg-red-800 text-white [a&]:hover:bg-secondary/90",
+        awaiting_draw:
+          "border-transparent bg-zinc-400 text-white [a&]:hover:bg-secondary/90",
       },
     },
     defaultVariants: {

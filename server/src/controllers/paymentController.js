@@ -1,4 +1,4 @@
-import * as paymentService from "../services/paymentService.js";
+import * as paymentService from "#services/paymentService.js";
 import * as bookingService from "../services/bookingService.js";
 import logger from "#core/logger.js";
 
@@ -57,12 +57,58 @@ export async function findPaymentByBooking(req, res) {
   }
 }
 
+export async function findPaymentByDraw(req, res) {
+  try {
+    const { id } = req.query;
+    const result = await paymentService.findPaymentByDraw(id);
+    res.status(201).json(result);
+  } catch (err) {
+    logger.error("Error on findPaymentByDraw", { err });
+    res.status(500).json({ error: "Erro ao buscar payments by booking" });
+  }
+}
+
+export async function drawPaided(req, res) {
+  const { body } = req;
+
+  try {
+    const payment = await paymentService.updatePaymentByAsaasPaymentId(
+      body.payment.id,
+      { status_role: body.payment.status === "RECEIVED" && "paid" }
+    );
+
+    const draw = await drawService.updateDraw({
+      id: payment.draw_id,
+      status: "approved",
+    });
+
+    const io = req.app.get("io");
+
+    const message = {
+      paymentId: body.payment.id,
+      booking,
+      userId: payment.user_id,
+      customer: body.payment.customer,
+      status: body.payment.status,
+    };
+
+    io.to(`user:${payment.user_id}`).emit("payment:confirmed", message);
+    io.to("admin").emit("admin:payment:confirmed", message);
+
+    res.status(200).json(message);
+  } catch (err) {
+    logger.error("Error on bookingPaided", { err });
+    res.status(500).json({ error: "Erro em bookingPaided" });
+  }
+}
+
 export async function bookingPaided(req, res) {
   const { body } = req;
 
   try {
     const payment = await paymentService.updatePaymentByAsaasPaymentId(
       body.payment.id,
+      "payments_bookings",
       { status_role: body.payment.status === "RECEIVED" && "paid" }
     );
 
@@ -80,8 +126,6 @@ export async function bookingPaided(req, res) {
       customer: body.payment.customer,
       status: body.payment.status,
     };
-
-    console.log(payment);
 
     io.to(`user:${payment.user_id}`).emit("payment:confirmed", message);
     io.to("admin").emit("admin:payment:confirmed", message);

@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays, eachDayOfInterval, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { enumStatus } from "@/lib/enumStatus";
 import {
@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, ChevronRight, Copy, Download, Eye, Info, ScanQrCode, Users, X, XCircle } from "lucide-react";
+import { Accessibility, ChevronRight, Copy, Download, Edit, Eye, Info, ScanQrCode, Users, X, XCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
@@ -27,6 +27,8 @@ import { useSocket } from "@/hooks/useSocket";
 import { toast } from "sonner";
 import html2pdf from 'html2pdf.js';
 import { Alert } from "@/components/ui/alert";
+import LexicalViewer from "@/components/lexical-viewer";
+import { rangeIncludesDate } from "react-day-picker";
 
 export default function BookingDetails() {
   const location = useLocation();
@@ -47,7 +49,12 @@ export default function BookingDetails() {
     if (!socket) return;
 
     socket.on("payment:confirmed", (data) => {
-      setBooking(data.booking);
+      setBooking(prevState => {
+        return {
+          ...prevState,
+          status: data.status
+        }
+      });
       toast.success("Pagamento confirmado com sucesso!");
     });
 
@@ -130,11 +137,16 @@ export default function BookingDetails() {
   }
 
   async function handlePayBooking() {
-    const response = await apiRequest(`/payments/find-payment-by-booking?id=${booking.id}`, {
+    const response = await apiRequest(`/payments-bookings/find-payment-by-booking?id=${booking.id}`, {
       method: "GET"
     });
 
     setPayment(response);
+  }
+
+  async function handleUpdateToSend() {
+    saveBooking(booking);
+    navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/enviar-documentos`);
   }
 
   async function handleCopy(pixCode) {
@@ -149,7 +161,7 @@ export default function BookingDetails() {
   }
 
   async function handleGetRefund() {
-    const response = await apiRequest(`/payments/refund`, {
+    const response = await apiRequest(`/payments-bookings/refund`, {
       method: "POST",
       body: JSON.stringify({
         booking_id: booking_id
@@ -162,127 +174,87 @@ export default function BookingDetails() {
     }
   }
 
+  function generateAuthorizationHTML(booking, user) {
+    const formatDate = (date) => format(new Date(date), 'dd/MM/yyyy');
+    const formatPeriod = `${formatDate(booking.check_in)} à ${formatDate(booking.check_out)}`;
+    const totalDays = differenceInDays(new Date(booking.check_out), new Date(booking.check_in));
+
+    const renderPeopleRows = () => {
+      let count = 1;
+
+      const mapPerson = (person, tipo) => `
+      <tr>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${count++}</td>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${person.name}</td>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${person.cpf === "" ? "Não possui CPF" : person.cpf}</td>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${totalDays} dias</td>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${tipo}</td>
+      </tr>
+    `;
+
+      return `
+      ${booking.dependents.map(dep => mapPerson(dep, 'Dependente')).join('')}
+      ${booking.guests.map(gue => mapPerson(gue, 'Convidado')).join('')}
+      ${booking.children.map(chi => mapPerson(chi, 'Criança')).join('')}
+    `;
+    };
+
+    const roomNumbers = booking.rooms.map(r => r.number).join(', ');
+
+    return `
+    <div style="font-family: 'DM Sans', sans-serif; color: #333;">
+      <h1 style="color: #00598a; font-size: 24px; font-weight:bold;">STIP Reservas - autorização #${booking.id.slice(0, 8)}</h1>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><th style="text-align:left">Titular</th><td>${user.name}</td></tr>
+        <tr><th style="text-align:left">Documento</th><td>${user.cpf}</td></tr>
+        <tr><th style="text-align:left">Empresa</th><td>${user.work_company || '-'}</td></tr>
+        <tr><th style="text-align:left">Período</th><td>${formatPeriod}</td></tr>
+        <tr><th style="text-align:left">Quarto(s)</th><td>${roomNumbers}</td></tr>
+      </table>
+
+      <h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 16px; font-weight:bold;">Acompanhantes</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead style="line-height:48px;">
+          <tr style="background:#00598a; color:#FFFFFF;">
+            <th>#</th><th>Nome</th><th>Nº Documento</th><th>Estadia</th><th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${renderPeopleRows()}
+        </tbody>
+      </table>
+
+      <h3 style="margin-top: 24px;">IMPORTANTE: Termos & Condições</h3>
+      <ol>
+        <li>A autorização terá validade das 8h do primeiro dia até as 17h do último dia informado;</li>
+        <li>Não será permitida a entrada de pessoas não cadastradas na autorização;</li>
+        <li>O desrespeito às normas resultará na perda do direito de uso da colônia de férias;</li>
+        <li>Pulseiras de identificação são obrigatórias. Perda = R$ 3,00/unidade;</li>
+        <li>É proibida a entrada com animais de estimação;</li>
+        <li>Cancelamentos até 1 dia antes do check-in (baixa temporada) permitem reembolso;</li>
+        <li>Cancelamentos em alta temporada não serão reembolsados por não ser possível a realocação para outro inscrito;</li>
+        <li>Check-in: das 8h às 18h;</li>
+        <li>Check-out: até 17h;</li>
+        <li>Cancelamento somente via plataforma STIP Reservas.</li>
+      </ol>
+
+      <h3 style="margin-top: 24px;">ATENÇÃO! É necessário levar:</h3>
+      <ul>
+        <li>Roupa de cama e itens de higiene pessoal;</li>
+        <li>Detergente, esponja e pano de prato;</li>
+        <li>A limpeza do quarto é de responsabilidade do hóspede;</li>
+        <li>Cuide do kit de limpeza disponibilizado.</li>
+      </ul>
+
+      <footer style="margin-top: 20px; line-height:24px; font-size: 12px; text-align: center; color:#bbb;">
+        <p>Documento gerado eletronicamente via STIP Reservas em ${new Date().getFullYear()}.</p>
+      </footer>
+    </div>
+  `;
+  }
+
   function handleDownloadAuthorization() {
-    const htmlString = `<div style="padding: 0; font-family: 'DM Sans', Arial, sans-serif; color: #333; background-color: #fff;page-break-inside: avoid;">
-  <h1 style="font-size: 28px; color: #00598a; margin-bottom: 8px;">STIP Reservas</h1>
-  <h2 style="font-size: 20px; margin-bottom: 24px; color: #111;">Autorização #A8374U</h2>
-
-  <div>
-    <h3
-      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
-      Informações Gerais
-    </h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;page-break-inside: avoid;">
-      <tbody>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Titular</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Jeremias Seles de Almeida</td>
-        </tr>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Documento</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">79668010</td>
-        </tr>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Empresa</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">PANI. MERC. AHU LTDA</td>
-        </tr>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Período</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">21/06/2025 à 22/06/2025</td>
-        </tr>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Quarto(s)</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">13</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div>
-    <h3
-      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
-      Acompanhantes
-    </h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;page-break-inside: avoid;">
-      <thead>
-        <tr style="background-color: #f8f8f8; font-weight: bold;">
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">#</th>
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">Nome</th>
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">Nº Documento</th>
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">Estadia</th>
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">Tipo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">1</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Clemilda dos Santos Silva</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">919104399-91</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">2 dias</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Dependente</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">2</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Gabriel Santos de Almeida</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">139626939-80</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">2 dias</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Dependente</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">3</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Laura Mariana da Silva</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">155144439-90</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">2 dias</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Convidado</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div>
-    <h3
-      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
-      IMPORTANTE: Termos & Condições
-    </h3>
-    <ol style="margin-bottom: 8px; padding-left: 0; text-indent: 0;list-style-type:decimal;page-break-inside: avoid;">
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">1. A autorização terá validade das 8h do primeiro dia até as 17h do
-        último dia informado;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">2. Não será permitida a entrada de pessoas não cadastradas na
-        autorização;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">3. O desrespeito às normas resultará na perda do direito de uso da
-        colônia de férias;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">4. Pulseiras de identificação são obrigatórias. Perda = R$
-        3,00/unidade;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">5. É proibida a entrada com animais de estimação;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">6. Cancelamentos até 1 dia antes do check-in (baixa temporada)
-        permitem reembolso;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">7. Cancelamentos até 3 dias antes do check-in (alta temporada)
-        permitem reembolso;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">8. Check-in: das 8h às 18h;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">9. Check-out: até 17h;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">10. Cancelamento somente via plataforma STIP Reservas.</li>
-    </ol>
-  </div>
-
-  <div>
-    <h3
-      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
-      ATENÇÃO! É necessário levar:
-    </h3>
-    <ul style="margin-left: 1.5rem; margin-top: 8px; list-style-type: disc;page-break-inside: avoid;">
-      <li style="margin-bottom: 8px; line-height: 1.5;page-break-inside: avoid;">Roupa de cama e itens de higiene pessoal;</li>
-      <li style="margin-bottom: 8px; line-height: 1.5;">Detergente, esponja e pano de prato;</li>
-      <li style="margin-bottom: 8px; line-height: 1.5;">A limpeza do quarto é de responsabilidade do hóspede;</li>
-      <li style="margin-bottom: 8px; line-height: 1.5;">Cuide do kit de limpeza disponibilizado.</li>
-    </ul>
-  </div>
-
-  <div>
-    <footer style="margin-top: 40px; font-size: 12px; color: #666; text-align: center;page-break-inside: avoid; padding: 10px;">
-      <p style="page-break-inside: avoid;">Documento gerado eletronicamente via STIP Reservas em 2025.</p>
-    </footer>
-  </div>
-</div>`
+    const htmlString = generateAuthorizationHTML(booking, user);
 
     const opt = {
       margin: 0.5,
@@ -296,13 +268,13 @@ export default function BookingDetails() {
   }
 
   return (
-    <section className="flex w-full p-20 justify-between">
+    <section className="w-full xl:p-20 pr-2 overflow-y-auto">
       {
         booking
         &&
-        <section className="w-full">
+        <section className="w-full pr-2 overflow-y-auto">
           <GlobalBreadcrumb />
-          <div className="flex gap-12 items-end mb-8">
+          <div className="flex gap-12 items-end mb-8 flex-wrap">
             <Text heading="h1">Detalhes da solicitação</Text>
             <div className="flex items-center gap-2">
               <Label>Solicitação</Label>
@@ -310,33 +282,45 @@ export default function BookingDetails() {
             </div>
           </div>
 
-          <section className="flex flex-column w-full space-x-16 justify-between">
-            <section className="w-[55%] flex-column space-y-8">
+          <section className="flex flex-column w-full justify-between flex-wrap lg:space-x-16">
+            <section className="w-full md:w-[90%] lg:w-[80%] xl:w-[100%] flex-column space-y-8">
               <Card>
                 <CardHeader>
                   <CardTitle>Resumo da Solicitação</CardTitle>
                   <CardDescription>Aqui estão as informações básicas da solicitação</CardDescription>
                 </CardHeader>
-                <CardContent className={'flex justify-between space-x-6'}>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Solicitação</p>
-                    <Badge className={'w-full'}>#{booking && booking.id.slice(0, 8)}</Badge>
+                <CardContent className={'flex flex-col space-y-6'}>
+                  <div className={'flex justify-between space-y-4 flex-wrap md:flex-nowrap md:space-x-4 md:space-y-0'}>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Solicitação</p>
+                      <Badge className={'w-full'}>#{booking && booking.id.slice(0, 8)}</Badge>
+                    </div>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Status</p>
+                      <Badge className={'w-full'} variant={booking.status}>{enumStatus[booking.status]}</Badge>
+                    </div>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Criada em</p>
+                      <Badge className={'w-full'} variant={'secondary'}>{format(booking.utc_created_on, "dd/MM/yyyy 'às' HH:mm")}</Badge>
+                    </div>
                   </div>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Status</p>
-                    <Badge className={'w-full'} variant={booking.status}>{enumStatus[booking.status]}</Badge>
-                  </div>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Criada em</p>
-                    <Badge className={'w-full'} variant={'secondary'}>{format(booking.utc_created_on, "dd/MM/yyyy 'às' HH:mm")}</Badge>
-                  </div>
+                  {
+                    booking.status === 'refused'
+                    &&
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Justificativa da recusa</p>
+                      <Badge className={'w-full'} variant={'secondary'}>
+                        <LexicalViewer jsonContent={booking.justification} styles={"text-black max-w-none text-sm text-center"} />
+                      </Badge>
+                    </div>
+                  }
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
                   <CardTitle>Informações de Estadia</CardTitle>
                 </CardHeader>
-                <CardContent className={'flex justify-between space-x-6'}>
+                <CardContent className={'flex justify-between space-y-4 flex-wrap md:flex-nowrap md:space-x-4 md:space-y-0'}>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm">Data de entrada</p>
                     <Badge variant="secondary" className={'w-full'}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
@@ -347,7 +331,7 @@ export default function BookingDetails() {
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Diária(s)</p>
-                    <Badge variant="secondary" className={'w-full'}>{differenceInDays(booking.check_out, booking.check_in)} dia(s)</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{eachDayOfInterval({start: new Date(booking.check_out), end: new Date(booking.check_in)}).length} dia(s)</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Quarto(s)</p>
@@ -381,7 +365,7 @@ export default function BookingDetails() {
                     <p className="font-medium text-slate-500 mb-1">Títular</p>
                     <Card>
                       <CardHeader>
-                        <CardTitle className={'flex items-center gap-4'}>
+                        <CardTitle className={'flex items-center gap-4 flex-wrap'}>
                           {user.name}
                           <Badge variant={user.associate_role}>
                             {enumAssociateRole[user.associate_role]}
@@ -389,7 +373,7 @@ export default function BookingDetails() {
                           <Badge variant={'cpf_details'}>CPF {user.cpf}</Badge>
                         </CardTitle>
                       </CardHeader>
-                      <CardContent className="flex justify-between flex-wrap">
+                      <CardContent className="flex justify-between flex-wrap space-y-4 2xl:space-y-0 xl:flex-nowrap">
                         <FileUploadBlock
                           label="Holerite recente"
                           id="holerite"
@@ -398,6 +382,7 @@ export default function BookingDetails() {
                           documentsAssociation={'holder'}
                           userId={user.id}
                           key={'holerite_sender'}
+                          allowEdit={false}
                           value={booking ? booking.url_receipt_picture : ""}
                         />
                         <FileUploadBlock
@@ -407,6 +392,7 @@ export default function BookingDetails() {
                           documentType={'clt_digital'}
                           documentsAssociation={'holder'}
                           userId={user.id}
+                          allowEdit={false}
                           value={booking ? booking.url_word_card_file : ""}
                         />
                       </CardContent>
@@ -443,6 +429,7 @@ export default function BookingDetails() {
                                   documentType={'documento_com_foto'}
                                   documentsAssociation={'dependents'}
                                   userId={user.id}
+                                  allowEdit={false}
                                   value={dep ? dep.url_document_picture : ""}
                                 />
                                 {
@@ -455,6 +442,7 @@ export default function BookingDetails() {
                                     documentType={'doc_comprobatorio'}
                                     documentsAssociation={'dependents'}
                                     userId={user.id}
+                                    allowEdit={false}
                                     value={dep ? dep.url_medical_report : ""}
                                   />
                                 }
@@ -496,6 +484,7 @@ export default function BookingDetails() {
                                   documentType={'documento_com_foto'}
                                   documentsAssociation={'guests'}
                                   userId={user.id}
+                                  allowEdit={false}
                                   value={gue ? gue.url_document_picture : ""}
                                 />
                               </CardContent>
@@ -509,6 +498,7 @@ export default function BookingDetails() {
                                   documentType={'doc_comprobatorio'}
                                   documentsAssociation={'guests'}
                                   userId={user.id}
+                                  allowEdit={false}
                                   value={gue ? gue.url_medical_report : ""}
                                 />
                               }
@@ -549,6 +539,7 @@ export default function BookingDetails() {
                                   documentType={'documento_com_foto'}
                                   documentsAssociation={'children'}
                                   userId={user.id}
+                                  allowEdit={false}
                                   value={chi ? chi.url_document_picture : ""}
                                 />
                                 {
@@ -561,6 +552,7 @@ export default function BookingDetails() {
                                     documentType={'doc_comprobatorio'}
                                     documentsAssociation={'children'}
                                     userId={user.id}
+                                    allowEdit={false}
                                     value={chi ? chi.url_medical_report : ""}
                                   />
                                 }
@@ -574,12 +566,12 @@ export default function BookingDetails() {
                 </CardContent>
               </Card>
             </section>
-            <div className="relative w-[30%]">
-              <div className={'fixed bottom-10 right-20 w-fit'}>
+            <div className="mt-6 w-full lg:relative lg:w-[30%]">
+              <div className={'lg:right-10 lg:bottom-10 lg:w-fit lg:fixed w-full'}>
                 {
                   payment
                   &&
-                  <Card className={'w-[250px] gap-0 mb-5'}>
+                  <Card className={'w-full lg:w-[250px] gap-0 mb-5'}>
                     <CardHeader>
                       <CardTitle className={'text-sm text-zinc-500 mb-1 text-center'}>
                         Leia o QR Code ou utilize a função "PIX copia e cola"
@@ -591,7 +583,7 @@ export default function BookingDetails() {
                     </CardContent>
                   </Card>
                 }
-                <Card className={'w-[250px] gap-0'}>
+                <Card className={'w-full lg:w-[250px] gap-0 mb-5'}>
                   <CardHeader>
                     <CardTitle className={'text-sm text-zinc-500 mb-1'}>
                       Valor total da reserva
@@ -617,6 +609,11 @@ export default function BookingDetails() {
                   booking.status === 'payment_pending'
                   &&
                   <Button className={'mt-4 w-full'} variant={'payment_pending'} onClick={handlePayBooking}>Realizar pagamento<ScanQrCode /></Button>
+                }
+                {
+                  booking.status === 'refused'
+                  &&
+                  <Button className={'mt-4 w-full'} variant={'refused'} onClick={handleUpdateToSend}>Realizar alterções e reenviar<Edit /></Button>
                 }
                 {/* {
                   isHighSeason &&

@@ -64,13 +64,13 @@ export default function SendDocuments() {
 
   useEffect(() => {
     (async () => {
-      const response_dep = await apiRequest(`/dependents/get-dependents?id=${user.id}`, {
+      const response_dep = await apiRequest(`/dependents/get-dependents`, {
         method: "GET"
       });
-      const response_gue = await apiRequest(`/guests/get-guests?id=${user.id}`, {
+      const response_gue = await apiRequest(`/guests/get-guests`, {
         method: "GET"
       });
-      const response_chi = await apiRequest(`/children/get-children?id=${user.id}`, {
+      const response_chi = await apiRequest(`/children/get-children`, {
         method: "GET"
       });
       setDependentsParcial(response_dep);
@@ -112,7 +112,7 @@ export default function SendDocuments() {
       })
     });
 
-    saveBooking(result);
+    saveBooking({...booking, ...result});
     navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/escolher-quarto`);
   }
 
@@ -168,10 +168,10 @@ export default function SendDocuments() {
 
   return (
     <>
-      <section className="flex w-full p-20 justify-between">
+      <section className="w-full xl:flex xl:justify-between 2xl:space-x-24 xl:space-x-8 xl:p-20 pr-2 overflow-y-auto">
         <section className="w-fit">
           <GlobalBreadcrumb />
-          <div className="flex gap-12 items-end mb-8">
+          <div className="flex space-x-12 items-end mb-8 flex-wrap 2xl:flex-nowrap">
             <Text heading="h1">Envio de Documentos</Text>
             <div className="flex items-center gap-2">
               <Label>Solicitação</Label>
@@ -179,8 +179,8 @@ export default function SendDocuments() {
             </div>
           </div>
           <Text heading="h2">Documentos do titular</Text>
-          <Card className="w-fit mb-7 mt-5">
-            <CardContent className="flex gap-15 w-fit">
+          <Card className="w-full mb-7 mt-5">
+            <CardContent className="flex w-full flex-wrap space-y-4 lg:flex-nowrap lg:space-y-0 lg:space-x-4">
               <FileUploadBlock
                 label="Holerite recente"
                 id="holerite"

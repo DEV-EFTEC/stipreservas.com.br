@@ -14,6 +14,7 @@ router.get('/get-booking-complete', bookingController.getBookingComplete);
 router.get('/get-participants', bookingController.getParticipants);
 router.delete('/delete-booking/:id', bookingController.deleteBooking);
 router.post('/approve-booking', bookingController.approveBooking);
+router.post('/refuse-booking', bookingController.refuseBooking);
 router.put('/update-participants/:booking_id', bookingController.updateParticipants)
 
 export default router;

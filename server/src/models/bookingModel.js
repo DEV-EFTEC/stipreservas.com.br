@@ -108,3 +108,15 @@ export async function approveBooking(id) {
 
   return updatedBooking;
 }
+
+export async function refuseBooking(id) {
+  const [updatedBooking] = await db("bookings")
+    .where({ id })
+    .update({
+      expires_at: db.raw(`"utc_created_on" + interval '1 day'`),
+      status: "refused",
+    })
+    .returning("*");
+
+  return updatedBooking;
+}
