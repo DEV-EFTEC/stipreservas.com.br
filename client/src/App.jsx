@@ -33,18 +33,20 @@ export default function UnionBeachHeadquarters() {
 
             <div className="hidden md:flex items-center space-x-6">
               <nav className="flex space-x-6">
-                <Link href="#processo" className="hover:text-sky-200 transition-colors">
+                <Link to="#processo" className="hover:text-sky-200 transition-colors">
                   Processo
                 </Link>
-                <Link href="#sorteios" className="hover:text-sky-200 transition-colors">
+                <Link to="#sorteios" className="hover:text-sky-200 transition-colors">
                   Sorteios
                 </Link>
-                <Link href="#contato" className="hover:text-sky-200 transition-colors">
+                <Link to="#contato" className="hover:text-sky-200 transition-colors">
                   Contato
                 </Link>
               </nav>
-              <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold ml-4" size="sm">
-                Login
+              <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold ml-4" size="sm" asChild>
+                <Link to={'/signin'}>
+                  Login
+                </Link>
               </Button>
             </div>
 
@@ -67,13 +69,13 @@ export default function UnionBeachHeadquarters() {
 
           <div id="mobile-menu" className="hidden md:hidden mt-4 pb-4 border-t border-sky-800">
             <nav className="flex flex-col space-y-3 mt-4">
-              <Link href="#processo" className="hover:text-sky-200 transition-colors py-2">
+              <Link to="#processo" className="hover:text-sky-200 transition-colors py-2">
                 Processo
               </Link>
-              <Link href="#sorteios" className="hover:text-sky-200 transition-colors py-2">
+              <Link to="#sorteios" className="hover:text-sky-200 transition-colors py-2">
                 Sorteios
               </Link>
-              <Link href="#contato" className="hover:text-sky-200 transition-colors py-2">
+              <Link to="#contato" className="hover:text-sky-200 transition-colors py-2">
                 Contato
               </Link>
               <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold mt-4 w-full" size="sm">
@@ -97,7 +99,7 @@ export default function UnionBeachHeadquarters() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button size="lg" className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold" asChild>
-                    <Link href="#contato">
+                    <Link to="https://wa.link/dhybtn" target="_blank">
                       <MessageCircle className="mr-2 h-5 w-5" />
                       Contatar via WhatsApp
                     </Link>
@@ -108,7 +110,7 @@ export default function UnionBeachHeadquarters() {
                     className="border-white text-white hover:bg-white hover:text-sky-900 bg-transparent"
                     asChild
                   >
-                    <Link href="#processo">Ver Como Funciona</Link>
+                    <Link to="#processo">Ver Como Funciona</Link>
                   </Button>
                 </div>
               </div>
@@ -613,7 +615,7 @@ export default function UnionBeachHeadquarters() {
                       Entre em contato para comprovar assistência sindical e receber o link de cadastro.
                     </p>
                     <Button className="bg-green-600 hover:bg-green-700 text-white" asChild>
-                      <Link href="https://wa.me/5511999999999" target="_blank">
+                      <Link to="https://wa.link/dhybtn" target="_blank">
                         <Phone className="mr-2 h-4 w-4" />
                         Contatar via WhatsApp
                       </Link>
@@ -692,13 +694,13 @@ export default function UnionBeachHeadquarters() {
             <div>
               <h4 className="text-white font-semibold mb-4">Links Rápidos</h4>
               <div className="space-y-2">
-                <Link href="#processo" className="block hover:text-sky-400 transition-colors">
+                <Link to="#processo" className="block hover:text-sky-400 transition-colors">
                   Como Reservar
                 </Link>
-                <Link href="#sorteios" className="block hover:text-sky-400 transition-colors">
+                <Link to="#sorteios" className="block hover:text-sky-400 transition-colors">
                   Sorteios
                 </Link>
-                <Link href="#contato" className="block hover:text-sky-400 transition-colors">
+                <Link to="#contato" className="block hover:text-sky-400 transition-colors">
                   Contato
                 </Link>
               </div>
