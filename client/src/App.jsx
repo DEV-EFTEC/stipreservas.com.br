@@ -45,7 +45,7 @@ export default function UnionBeachHeadquarters() {
               </nav>
               <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold ml-4" size="sm" asChild>
                 <Link to={'/signin'}>
-                  Login
+                  Entrar
                 </Link>
               </Button>
             </div>
@@ -78,8 +78,10 @@ export default function UnionBeachHeadquarters() {
               <Link to="#contato" className="hover:text-sky-200 transition-colors py-2">
                 Contato
               </Link>
-              <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold mt-4 w-full" size="sm">
-                Login
+              <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold mt-4 w-full" size="sm" asChild>
+                <Link to={'/signin'}>
+                  Login
+                </Link>
               </Button>
             </nav>
           </div>
