@@ -121,7 +121,7 @@ export default function ApproveDocuments() {
       setFinalPath(`/admin/enviar-recusa/${booking.id}`);
     }
 
-  }, [booking]);
+  }, [booking, dependents, guests, children]);
 
   async function handleSubmit() {
     await apiRequest(`/bookings/update-participants/${booking.id}`, {
