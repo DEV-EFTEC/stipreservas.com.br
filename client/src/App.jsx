@@ -756,11 +756,7 @@ export default function UnionBeachHeadquarters() {
                   <div>
                     <h3 className="text-xl font-semibold mb-2">Horário de Atendimento</h3>
                     <p className="text-sky-100">
-                      Segunda a Sexta: 8h às 18h
-                      <br />
-                      Sábados: 8h às 14h
-                      <br />
-                      Domingos e Feriados: Fechado
+                      Segunda a Sexta: 8h às 17h (Sede de Curitiba)
                     </p>
                   </div>
                 </div>
