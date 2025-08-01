@@ -109,7 +109,6 @@ export default function SignIn() {
                         </Alert>
                     )}
                     <Button type="submit" className={"w-full"}>Entrar</Button>
-                    <p className="text-center">Ainda não criou sua conta? <Link to={"/register"} className="underline text-sky-700">Registre-se</Link></p>
                 </form>
             </Form>
             <p className="text-sm text-white text-center">

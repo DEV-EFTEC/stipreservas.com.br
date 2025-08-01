@@ -20,10 +20,16 @@ import { Link } from "react-router-dom"
 import StipLogo from "./assets/StipLogo"
 import SedePraia from "./assets/SedePraia.jpg"
 import SedePraiaFachada from "./assets/SedePraiaFachada.jpg"
+import SedePraiaPanoramica from "./assets/SedePraiaPanoramica.png"
+import SedePraiaAerea from "./assets/SedePraiaAerea.png"
+import SedePraiaEstacionamento from "./assets/SedePraiaEstacionamento.jpg"
+import SedePraiaPiscina from "./assets/SedePraiaPiscina.jpg"
+import ReactPlayer from 'react-player'
 
 export default function UnionBeachHeadquarters() {
   return (
     <div className="flex flex-col min-h-screen bg-zinc-50">
+      {/* Header */}
       <header className="bg-sky-900 text-white shadow-lg">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -31,25 +37,27 @@ export default function UnionBeachHeadquarters() {
               <StipLogo />
             </div>
 
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
               <nav className="flex space-x-6">
-                <Link to="#processo" className="hover:text-sky-200 transition-colors">
+                <a href="#processo" className="hover:text-sky-200 transition-colors">
                   Processo
-                </Link>
-                <Link to="#sorteios" className="hover:text-sky-200 transition-colors">
+                </a>
+                <a href="#sorteios" className="hover:text-sky-200 transition-colors">
                   Sorteios
-                </Link>
-                <Link to="#contato" className="hover:text-sky-200 transition-colors">
+                </a>
+                <a href="#contato" className="hover:text-sky-200 transition-colors">
                   Contato
-                </Link>
+                </a>
               </nav>
               <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold ml-4" size="sm" asChild>
-                <Link to={'/signin'}>
+                <a href={'/signin'}>
                   Entrar
-                </Link>
+                </a>
               </Button>
             </div>
 
+            {/* Mobile Menu Button */}
             <div className="md:hidden">
               <Button
                 variant="ghost"
@@ -67,21 +75,22 @@ export default function UnionBeachHeadquarters() {
             </div>
           </div>
 
+          {/* Mobile Navigation Menu */}
           <div id="mobile-menu" className="hidden md:hidden mt-4 pb-4 border-t border-sky-800">
             <nav className="flex flex-col space-y-3 mt-4">
-              <Link to="#processo" className="hover:text-sky-200 transition-colors py-2">
+              <a href="#processo" className="hover:text-sky-200 transition-colors py-2">
                 Processo
-              </Link>
-              <Link to="#sorteios" className="hover:text-sky-200 transition-colors py-2">
+              </a>
+              <a href="#sorteios" className="hover:text-sky-200 transition-colors py-2">
                 Sorteios
-              </Link>
-              <Link to="#contato" className="hover:text-sky-200 transition-colors py-2">
+              </a>
+              <a href="#contato" className="hover:text-sky-200 transition-colors py-2">
                 Contato
-              </Link>
+              </a>
               <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold mt-4 w-full" size="sm" asChild>
-                <Link to={'/signin'}>
-                  Login
-                </Link>
+                <a href={'/signin'}>
+                  Entrar
+                </a>
               </Button>
             </nav>
           </div>
@@ -89,6 +98,7 @@ export default function UnionBeachHeadquarters() {
       </header>
 
       <main className="flex-1">
+        {/* Hero Section */}
         <section className="bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 text-white py-20">
           <div className="container mx-auto px-4">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -133,6 +143,7 @@ export default function UnionBeachHeadquarters() {
           </div>
         </section>
 
+        {/* Registration Notice */}
         <section className="bg-amber-50 border-l-4 border-amber-400 py-8">
           <div className="container mx-auto px-4">
             <div className="flex items-start space-x-4">
@@ -148,6 +159,7 @@ export default function UnionBeachHeadquarters() {
           </div>
         </section>
 
+        {/* Location Presentation Section */}
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
@@ -165,7 +177,7 @@ export default function UnionBeachHeadquarters() {
                   <div>
                     <h3 className="text-xl font-semibold text-zinc-900 mb-2">Localização Privilegiada</h3>
                     <p className="text-zinc-600 mb-3">
-                      Rua Olinda, 76, Balneário de Shangri-lá
+                      Rua Olinda, 278-344, Balneário de Shangri-lá
                       <br />
                       Pontal do Paraná, PR - CEP: 83255-000
                     </p>
@@ -318,7 +330,7 @@ export default function UnionBeachHeadquarters() {
                       <MapPin className="h-5 w-5 text-sky-900" />
                       <div>
                         <p className="font-semibold text-zinc-900">Endereço Completo:</p>
-                        <p className="text-zinc-600">Rua Olinda, 76, Balneário de Shangri-lá</p>
+                        <p className="text-zinc-600">Rua Olinda, 278-344, Balneário de Shangri-lá</p>
                         <p className="text-zinc-600">Pontal do Paraná, PR - CEP: 83255-000</p>
                       </div>
                     </div>
@@ -342,6 +354,107 @@ export default function UnionBeachHeadquarters() {
           </div>
         </section>
 
+        {/* Photo Gallery Section */}
+        <section className="py-20 bg-zinc-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-4">Galeria</h2>
+              <p className="text-xl text-zinc-600 max-w-3xl mx-auto">
+                Conheça todos os ambientes da nossa sede praia através das nossas fotos
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Main Featured Photo */}
+              <div className="lg:col-span-2 lg:row-span-2">
+                <ReactPlayer
+                  src="https://www.youtube.com/watch?v=8gN8QvMfEEw"
+                  controls
+                  width="100%"
+                  height="100%"
+                />
+              </div>
+
+              {/* Quartos */}
+              <div className="relative group overflow-hidden rounded-lg shadow-lg h-48">
+                <img
+                  src={SedePraiaPiscina}
+                  alt="Piscinas"
+                  width={400}
+                  height={300}
+                  className="w-full h-full object-cover object-[20%_60%] group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-2 left-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h4 className="font-semibold">Piscinas</h4>
+                  <p className="text-xs">Parte externa</p>
+                </div>
+              </div>
+
+              <div className="relative group overflow-hidden rounded-lg shadow-lg h-48">
+                <img
+                  src={SedePraiaFachada}
+                  alt="Fachada"
+                  width={400}
+                  height={300}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-2 left-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h4 className="font-semibold">Fachada Sede Praia</h4>
+                  <p className="text-xs">Parte Externa</p>
+                </div>
+              </div>
+
+              <div className="relative group overflow-hidden rounded-lg shadow-lg h-48">
+                <img
+                  src={SedePraiaEstacionamento}
+                  alt="Estacionamento"
+                  width={400}
+                  height={300}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-2 left-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h4 className="font-semibold">Estacionamento</h4>
+                  <p className="text-xs">Seguro</p>
+                </div>
+              </div>
+
+              <div className="relative group overflow-hidden rounded-lg shadow-lg h-48">
+                <img
+                  src={SedePraiaAerea}
+                  alt="Vista aerea"
+                  width={400}
+                  height={300}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-2 left-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h4 className="font-semibold">Sede por vista aérea</h4>
+                  <p className="text-xs">Parte externa</p>
+                </div>
+              </div>
+
+              <div className="relative group overflow-hidden rounded-lg shadow-lg h-48">
+                <img
+                  src={SedePraiaPanoramica}
+                  alt="Vista panorâmica"
+                  width={400}
+                  height={300}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-2 left-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h4 className="font-semibold">Vista panorâmica</h4>
+                  <p className="text-xs">Apenas 1 quadra de distância da praia</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Process Section */}
         <section id="processo" className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
@@ -475,6 +588,7 @@ export default function UnionBeachHeadquarters() {
           </div>
         </section>
 
+        {/* Raffles Section */}
         <section id="sorteios" className="py-20 bg-gradient-to-r from-amber-50 to-orange-50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -597,6 +711,7 @@ export default function UnionBeachHeadquarters() {
           </div>
         </section>
 
+        {/* Contact Section */}
         <section id="contato" className="py-20 bg-sky-900 text-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -681,6 +796,7 @@ export default function UnionBeachHeadquarters() {
         </section>
       </main>
 
+      {/* Footer */}
       <footer className="bg-zinc-900 text-zinc-300 py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
@@ -696,15 +812,15 @@ export default function UnionBeachHeadquarters() {
             <div>
               <h4 className="text-white font-semibold mb-4">Links Rápidos</h4>
               <div className="space-y-2">
-                <Link to="#processo" className="block hover:text-sky-400 transition-colors">
+                <a href="#processo" className="block hover:text-sky-400 transition-colors">
                   Como Reservar
-                </Link>
-                <Link to="#sorteios" className="block hover:text-sky-400 transition-colors">
+                </a>
+                <a href="#sorteios" className="block hover:text-sky-400 transition-colors">
                   Sorteios
-                </Link>
-                <Link to="#contato" className="block hover:text-sky-400 transition-colors">
+                </a>
+                <a href="#contato" className="block hover:text-sky-400 transition-colors">
                   Contato
-                </Link>
+                </a>
               </div>
             </div>
 
@@ -717,7 +833,7 @@ export default function UnionBeachHeadquarters() {
                 </p>
                 <p className="flex items-center">
                   <MapPin className="h-4 w-4 mr-2" />
-                  Rua Olinda, 76, Balneário de Shangri-lá, Pontal do Paraná - PR
+                  Rua Olinda, 278-344, Balneário de Shangri-lá, Pontal do Paraná - PR
                 </p>
               </div>
             </div>

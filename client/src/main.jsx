@@ -57,6 +57,7 @@ import SendDocumentsAdmin from './pages/admin/SendDocumentsAdmin';
 import GetRoomAdmin from './pages/admin/GetRoomAdmin';
 import FinishBookAdmin from './pages/admin/FinishBookAdmin';
 import BookingSettingsAdmin from './pages/admin/BookingSettingsAdmin';
+import { GenerateRegisterLink } from './pages/admin/GenerateRegisterLink';
 
 let router = createBrowserRouter([
   {
@@ -286,6 +287,20 @@ let router = createBrowserRouter([
   {
     path: "/admin",
     element: <Navigate to="/admin/home" replace />
+  },
+  {
+    path: "/admin/associados/gerar-link",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <AdminSidebar />
+            <AdminSidebarTrigger />
+            <GenerateRegisterLink />
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
   },
   {
     path: "/admin/home",

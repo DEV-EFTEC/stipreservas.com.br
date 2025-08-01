@@ -70,8 +70,8 @@ const data = {
           url: "/admin/associados",
         },
         {
-          title: "Cadastrar",
-          url: "/admin/associados/novo-associado",
+          title: "Gerar link de cadastro",
+          url: "/admin/associados/gerar-link",
         },
         {
           title: "Editar",
