@@ -55,7 +55,7 @@ export function Home() {
           if (ps.id === data.booking_id) {
             return {
               ...ps,
-              status: data.booking.status
+              status: "payment_pending"
             }
           }
 
