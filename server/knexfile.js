@@ -21,8 +21,12 @@ export default {
   production: {
     client: "pg",
     connection: {
-      connectionString: process.env.DATABASE_PUBLIC_URL,
+      connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
+    },
+    pool: {
+      min: 2,
+      max: 10, // ou 15, se o banco permitir
     },
     migrations: {
       directory: "./migrations",

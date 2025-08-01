@@ -1,7 +1,7 @@
 import knex from "knex";
 import knexConfig from "../../knexfile.js";
-
-const db = knex(knexConfig.development);
+const environment = process.env.NODE_ENV || 'development';
+const db = knex(knexConfig[environment]);
 
 function getRandomToneOfColor(hue = 210) {
   const saturation = Math.floor(Math.random() * 20) + 80; // entre 70% e 100%

@@ -69,8 +69,8 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(process.env.API_HTTP_PORT, () => {
+httpServer.listen(process.env.PORT, () => {
   logger.info(
-    `Servidor HTTP+WebSocket rodando em http://localhost:${process.env.API_HTTP_PORT}`
+    `Servidor HTTP+WebSocket rodando em http://localhost:${process.env.PORT}`
   );
 });

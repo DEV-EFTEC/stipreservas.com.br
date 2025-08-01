@@ -18,7 +18,8 @@ cat <<EOF > src/models/${name_lower}Model.js
 // ${name_capitalized} Model
 import knex from 'knex';
 import knexConfig from '../../knexfile.js';
-const db = knex(knexConfig.development);
+const environment = process.env.NODE_ENV || 'development';
+const db = knex(knexConfig[environment]);
 
 export async function findAll${name_capitalized}s() {
   return db('${name_lower}s').select('*');

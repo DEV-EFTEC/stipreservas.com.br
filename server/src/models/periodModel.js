@@ -1,6 +1,7 @@
 import knex from "knex";
 import knexConfig from "../../knexfile.js";
-const db = knex(knexConfig.development);
+const environment = process.env.NODE_ENV || 'development';
+const db = knex(knexConfig[environment]);
 
 export async function getPeriods() {
   return db("high_season_periods").select("*");

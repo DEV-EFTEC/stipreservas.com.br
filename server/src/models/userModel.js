@@ -1,13 +1,23 @@
 import knex from "knex";
 import knexConfig from "../../knexfile.js";
-const db = knex(knexConfig.development);
+const environment = process.env.NODE_ENV || "development";
+const db = knex(knexConfig[environment]);
 
 export async function findUserByCPF(cpf) {
   return db("users").select("*").where({ cpf }).first();
 }
 
-export async function createUser(data) {
-  return db("users").insert(data);
+export async function createUser(data, token) {
+  await db("users").insert(data);
+  return db("registration_tokens").update({ used: true }).where({ token });
+}
+
+export async function registrationLink(data) {
+  return db("registration_tokens").insert(data)
+}
+
+export async function verifyToken(token) {
+    return db("registration_tokens").select().where({ token }).first();
 }
 
 export async function getAllUsers() {

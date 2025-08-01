@@ -1,6 +1,7 @@
 import knex from 'knex';
 import knexConfig from '../../knexfile.js';
-const db = knex(knexConfig.development);
+const environment = process.env.NODE_ENV || 'development';
+const db = knex(knexConfig[environment]);
 
 async function create() {
   await db('rooms').insert([

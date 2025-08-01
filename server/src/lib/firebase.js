@@ -1,15 +1,13 @@
+import 'dotenv/config';
 import logger from "#core/logger.js";
 import { v4 as uuid } from "uuid";
 import { initializeApp, cert } from "firebase-admin/app";
 import { getStorage } from "firebase-admin/storage";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+const firebaseBase64 = process.env.FIREBASE_SERVICE_ACCOUNT;
+const firebaseConfig = JSON.parse(Buffer.from(firebaseBase64, 'base64').toString('utf8'));
 
 initializeApp({
-  credential: cert(serviceAccount),
+  credential: cert(firebaseConfig),
   storageBucket: "stip-reservas.firebasestorage.app",
 });
 

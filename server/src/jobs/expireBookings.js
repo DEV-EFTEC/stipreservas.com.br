@@ -2,9 +2,10 @@ import cron from "node-cron";
 import knex from "knex";
 import knexConfig from "../../knexfile.js";
 
-const db = knex(knexConfig.development);
+const environment = process.env.NODE_ENV || "development";
+const db = knex(knexConfig[environment]);
 
-cron.schedule("*/10 * * * *", async () => {
+cron.schedule("5 */10 * * * *", async () => {
   console.log(
     `\x1b[33m[CRON - status: INCOMPLETE]\x1b[0m${new Date().toISOString()} ~ Verificando reservas expiradas...`
   );
@@ -18,11 +19,15 @@ cron.schedule("*/10 * * * *", async () => {
     const bookingIds = expiredBookings.map((b) => b.id);
 
     if (bookingIds.length) {
-      await db("guests_bookings").whereIn("booking_id", bookingIds).del();
-      await db("dependents_bookings").whereIn("booking_id", bookingIds).del();
-      await db("children_bookings").whereIn("booking_id", bookingIds).del();
-      await db("booking_rooms").whereIn("booking_id", bookingIds).del();
-      await db("bookings").whereIn("id", bookingIds).del();
+      await db.transaction(async (trx) => {
+        await trx("guests_bookings").whereIn("booking_id", bookingIds).del();
+        await trx("dependents_bookings")
+          .whereIn("booking_id", bookingIds)
+          .del();
+        await trx("children_bookings").whereIn("booking_id", bookingIds).del();
+        await trx("booking_rooms").whereIn("booking_id", bookingIds).del();
+        await trx("bookings").whereIn("id", bookingIds).del();
+      });
       console.log(
         `\x1b[33m[CRON - status: INCOMPLETE]\x1b[0m${new Date().toISOString()} = Reservas expiradas removidas.`
       );
@@ -39,7 +44,7 @@ cron.schedule("*/10 * * * *", async () => {
   }
 });
 
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("15 */1 * * * *", async () => {
   console.log(
     `\x1b[33m[CRON - status: PAYMENT_PENDING]\x1b[0m${new Date().toISOString()} ~ Verificando reservas com pendencia de pagamento expiradas...`
   );
@@ -53,11 +58,12 @@ cron.schedule("*/1 * * * *", async () => {
     const bookingIds = expiredBookings.map((b) => b.id);
 
     if (bookingIds.length) {
-      await db("guests_bookings").whereIn("booking_id", bookingIds).del();
-      await db("dependents_bookings").whereIn("booking_id", bookingIds).del();
-      await db("children_bookings").whereIn("booking_id", bookingIds).del();
-      await db("booking_rooms").whereIn("booking_id", bookingIds).del();
-      await db("bookings").whereIn("id", bookingIds).del();
+      await db.transaction(async (trx) => {
+        await trx("bookings")
+          .whereIn("id", bookingIds)
+          .update({ status: "expired", expires_at: "" });
+      });
+
       console.log(
         `\x1b[33m[CRON - status: PAYMENT_PENDING]\x1b[0m${new Date().toISOString()} = Reservas expiradas removidas.`
       );
@@ -74,7 +80,7 @@ cron.schedule("*/1 * * * *", async () => {
   }
 });
 
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("30 */5 * * * *", async () => {
   console.log(
     `\x1b[33m[CRON - status: DECLINED]\x1b[0m${new Date().toISOString()} ~ Verificando reservas com pendencia de pagamento expiradas...`
   );

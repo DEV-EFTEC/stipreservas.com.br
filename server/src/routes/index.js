@@ -10,6 +10,7 @@ import storageRoutes from "./storage.routes.js";
 import periodsRoutes from "./periods.routes.js";
 import drawsRoutes from "./draws.routes.js";
 import calendarRoutes from "./calendar.routes.js";
+import enterprisesRoutes from "./enterprises.routes.js";
 import auth from "#middlewares/auth.js";
 
 export default (app) => {
@@ -25,4 +26,5 @@ export default (app) => {
   app.use("/draws", auth, drawsRoutes);
   app.use("/periods", auth, periodsRoutes);
   app.use("/calendar", auth, calendarRoutes);
+  app.use("/enterprises", enterprisesRoutes);
 };

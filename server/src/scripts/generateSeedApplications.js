@@ -1,9 +1,10 @@
 import "dotenv/config";
 import knex from "knex";
 import knexConfig from "../../knexfile.js";
-const db = knex(knexConfig.development);
 import { faker } from "@faker-js/faker";
 import bcrypt from "bcrypt";
+const environment = process.env.NODE_ENV || 'development';
+const db = knex(knexConfig[environment]);
 
 const SALT_ROUNDS = 12;
 

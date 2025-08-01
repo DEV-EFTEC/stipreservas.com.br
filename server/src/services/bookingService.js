@@ -7,9 +7,7 @@ import * as childrenModel from "#models/childrenModel.js";
 import * as holderModel from "#models/holderModel.js";
 import * as paymentService from "#services/paymentService.js";
 import _ from "lodash";
-import dotenv from "dotenv";
-
-dotenv.config();
+import "dotenv/config";
 
 const resend = new Resend(process.env.RESEND_API);
 
