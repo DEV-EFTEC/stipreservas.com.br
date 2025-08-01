@@ -13,7 +13,7 @@ export async function sendDocument(
   formData.append('documents_association', documentsAssociation);
   formData.append('document_type', documentType);
 
-  const response = await fetch(`http://localhost:3301/storage/send-document`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/storage/send-document`, {
     headers: { 'Authorization': `Bearer ${token}` },
     method: "POST",
     body: formData
