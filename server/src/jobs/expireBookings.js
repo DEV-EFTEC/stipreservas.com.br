@@ -61,7 +61,7 @@ cron.schedule("15 */1 * * * *", async () => {
       await db.transaction(async (trx) => {
         await trx("bookings")
           .whereIn("id", bookingIds)
-          .update({ status: "expired", expires_at: "" });
+          .update({ status: "expired", expires_at: null });
       });
 
       console.log(
