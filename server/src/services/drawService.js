@@ -183,7 +183,7 @@ export async function run(draw_id) {
     await drawModel.updateDrawApply(drawn.id, { status: "drawn" });
 
     await resend.emails.send({
-      from: "STIP reservas <contato@eftrack.com.br>",
+      from: "STIP reservas <info@stip-reservas.com.br>",
       to: "dev@eftecnologia.com",
       subject: "🎉 Você foi contemplado no sorteio!",
       html: `
@@ -288,7 +288,7 @@ export async function run(draw_id) {
   for (const not_drawn of notAllocated) {
     await drawModel.updateDrawApply(not_drawn.id, { status: "not_drawn" });
     await resend.emails.send({
-      from: "STIP reservas <contato@eftrack.com.br>",
+      from: "STIP reservas <info@stip-reservas.com.br>",
       to: "dev@eftecnologia.com",
       subject: "Resultado do sorteio",
       html: `
@@ -469,7 +469,7 @@ export async function rerun(draw_id) {
     await drawModel.updateDrawApply(drawn.id, { status: "drawn" });
 
     await resend.emails.send({
-      from: "STIP reservas <contato@eftrack.com.br>",
+      from: "STIP reservas <info@stip-reservas.com.br>",
       to: "dev@eftecnologia.com",
       subject: "🎉 Você foi contemplado no re-sorteio!",
       html: `
@@ -574,7 +574,7 @@ export async function rerun(draw_id) {
   for (const not_drawn of notAllocated) {
     await drawModel.updateDrawApply(not_drawn.id, { status: "not_drawn" });
     await resend.emails.send({
-      from: "STIP reservas <contato@eftrack.com.br>",
+      from: "STIP reservas <info@stip-reservas.com.br>",
       to: "dev@eftecnologia.com",
       subject: "Resultado do re-sorteio",
       html: `
@@ -811,7 +811,7 @@ export async function approveDraw(id, user_id) {
   const draw = await drawModel.findDrawById(id);
   const user = await userModel.findUserById(user_id);
   const { data, error } = await resend.emails.send({
-    from: "STIP reservas <contato@eftrack.com.br>",
+    from: "STIP reservas <info@stip-reservas.com.br>",
     to: [user.email],
     subject: "Sua inscrição para o sortieo foi aprovada!",
     html: `<!DOCTYPE html>
@@ -923,7 +923,7 @@ export async function refuseDraw(id, user_id, justification) {
   const draw = await drawModel.findDrawById(id);
   const user = await userModel.findUserById(user_id);
   const { data, error } = await resend.emails.send({
-    from: "STIP reservas <contato@eftrack.com.br>",
+    from: "STIP reservas <info@stip-reservas.com.br>",
     to: [user.email],
     subject: "Sua inscrição para o sorteio foi recusada.",
     html: `<!DOCTYPE html>

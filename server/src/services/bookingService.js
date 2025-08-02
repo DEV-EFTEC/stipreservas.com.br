@@ -186,7 +186,7 @@ export async function approveBooking(id, user_id, value) {
   const booking = await bookingModel.findBookingById(id);
   const user = await userModel.findUserById(user_id);
   const { data, error } = await resend.emails.send({
-    from: "STIP reservas <contato@eftrack.com.br>",
+    from: "STIP reservas <info@stip-reservas.com.br>",
     to: [user.email],
     subject: "Sua solicitação de reserva foi aprovada!",
     html: `<!DOCTYPE html>
@@ -287,10 +287,10 @@ export async function approveBooking(id, user_id, value) {
 
   if (data) {
     const booking = await bookingModel.approveBooking(id);
-    const payment = await paymentService.createPayment("payments_bookings", {
+    const payment = await paymentService.createPayment("payments", {
       booking_id: id,
       user_id: user_id,
-      value: value,
+      value: 5.0,
       due_date: booking.expires_at.toISOString().split("T")[0],
     });
 
@@ -304,7 +304,7 @@ export async function refuseBooking(id, user_id, justification) {
   const booking = await bookingModel.findBookingById(id);
   const user = await userModel.findUserById(user_id);
   const { data, error } = await resend.emails.send({
-    from: "STIP reservas <contato@eftrack.com.br>",
+    from: "STIP reservas <info@stip-reservas.com.br>",
     to: [user.email],
     subject: "Sua solicitação de reserva foi recusada",
     html: `<!DOCTYPE html>
