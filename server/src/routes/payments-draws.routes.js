@@ -6,7 +6,6 @@ import * as paymentController from "../controllers/paymentController.js";
 const router = express.Router();
 
 router.post("/", auth, paymentController.createPayment);
-router.post("/booking-paided", paymentAuth, paymentController.bookingPaided);
 router.get("/get-payment", auth, paymentController.findPaymentById);
 router.get("/get-payments", auth, paymentController.findPaymentsByUser);
 router.get(

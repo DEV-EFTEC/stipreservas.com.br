@@ -10,8 +10,10 @@ import storageRoutes from "./storage.routes.js";
 import periodsRoutes from "./periods.routes.js";
 import drawsRoutes from "./draws.routes.js";
 import calendarRoutes from "./calendar.routes.js";
+import webhooksRoutes from "./webhooks.routes.js";
 import enterprisesRoutes from "./enterprises.routes.js";
 import auth from "#middlewares/auth.js";
+import paymentAuth from "#middlewares/payment-auth.js";
 
 export default (app) => {
   app.use("/users", userRoutes);
@@ -27,4 +29,5 @@ export default (app) => {
   app.use("/periods", auth, periodsRoutes);
   app.use("/calendar", auth, calendarRoutes);
   app.use("/enterprises", enterprisesRoutes);
+  app.use("/asaas/webhooks", paymentAuth, webhooksRoutes);
 };
