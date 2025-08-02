@@ -142,19 +142,20 @@ export async function updatePaymentByAsaasPaymentId(id, table, status) {
 
 export async function refundPayment(id, table) {
   try {
-    const { asaas_payment_id, user_id } =
+    const { asaas_payment_id } =
       await paymentModel.findPaymentByBooking(id);
-
-    const refund = await apiAsaas(`/payments/${asaas_payment_id}/refund`, {
-      method: "POST",
-    });
 
     paymentModel.updatePaymentByAsaasPaymentId(asaas_payment_id, table, {
       status_role: "refund_solicitation",
     });
+
     bookingModel.updateBooking(id, { status: "refund_solicitation" });
 
-    return { ...refund, user_id };
+    const asaas = await apiAsaas(`/payments/${asaas_payment_id}/refund`, {
+      method: "POST",
+    });
+
+    return { booking_id: id, status: 'refund_solicitation', asaas };
   } catch (err) {
     return logger.error(err);
   }
