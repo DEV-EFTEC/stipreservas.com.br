@@ -1,10 +1,12 @@
 import * as paymentService from "#services/paymentService.js";
-import * as bookingService from "../services/bookingService.js";
 import logger from "#core/logger.js";
 
 export async function createPayment(req, res) {
   try {
-    const result = await paymentService.createPayment(req.body);
+    const result = await paymentService.createPayment(
+      "payments-bookings",
+      req.body
+    );
     res.status(201).json(result);
   } catch (err) {
     logger.error("Error on createPayment", { err });
@@ -102,59 +104,13 @@ export async function drawPaided(req, res) {
   }
 }
 
-export async function bookingPaided(req, res) {
-  const { body } = req;
-
-  try {
-    const payment = await paymentService.updatePaymentByAsaasPaymentId(
-      body.payment.id,
-      "payments_bookings",
-      { status_role: body.payment.status === "RECEIVED" && "paid" }
-    );
-
-    const booking = await bookingService.updateBooking({
-      id: payment.booking_id,
-      status: "approved",
-    });
-
-    const io = req.app.get("io");
-
-    const message = {
-      paymentId: body.payment.id,
-      booking,
-      userId: payment.user_id,
-      customer: body.payment.customer,
-      status: body.payment.status,
-    };
-
-    io.to(`user:${payment.user_id}`).emit("payment:confirmed", message);
-    io.to("admin").emit("admin:payment:confirmed", message);
-
-    res.status(200).json(message);
-  } catch (err) {
-    logger.error("Error on bookingPaided", { err });
-    res.status(500).json({ error: "Erro em bookingPaided" });
-  }
-}
-
 export async function refund(req, res) {
   const { booking_id } = req.body;
 
-  const io = req.app.get("io");
-
   try {
-    const refund = await paymentService.refundPayment(booking_id);
+    const refund = await paymentService.refundPayment(booking_id, "payments");
 
-    const message = {
-      ...refund,
-      booking_id,
-      booking_status: 'refunded'
-    };
-
-    io.to(`user:${refund.user_id}`).emit("payment:refused", message);
-    io.to("admin").emit("admin:payment:refused", message);
-
-    res.status(200).json(message);
+    res.status(200).json(refund);
   } catch (err) {
     logger.error("Error on refundPayment", { err });
     res.status(500).json({ error: "Erro em refundPayment" });
