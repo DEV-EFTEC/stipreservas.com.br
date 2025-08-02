@@ -60,14 +60,10 @@ async function createPaymentLink(
 
     paymentModel.createPayment(table, mock);
 
-    console.log({
-      table
-    })
-
     return id;
   } catch (err) {
     logger.error(err);
-    throw err; // ou return { error: true, message: err.message }
+    throw err;
   }
 }
 
