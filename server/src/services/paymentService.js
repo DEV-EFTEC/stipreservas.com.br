@@ -40,7 +40,7 @@ async function createPaymentLink(
     });
 
     const mock =
-      table === "payments_bookings"
+      table === "payments"
         ? {
             asaas_customer_id: customer_id,
             price: value,

@@ -4,7 +4,7 @@ const environment = process.env.NODE_ENV || 'development';
 const db = knex(knexConfig[environment]);
 
 export async function findPaymentById(id) {
-  return db("payments_bookings").where({ id }).select("*").first();
+  return db("payments").where({ id }).select("*").first();
 }
 
 export async function findPaymentsByUser(created_by, table) {
@@ -12,7 +12,7 @@ export async function findPaymentsByUser(created_by, table) {
 }
 
 export async function findPaymentByBooking(booking_id) {
-  return db("payments_bookings").where({ booking_id }).select("*").first();
+  return db("payments").where({ booking_id }).select("*").first();
 }
 
 export async function findPaymentByDraw(draw_apply_id) {
