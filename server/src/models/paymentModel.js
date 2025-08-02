@@ -36,7 +36,7 @@ export async function updatePaymentStatus(id, table, status) {
 
 export async function updatePaymentByAsaasPaymentId(id, table, status) {
   const [updated] = await db(table)
-    .where({ asaas_payment_id: id })
+    .where("asaas_payment_id", "=", id)
     .update(status)
     .returning("*");
 
