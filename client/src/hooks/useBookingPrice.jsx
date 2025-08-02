@@ -21,8 +21,6 @@ function getDateRange(startDate, endDate) {
 function calculateTotalPrice(booking) {
   if (!booking || !booking.rooms?.length) return 0;
 
-  console.log({ booking })
-
   let total = 0;
   const roomOccupancy = {};
 

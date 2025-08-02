@@ -98,7 +98,6 @@ export default function BookingDetails() {
         });
 
         setIsHighSeason(is_high_period);
-        console.log(is_high_period)
 
         const now = new Date();
         const checkIn = new Date(booking.check_in);
@@ -164,7 +163,7 @@ export default function BookingDetails() {
     const response = await apiRequest(`/payments-bookings/refund`, {
       method: "POST",
       body: JSON.stringify({
-        booking_id: booking_id
+        booking_id: booking.id
       })
     });
     if (response) {

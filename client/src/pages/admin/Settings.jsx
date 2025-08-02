@@ -43,7 +43,6 @@ export default function Settings() {
     })
 
     if (result) {
-      console.log(result)
       setSeasons(prevState => [result, ...prevState]);
       toast.success("Período adicionado com sucesso");
       setSeasonLoading(false);

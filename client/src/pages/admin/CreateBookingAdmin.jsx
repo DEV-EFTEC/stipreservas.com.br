@@ -112,7 +112,7 @@ export default function CreateBookingAdmin() {
       }
     } catch (err) {
       toast.error(err)
-      console.log(err)
+      console.error(err)
     }
   }
 

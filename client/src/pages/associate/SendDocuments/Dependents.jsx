@@ -59,7 +59,6 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction onClick={() => {
-                  console.log("Dependentes selecionados:", selectedDependents);
                   setDependents(prevState => [...prevState, ...selectedDependents])
                 }}>Continuar</AlertDialogAction>
               </AlertDialogFooter>

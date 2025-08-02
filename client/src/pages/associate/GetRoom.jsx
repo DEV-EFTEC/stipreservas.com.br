@@ -34,7 +34,6 @@ export default function GetRoom() {
           const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}&booking_id=${booking.id}`);
           setRooms(response);
         })()
-        console.log('no has room')
       } else {
         const qtd = (booking.partner_presence ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity;
         setPeopleCapacity(qtd);
@@ -53,7 +52,6 @@ export default function GetRoom() {
           setIsUpdate(true);
         })()
 
-        console.log('has room')
       }
     }
   }, [booking])

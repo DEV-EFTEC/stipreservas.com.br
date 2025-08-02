@@ -36,7 +36,6 @@ export function SocketProvider({ children }) {
     });
 
     newSocket.on("admin:payment:confirmed", (data) => {
-      console.log(data)
       toast.success("Pagamento confirmado!", {
         description: `A reserva ${data.booking.id} teve o pagamento confirmado.`
       });

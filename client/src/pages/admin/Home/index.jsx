@@ -28,7 +28,6 @@ export function Home() {
     });
 
     socket.on("admin:payment:confirmed", (data) => {
-      console.log({home: data})
       setBookings(prevState => {
         const newBookings = prevState.map(ps => {
           if (ps.id === data.booking.id) {

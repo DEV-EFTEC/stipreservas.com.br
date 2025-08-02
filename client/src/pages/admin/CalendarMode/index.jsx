@@ -64,9 +64,6 @@ export function CalendarMode() {
             borderLeftWidth: itemContext.selected ? 3 : 1,
             borderRightWidth: itemContext.selected ? 3 : 1
           },
-          onMouseDown: () => {
-            console.log("on item click", item);
-          }
         })}
       >
         {itemContext.useResizeHandle ? <div {...leftResizeProps} /> : null}
