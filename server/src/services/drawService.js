@@ -174,7 +174,6 @@ export async function run(draw_id) {
         user_name: name,
         user_email: email,
       });
-      console.log(`❌ ${application.created_by} não conseguiu ser alocado.`);
     }
   }
 
@@ -461,7 +460,6 @@ export async function rerun(draw_id) {
         user_name: name,
         user_email: email,
       });
-      console.log(`❌ ${application.created_by} não conseguiu ser alocado.`);
     }
   }
 

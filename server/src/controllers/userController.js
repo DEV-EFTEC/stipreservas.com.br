@@ -38,7 +38,6 @@ export async function register(req, res) {
 
 export async function registrationLink(req, res) {
   try {
-    console.log(req.user);
     if (req.user.role !== "admin") {
       res.status(401).json({ message: "Unauthorized" });
     }

@@ -81,8 +81,11 @@ export async function createPayment(table, mock) {
   const { booking_id, user_id, value, due_date } = mock;
   const user = await paymentModel.findCustomerIdByUser(user_id);
 
+  console.log("===========")
+  console.log(user)
+
   try {
-    if (user.asaas_customer_id.length > 0) {
+    if (user.asaas_customer_id && user.asaas_customer_id.trim() !== "") {
       const payment_id = await createPaymentLink(
         user.asaas_customer_id,
         value,
