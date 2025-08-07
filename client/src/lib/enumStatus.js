@@ -12,4 +12,5 @@ export const enumStatus = {
   "drawn": "Sorteado",
   "not_drawn": "Não sorteado",
   "awaiting_draw": "Aguardando sorteio",
+  "awaiting_invites": "Aguardando convites",
 }

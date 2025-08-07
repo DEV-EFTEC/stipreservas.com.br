@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api";
-import { differenceInDays, format } from "date-fns";
+import { addDays, differenceInDays, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/hooks/useSocket";
@@ -49,8 +49,8 @@ export default function FinishBook() {
       method: "POST",
       body: JSON.stringify({
         id: booking_id,
-        status: "pending_approval",
-        expires_at: null
+        status: "awaiting_invites",
+        expires_at: addDays(new Date(), 1)
       })
     });
 
@@ -214,6 +214,7 @@ export default function FinishBook() {
                                   associationId={user.id}
                                   documentType={'documento_com_foto'}
                                   documentsAssociation={'dependents'}
+                                  allowEdit={false}
                                   userId={user.id}
                                   value={dep ? dep.url_document_picture : ""}
                                 />
@@ -224,6 +225,7 @@ export default function FinishBook() {
                                     label="Documento comprobatório"
                                     id={"dep_url_medical_report" + index}
                                     associationId={user.id}
+                                    allowEdit={false}
                                     documentType={'doc_comprobatorio'}
                                     documentsAssociation={'dependents'}
                                     userId={user.id}
@@ -267,6 +269,7 @@ export default function FinishBook() {
                                   associationId={user.id}
                                   documentType={'documento_com_foto'}
                                   documentsAssociation={'guests'}
+                                  allowEdit={false}
                                   userId={user.id}
                                   value={gue ? gue.url_document_picture : ""}
                                 />
@@ -280,6 +283,7 @@ export default function FinishBook() {
                                   associationId={user.id}
                                   documentType={'doc_comprobatorio'}
                                   documentsAssociation={'guests'}
+                                  allowEdit={false}
                                   userId={user.id}
                                   value={gue ? gue.url_medical_report : ""}
                                 />
@@ -319,6 +323,7 @@ export default function FinishBook() {
                                   id={"chi_picture" + index}
                                   associationId={user.id}
                                   documentType={'documento_com_foto'}
+                                  allowEdit={false}
                                   documentsAssociation={'children'}
                                   userId={user.id}
                                   value={chi ? chi.url_document_picture : ""}
@@ -332,10 +337,52 @@ export default function FinishBook() {
                                     associationId={user.id}
                                     documentType={'doc_comprobatorio'}
                                     documentsAssociation={'children'}
+                                    allowEdit={false}
                                     userId={user.id}
                                     value={chi ? chi.url_medical_report : ""}
                                   />
                                 }
+                              </CardContent>
+                            </Card>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  }
+                  {
+                    booking.associates.length > 0
+                    &&
+                    <div className="mt-5">
+                      <p className="font-medium text-slate-500 mb-1">Outros associados ({booking.associates.length})</p>
+                      <div className="flex-col space-y-4">
+                        {
+                          booking.associates.map((asc, index) => (
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className={'flex items-center gap-4'}>
+                                  {asc.name}
+                                  <Badge variant={'cpf_details'}>CPF {asc.cpf}</Badge>
+                                  {
+                                    asc.disability
+                                    &&
+                                    <Badge variant="preferential">
+                                      Preferêncial
+                                    </Badge>
+                                  }
+                                  <Badge variant={'secondary'}>Data de nascimento: {format(asc.birth_date, 'dd/MM/yyyy')}</Badge>
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className={'flex justify-between'}>
+                                <FileUploadBlock
+                                  label="Documento com foto"
+                                  id={"asc_picture" + index}
+                                  associationId={user.id}
+                                  documentType={'documento_com_foto'}
+                                  documentsAssociation={'associates'}
+                                  allowEdit={false}
+                                  userId={user.id}
+                                  value={asc ? asc.url_document_picture : ""}
+                                />
                               </CardContent>
                             </Card>
                           ))
@@ -362,11 +409,11 @@ export default function FinishBook() {
                 </Card>
                 {
                   booking.status === 'incomplete' ||
-                  booking.status === 'refused'
-                  ?
-                  <Button className={'mt-4 w-full'} onClick={handleSubmit} variant={'positive'}>Finalizar reserva<Check /></Button>
-                  :
-                  <></>
+                    booking.status === 'refused'
+                    ?
+                    <Button className={'mt-4 w-full'} onClick={handleSubmit} variant={'positive'}>Finalizar reserva<Check /></Button>
+                    :
+                    <></>
                 }
               </div>
             </div>

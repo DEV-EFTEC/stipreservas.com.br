@@ -26,7 +26,7 @@ export default function DatePickerWithRange({ className, date, setDate, associat
   const anoLiberado = liberaMesSeguinte && month === 11 ? year + 1 : year;
 
   const inicioMesLiberado = new Date(anoLiberado, mesLiberado, 1);
-  const dataMinima = addDays(inicioMesLiberado, 7);
+  const dataMinima = addDays(today, 7);
   const dataMaxima = endOfMonth(inicioMesLiberado);
   const defaultMonth = inicioMesLiberado;
 

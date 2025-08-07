@@ -101,7 +101,7 @@ export function Home() {
           });
           setBookings(result.data);
           setPaginationData(result.pagination);
-        } else {
+        } else if (option === "draw_applies") {
           const result = await apiRequest(`/draws/get-draws-applications?user_id=${user.id}&page=${page}&limit=${limit}`, {
             method: "GET"
           });
@@ -157,6 +157,7 @@ export function Home() {
         <TabsList className={'w-full'}>
           <TabsTrigger value="bookings">Reservas</TabsTrigger>
           <TabsTrigger value="draw_applies">Sorteios</TabsTrigger>
+          <TabsTrigger value="invites">Convites</TabsTrigger>
         </TabsList>
         <TabsContent value="bookings">
           <DataTable
@@ -176,6 +177,26 @@ export function Home() {
           />
         </TabsContent>
         <TabsContent value="draw_applies">
+          {
+            draws &&
+            <DataTable
+              columns={columns}
+              data={draws}
+              nextPage={() => setPage(prevState => prevState + 1)}
+              previousPage={
+                () => setPage(prevState => {
+                  if (prevState > 1) {
+                    return prevState - 1
+                  } else {
+                    return 1
+                  }
+                })
+              }
+              pagination={paginationData}
+            />
+          }
+        </TabsContent>
+        <TabsContent value="invites">
           {
             draws &&
             <DataTable

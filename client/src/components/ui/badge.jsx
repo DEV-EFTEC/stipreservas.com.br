@@ -57,6 +57,12 @@ const badgeVariants = cva(
           "border-transparent bg-red-800 text-white [a&]:hover:bg-secondary/90",
         awaiting_draw:
           "border-transparent bg-zinc-400 text-white [a&]:hover:bg-secondary/90",
+        awaiting_invites:
+          "border-transparent bg-indigo-400 text-white [a&]:hover:bg-secondary/90",
+        local:
+          "border-transparent bg-amber-800 text-white [a&]:hover:bg-secondary/90",
+        admin:
+          "border-transparent bg-sky-900 text-white [a&]:hover:bg-secondary/90",
       },
     },
     defaultVariants: {

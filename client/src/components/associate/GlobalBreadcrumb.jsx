@@ -6,6 +6,14 @@ import {
   BreadcrumbSeparator
 } from "../ui/breadcrumb";
 import { Slash } from "lucide-react";
+import { enumRoutes } from "@/lib/enumRoutes";
+
+function toTitleCase(str) {
+  return str
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 export default function GlobalBreadcrumb() {
   const location = useLocation();
@@ -14,11 +22,6 @@ export default function GlobalBreadcrumb() {
 
   return (
     <Breadcrumb className="w-full flex space-x-4 py-4">
-      <BreadcrumbItem>
-        <BreadcrumbLink asChild>
-          <Link to="/associado/home">Início</Link>
-        </BreadcrumbLink>
-      </BreadcrumbItem>
 
       {pathnames.map((value, index) => {
         const to = `/${pathnames.slice(0, index + 1).join("/")}`;
@@ -27,16 +30,18 @@ export default function GlobalBreadcrumb() {
 
         return (
           <div key={to} className="flex items-center space-x-4">
-            <BreadcrumbSeparator />
+            {index > 0 && <BreadcrumbSeparator />}
             <BreadcrumbItem>
               {isLast ? (
-                <BreadcrumbLink isCurrentPage asChild className={"text-sky-700"}>
-                  <span className="capitalize">{decodeURIComponent(value).replace("-", " ")}</span>
+                <BreadcrumbLink isCurrentPage asChild className="text-sky-700">
+                  <span className="capitalize">
+                    {enumRoutes[value] || toTitleCase(decodeURIComponent(value))}
+                  </span>
                 </BreadcrumbLink>
               ) : (
                 <BreadcrumbLink asChild>
                   <Link to={to} className="capitalize">
-                    {decodeURIComponent(value).replace("-", " ")}
+                    {enumRoutes[value] || toTitleCase(decodeURIComponent(value))}
                   </Link>
                 </BreadcrumbLink>
               )}

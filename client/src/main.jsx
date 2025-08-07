@@ -58,6 +58,7 @@ import GetRoomAdmin from './pages/admin/GetRoomAdmin';
 import FinishBookAdmin from './pages/admin/FinishBookAdmin';
 import BookingSettingsAdmin from './pages/admin/BookingSettingsAdmin';
 import { GenerateRegisterLink } from './pages/admin/GenerateRegisterLink';
+import { CreateSystemUser } from './pages/admin/CreateSystemUser';
 
 let router = createBrowserRouter([
   {
@@ -429,7 +430,7 @@ let router = createBrowserRouter([
     )
   },
   {
-    path: "/admin/config",
+    path: "/admin/sistema/configuracoes",
     element: (
       <ProtectedRoute role={"admin"}>
         <SocketProvider>
@@ -606,6 +607,22 @@ let router = createBrowserRouter([
               <AdminSidebar />
               <AdminSidebarTrigger />
               <BookingSettingsAdmin />
+            </BookingProvider>
+          </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/admin/sistema/criar-usuario",
+    element: (
+      <ProtectedRoute role={"admin"}>
+        <SocketProvider>
+          <AdminSidebarProvider>
+            <BookingProvider>
+              <AdminSidebar />
+              <AdminSidebarTrigger />
+              <CreateSystemUser />
             </BookingProvider>
           </AdminSidebarProvider>
         </SocketProvider>

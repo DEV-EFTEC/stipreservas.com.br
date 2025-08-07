@@ -195,6 +195,7 @@ export default function BookingDetails() {
       ${booking.dependents.map(dep => mapPerson(dep, 'Dependente')).join('')}
       ${booking.guests.map(gue => mapPerson(gue, 'Convidado')).join('')}
       ${booking.children.map(chi => mapPerson(chi, 'Criança')).join('')}
+      ${booking.associates.map(chi => mapPerson(chi, 'Outros associados')).join('')}
     `;
     };
 
@@ -330,7 +331,7 @@ export default function BookingDetails() {
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Diária(s)</p>
-                    <Badge variant="secondary" className={'w-full'}>{eachDayOfInterval({start: new Date(booking.check_out), end: new Date(booking.check_in)}).length} dia(s)</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length} dia(s)</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Quarto(s)</p>
@@ -555,6 +556,47 @@ export default function BookingDetails() {
                                     value={chi ? chi.url_medical_report : ""}
                                   />
                                 }
+                              </CardContent>
+                            </Card>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  }
+                  {
+                    booking.associates.length > 0
+                    &&
+                    <div className="mt-5">
+                      <p className="font-medium text-slate-500 mb-1">Outros associados ({booking.associates.length})</p>
+                      <div className="flex-col space-y-4">
+                        {
+                          booking.associates.map((associates, index) => (
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className={'flex items-center gap-4'}>
+                                  {associates.name}
+                                  <Badge variant={'cpf_details'}>CPF {associates.cpf}</Badge>
+                                  {
+                                    associates.disability
+                                    &&
+                                    <Badge variant="preferential">
+                                      Preferêncial
+                                    </Badge>
+                                  }
+                                  <Badge variant={'secondary'}>Data de nascimento: {format(associates.birth_date, 'dd/MM/yyyy')}</Badge>
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className={'flex justify-between'}>
+                                <FileUploadBlock
+                                  label="Documento com foto"
+                                  id={"associates_picture" + index}
+                                  associationId={user.id}
+                                  documentType={'documento_com_foto'}
+                                  documentsAssociation={'associates'}
+                                  userId={user.id}
+                                  allowEdit={false}
+                                  value={associates ? associates.url_document_picture : ""}
+                                />
                               </CardContent>
                             </Card>
                           ))

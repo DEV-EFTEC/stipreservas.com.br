@@ -17,6 +17,12 @@ import { useNavigate } from "react-router-dom";
 import Dependents from "./Dependents";
 import Guests from "./Guests";
 import Children from "./Children";
+import LabeledInput from "@/components/LabeledInput";
+import { UserRound } from "lucide-react";
+import DatePickerBirth from "@/components/DatePickerBirth";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function SendDocuments() {
   const { user } = useAuth();
@@ -28,6 +34,8 @@ export default function SendDocuments() {
   const [selectedDependents, setSelectedDependents] = useState([]);
   const [selectedGuests, setSelectedGuests] = useState([]);
   const [selectedChildren, setSelectedChildren] = useState([]);
+  const [selectedAssociates, setSelectedAssociates] = useState([]);
+  const [cpf, setCpf] = useState();
 
   const {
     list: dependents,
@@ -61,6 +69,24 @@ export default function SendDocuments() {
 
     fetchData();
   }, []);
+
+  async function searchUser() {
+    try {
+      const result = await apiRequest("/users/find-user-by-cpf", {
+        method: "POST",
+        body: JSON.stringify({
+          cpf: cpf
+        })
+      });
+
+      if (result) {
+        setSelectedAssociates(prevState => [result, ...prevState]);
+      }
+    } catch (err) {
+      toast.error(err.error)
+      console.error(err)
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -96,6 +122,17 @@ export default function SendDocuments() {
         dependents: dependents.map(({ id }) => ({ dependent_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
         guests: guests.map(({ id }) => ({ guest_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
         children: children.map(({ id }) => ({ child_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
+        associates: selectedAssociates.map(({ id }) => ({
+          associate_booking: {
+            associate_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out
+          },
+          associate_booking_invite: {
+            booking_id: booking.id,
+            associate_invited_id: id,
+            created_by: user.id,
+            status: 'pending'
+          }
+        })),
         holders: []
       })
     });
@@ -112,7 +149,7 @@ export default function SendDocuments() {
       })
     });
 
-    saveBooking({...booking, ...result});
+    saveBooking({ ...booking, ...result, associates_quantity: selectedAssociates.length });
     navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/escolher-quarto`);
   }
 
@@ -251,7 +288,79 @@ export default function SendDocuments() {
                 saveEntity={saveEntity}
                 deleteEntity={deleteEntity}
               />
-
+              <hr className="my-14" />
+              <div className="w-full flex justify-between flex-col">
+                <Text heading="h2">Outros associados</Text>
+                <div className="flex w-fit space-x-4">
+                  <Input onChange={(e) => setCpf(e.target.value)} placeholder="Digite o CPF do associado" />
+                  <Button onClick={searchUser}>Procurar</Button>
+                </div>
+                {
+                  selectedAssociates.length > 0
+                  &&
+                  <>
+                    <div className="flex flex-col gap-8 mt-4">
+                      {selectedAssociates.map((asc, index) => (
+                        <Card className="w-fit">
+                          <CardContent>
+                            <header className="flex w-full justify-between items-center">
+                              <div className="flex items-center gap-2 mb-4">
+                                <UserRound strokeWidth={3} className="text-blue-500" width={20} />
+                                <Text heading={'h3'}>{asc.name ? asc.name : `Criança ${index + 1}`}</Text>
+                                <Badge variant="">#{asc.id?.slice(0, 8)}</Badge>
+                              </div>
+                            </header>
+                            <div className="flex flex-col gap-8 mb-8">
+                              <div className="flex gap-15">
+                                <LabeledInput
+                                  label={"Nome"}
+                                  onChange={(e) => updateChild(index, "name", e.target.value)}
+                                  value={asc.name}
+                                  disabled
+                                  id={"asc_name" + index}
+                                  key={"asc_name" + index} />
+                                <LabeledInput
+                                  label={"CPF"}
+                                  disabled
+                                  onChange={(e) => {
+                                    const value = maskCPF(e.target.value);
+                                    updateChild(index, "cpf", value);
+                                    return value;
+                                  }}
+                                  value={asc.cpf}
+                                  id={"asc_cpf" + index}
+                                  key={"asc_cpf" + index} />
+                              </div>
+                              <div className="flex gap-15">
+                                <div className="flex flex-col w-80 gap-2">
+                                  <Label>Data de Nascimento</Label>
+                                  <DatePickerBirth
+                                    date={new Date(asc.birth_date || '2000-01-01')}
+                                    setDate={(newDate) => updateChild(index, "birth_date", newDate)}
+                                    isChild={true}
+                                  />
+                                </div>
+                                <FileUploadBlock
+                                  label="Documento com foto"
+                                  id={"asc_picture" + index}
+                                  associationId={user.id}
+                                  documentType={'documento_com_foto'}
+                                  documentsAssociation={'children'}
+                                  userId={user.id}
+                                  allowEdit={false}
+                                  setFile={(url) => updateChild(index, "url_document_picture", url)}
+                                  value={asc ? asc.url_document_picture : ""}
+                                />
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))
+                      }
+                    </div>
+                  </>
+                }
+              </div>
             </>
           }
         </section>

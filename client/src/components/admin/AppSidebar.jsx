@@ -2,24 +2,13 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
   PartyPopper,
-  PieChart,
-  Plus,
-  Settings,
-  Settings2,
+  Shield,
   SquareTerminal,
   Users,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
-import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
 import {
   Sidebar,
@@ -31,7 +20,6 @@ import {
 import logo from "../../assets/stip-logo.svg"
 import { useAuth } from "@/hooks/useAuth"
 
-// This is sample data.
 const data = {
   user: {
     name: "shadcn",
@@ -45,10 +33,10 @@ const data = {
       icon: SquareTerminal,
       isActive: true,
       items: [
-        {
-          title: "Ver todas",
-          url: "/admin/solicitacoes",
-        },
+        // {
+        //   title: "Ver todas",
+        //   url: "/admin/solicitacoes",
+        // },
         {
           title: "Criar solicitação",
           url: "/admin/criar-reserva",
@@ -99,12 +87,21 @@ const data = {
         },
       ],
     },
-  ],
-  projects: [
     {
-      name: "Configurações",
-      url: "/admin/config",
-      icon: Settings,
+      title: "Sistema",
+      url: "/admin/sistema",
+      icon: Shield,
+      isActive: true,
+      items: [
+        {
+          title: "Criar novo usuário",
+          url: "/admin/sistema/criar-usuario",
+        },
+        {
+          title: "Configurações",
+          url: "/admin/sistema/configuracoes"
+        }
+      ],
     },
   ],
 }
@@ -118,7 +115,6 @@ export function AppSidebar({ ...props }) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

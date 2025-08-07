@@ -26,9 +26,10 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useBooking } from "@/hooks/useBooking";
+import { FileUploadBlock } from "@/components/FileUploadBlock";
 
 export default function CreateBooking() {
-  const { user, loading } = useAuth();
+  const { user, loading, login } = useAuth();
   const { saveBooking } = useBooking();
   const navigate = useNavigate();
   const [date, setDate] = useState({
@@ -36,6 +37,7 @@ export default function CreateBooking() {
     to: null,
   });
   const [partnerPresence, setPartnerPresence] = useState(true);
+  const [userNewPicture, setUserNewPicture] = useState(null);
 
   const formSchema = z.object({
     name: z.string(),
@@ -48,6 +50,8 @@ export default function CreateBooking() {
     defaultValues: {
       name: user.name,
       cpf: user.cpf,
+      cnpj: user.enterprise.cnpj,
+      enterprise_name: user.enterprise.name,
       associate_role: user.associate_role,
     }
   });
@@ -56,6 +60,8 @@ export default function CreateBooking() {
     delete values.associate_role;
     delete values.cpf;
     delete values.name;
+    delete values.cnpj;
+    delete values.enterprise_name;
     values.created_by = user.id;
     const result = await apiRequest("/bookings", {
       method: "POST",
@@ -80,10 +86,22 @@ export default function CreateBooking() {
           ],
           dependents: [],
           guests: [],
-          children: []
+          children: [],
+          associates: []
         })
       });
-      saveBooking({ ...result, holders });
+
+      if (userNewPicture) {
+        const result = await apiRequest(`/users/update-user/${user.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            url_document_picture: userNewPicture
+          })
+        });
+        login(result)
+      }
+
+      saveBooking({ ...result, holders, associates: [] });
       navigate(`/associado/criar-reserva/${result.id.slice(0, 8)}/enviar-documentos`);
     }
   }
@@ -125,6 +143,45 @@ export default function CreateBooking() {
                           <FormLabel>CPF</FormLabel>
                           <FormControl>
                             <Input placeholder={user.cpf} {...field} disabled />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FileUploadBlock
+                      label="Documento com foto"
+                      id="document_picture"
+                      associationId={user.id}
+                      documentType={'document_picture'}
+                      documentsAssociation={'holder'}
+                      userId={user.id}
+                      key={'document_picture_sender'}
+                      setFile={(url) => setUserNewPicture(url)}
+                      value={!userNewPicture ? user.url_document_picture : userNewPicture}
+                    />
+                  </div>
+                  <div className="flex justify-between space-y-4 flex-wrap sm:flex-nowrap sm:space-y-0 sm:space-x-4">
+                    <FormField
+                      control={form.control}
+                      name="cnpj"
+                      render={({ field }) => (
+                        <FormItem className={"w-full"}>
+                          <FormLabel>CNPJ empregador</FormLabel>
+                          <FormControl>
+                            <Input placeholder={user.enterprise.cnpj} {...field} disabled />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="enterprise_name"
+                      render={({ field }) => (
+                        <FormItem className={"w-full"}>
+                          <FormLabel>Razão social</FormLabel>
+                          <FormControl>
+                            <Input placeholder={user.enterprise.name} {...field} disabled />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

@@ -1,7 +1,7 @@
 import { Card, CardContent } from "./ui/card";
 import Text from "./Text";
 import { Banknote, BedDouble, Calendar, CalendarRange, ChevronRight, Menu, UsersRound, XIcon } from "lucide-react";
-import { differenceInDays, format, interval, intlFormatDistance } from "date-fns";
+import { differenceInDays, eachDayOfInterval, format, interval, intlFormatDistance } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useBooking } from "@/hooks/useBooking";
 import { Button } from "./ui/button";
@@ -17,6 +17,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import { rangeIncludesDate } from "react-day-picker";
 
 function Summary() {
   const { booking } = useBooking();
@@ -51,7 +52,7 @@ function Summary() {
                       <>
                         <Text heading={"small"}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Text>
                         <Text heading={"small"}>{format(booking.check_out, "d 'de' MMMM (ccc)", { locale: ptBR })}</Text>
-                        <Text heading={"small"}>Total de {differenceInDays(booking.check_out, booking.check_in) === 0 ? 1 : differenceInDays(booking.check_out, booking.check_in)} dia(s)</Text>
+                        <Text heading={"small"}>Total de {eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length} dia(s)</Text>
                       </>
                       :
                       <Text heading={"small"}>A definir</Text>
@@ -73,7 +74,7 @@ function Summary() {
                         <Text heading={"small"}>{booking.dependents_quantity}x Dependente(s)</Text>
                         <Text heading={"small"}>{booking.guests_quantity}x Convidado(s)</Text>
                         <Text heading={"small"}>{booking.children_age_max_quantity}x Criança(s)</Text>
-                        <Text heading={"small"}>Total de {(booking.partner_presence === true ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity + booking.children_age_max_quantity} pessoas</Text>
+                        <Text heading={"small"}>Total de {(booking.partner_presence === true ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity + booking.children_age_max_quantity + (booking.associates_quantity || 0)} pessoas</Text>
                       </>
                       :
                       <Text heading={"small"}>A definir</Text>

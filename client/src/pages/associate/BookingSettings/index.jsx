@@ -50,6 +50,7 @@ export default function BookingSettings() {
         children: booking.children.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
         dependents: booking.dependents.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
         guests: booking.guests.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
+        associates: booking.associates.map(({ id, check_in, check_out, room_id }) => ({ associate_booking: { id, check_in, check_out, room_id } })),
       })
     })
     if (response) {
@@ -60,9 +61,9 @@ export default function BookingSettings() {
   function getRoomOccupancy(booking) {
     const allPeople = [
       ...booking.holders,
-      ...booking.children,
       ...booking.dependents,
-      ...booking.guests
+      ...booking.guests,
+      ...booking.associates,
     ];
 
     const occupancy = {};
@@ -266,7 +267,7 @@ export default function BookingSettings() {
                 title="Crianças"
                 people={booking.children}
                 rooms={booking.rooms}
-                tooltip={'Crianças menores que 5 anos podem dormir no mesmo quarto. Caso seja necessário, poderá levar um colchão'}
+                tooltip={'Crianças menores que 5 anos não são contabilizadas na ocupação do quarto. Recomenda-se, caso necessário, levar colchão a parte.'}
                 onChangeRoom={(id, value) => {
                   setBooking(prev => ({
                     ...prev,
@@ -302,6 +303,50 @@ export default function BookingSettings() {
                         };
                       }
                       return c;
+                    })
+                  }));
+                }}
+              />
+
+              <BookingTable
+                title="Outros associados"
+                people={booking.associates}
+                rooms={booking.rooms}
+                onChangeRoom={(id, value) => {
+                  setBooking(prev => ({
+                    ...prev,
+                    associates: prev.associates.map(a =>
+                      a.id === id ? { ...a, room_id: value } : a
+                    )
+                  }));
+                }}
+                onChangeCheckIn={(id, e) => {
+                  const newDate = e.target.value;
+                  setBooking(prev => ({
+                    ...prev,
+                    associates: prev.associates.map(a => {
+                      if (a.id === id) {
+                        return {
+                          ...a,
+                          check_in: newDate
+                        };
+                      }
+                      return a;
+                    })
+                  }));
+                }}
+                onChangeCheckOut={(id, e) => {
+                  const newDate = e.target.value;
+                  setBooking(prev => ({
+                    ...prev,
+                    associates: prev.associates.map(a => {
+                      if (a.id === id) {
+                        return {
+                          ...a,
+                          check_out: newDate
+                        };
+                      }
+                      return a;
                     })
                   }));
                 }}

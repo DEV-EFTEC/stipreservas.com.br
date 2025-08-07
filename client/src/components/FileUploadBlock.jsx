@@ -36,13 +36,11 @@ export function FileUploadBlock({
   const viewerContainerRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  const { user } = useAuth();
-
   async function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    setIsLoading(true); // inicia o loading
+    setIsLoading(true);
     setFileName(file.name);
 
     const isPdfFile = file.type === "application/pdf";
@@ -174,6 +172,7 @@ export function FileUploadBlock({
           {allowEdit && (
             <>
               <Button
+                type="button"
                 variant="outline"
                 size="sm"
                 className="absolute top-3 right-1 text-xs text-sky-600 bg-white"
