@@ -21,6 +21,7 @@ export function Home() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [bookings, setBookings] = useState([]);
+  const [invites, setInvites] = useState([]);
   const [paginationData, setPaginationData] = useState();
   const [draw, setDraw] = useState();
   const [draws, setDraws] = useState();
@@ -96,7 +97,7 @@ export function Home() {
     async function fetchBookings() {
       try {
         if (option === "bookings") {
-          const result = await apiRequest(`/bookings/get-bookings?user_id=${user.id}&page=${page}&limit=${limit}`, {
+          const result = await apiRequest(`/bookings/get-bookings?page=${page}&limit=${limit}`, {
             method: "GET"
           });
           setBookings(result.data);
@@ -106,6 +107,12 @@ export function Home() {
             method: "GET"
           });
           setDraws(result.data);
+          setPaginationData(result.pagination);
+        } else {
+          const result = await apiRequest(`/bookings/get-invites?page=${page}&limit=${limit}`, {
+            method: "GET"
+          });
+          setInvites(result.data);
           setPaginationData(result.pagination);
         }
       } catch (err) {
@@ -198,10 +205,10 @@ export function Home() {
         </TabsContent>
         <TabsContent value="invites">
           {
-            draws &&
+            invites &&
             <DataTable
               columns={columns}
-              data={draws}
+              data={invites}
               nextPage={() => setPage(prevState => prevState + 1)}
               previousPage={
                 () => setPage(prevState => {

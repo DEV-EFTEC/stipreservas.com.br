@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, ChevronRight, Copy, Download, Edit, Eye, Info, ScanQrCode, Users, X, XCircle } from "lucide-react";
+import { Accessibility, ChevronRight, Copy, Download, Edit, Eye, Info, Mail, ScanQrCode, Users, X, XCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
@@ -26,7 +26,7 @@ import { calculateTotalPrice } from "@/hooks/useBookingPrice";
 import { useSocket } from "@/hooks/useSocket";
 import { toast } from "sonner";
 import html2pdf from 'html2pdf.js';
-import { Alert } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import LexicalViewer from "@/components/lexical-viewer";
 import { rangeIncludesDate } from "react-day-picker";
 
@@ -267,6 +267,26 @@ export default function BookingDetails() {
     html2pdf().set(opt).from(htmlString).save();
   }
 
+  async function updateStatusInvite(status) {
+    try {
+      const { success } = await apiRequest(`/bookings/${booking_id}/update-status-invite`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          status,
+          associate_invited_id: user.id
+        })
+      })
+
+      if (success) {
+        toast.success("Convite aceito com sucesso!")
+      } else {
+        toast.warning("COnvite recusado com sucesso.")
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   return (
     <section className="w-full xl:p-20 pr-2 overflow-y-auto">
       {
@@ -281,6 +301,18 @@ export default function BookingDetails() {
               <Badge variant="">#{booking && booking.id.slice(0, 8)}</Badge>
             </div>
           </div>
+
+          <Alert className={'w-fit mb-8'} variant={'info'}>
+            <Mail />
+            <AlertTitle>Convite realizado por {booking.holders[0].name}</AlertTitle>
+            <AlertDescription>
+              Olá! Você foi convidado para a solicitação #{booking.id.slice(0, 8)}.
+              <div className="flex space-x-4">
+                <Button variant={'positive'} onClick={() => updateStatusInvite("accepted")}>Aceitar convite</Button>
+                <Button variant={'destructive'} onClick={() => updateStatusInvite("refused")}>Recusar</Button>
+              </div>
+            </AlertDescription>
+          </Alert>
 
           <section className="flex flex-column w-full justify-between flex-wrap lg:space-x-16">
             <section className="w-full md:w-[90%] lg:w-[80%] xl:w-[100%] flex-column space-y-8">
@@ -366,21 +398,21 @@ export default function BookingDetails() {
                     <Card>
                       <CardHeader>
                         <CardTitle className={'flex items-center gap-4 flex-wrap'}>
-                          {user.name}
-                          <Badge variant={user.associate_role}>
-                            {enumAssociateRole[user.associate_role]}
+                          {booking.holders[0].name}
+                          <Badge variant={booking.holders[0].associate_role}>
+                            {enumAssociateRole[booking.holders[0].associate_role]}
                           </Badge>
-                          <Badge variant={'cpf_details'}>CPF {user.cpf}</Badge>
+                          <Badge variant={'cpf_details'}>CPF {booking.holders[0].cpf}</Badge>
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="flex justify-between flex-wrap space-y-4 2xl:space-y-0 xl:flex-nowrap">
                         <FileUploadBlock
                           label="Holerite recente"
                           id="holerite"
-                          associationId={user.id}
+                          associationId={booking.holders[0].id}
                           documentType={'holerite'}
                           documentsAssociation={'holder'}
-                          userId={user.id}
+                          userId={booking.holders[0].id}
                           key={'holerite_sender'}
                           allowEdit={false}
                           value={booking ? booking.url_receipt_picture : ""}
@@ -388,10 +420,10 @@ export default function BookingDetails() {
                         <FileUploadBlock
                           label="Carteira de Trabalho Digital"
                           id="clt-digital"
-                          associationId={user.id}
+                          associationId={booking.holders[0].id}
                           documentType={'clt_digital'}
                           documentsAssociation={'holder'}
-                          userId={user.id}
+                          userId={booking.holders[0].id}
                           allowEdit={false}
                           value={booking ? booking.url_word_card_file : ""}
                         />
@@ -590,10 +622,10 @@ export default function BookingDetails() {
                                 <FileUploadBlock
                                   label="Documento com foto"
                                   id={"associates_picture" + index}
-                                  associationId={user.id}
+                                  associationId={associates.id}
                                   documentType={'documento_com_foto'}
                                   documentsAssociation={'associates'}
-                                  userId={user.id}
+                                  userId={associates.id}
                                   allowEdit={false}
                                   value={associates ? associates.url_document_picture : ""}
                                 />

@@ -25,11 +25,13 @@ import SedePraiaAerea from "./assets/SedePraiaAerea.png"
 import SedePraiaEstacionamento from "./assets/SedePraiaEstacionamento.jpg"
 import SedePraiaPiscina from "./assets/SedePraiaPiscina.jpg"
 import ReactPlayer from 'react-player'
+import CookieBanner, { YoutubeEmbed } from "./components/cookies"
 
 export default function UnionBeachHeadquarters() {
   return (
     <div className="flex flex-col min-h-screen bg-zinc-50">
       {/* Header */}
+      <CookieBanner />
       <header className="bg-sky-900 text-white shadow-lg">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -338,7 +340,7 @@ export default function UnionBeachHeadquarters() {
                 </div>
 
                 <div className="relative">
-                  <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d899.3823163362722!2d-48.416747!3d-25.620554!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94db9598e3537969%3A0x42b62cd193d3314b!2sStip!5e0!3m2!1spt-BR!2sbr!4v1753986777281!5m2!1spt-BR!2sbr" width="100%" height="450" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                  <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d899.3823163362722!2d-48.416747!3d-25.620554!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94db9598e3537969%3A0x42b62cd193d3314b!2sStip!5e0!3m2!1spt-BR!2sbr!4v1753986777281!5m2!1spt-BR!2sbr" width="100%" height="450" allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
 
                   <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
                     <a href="https://maps.app.goo.gl/XHXvD9vnztUMrE9p6" target="_blank">
@@ -367,12 +369,13 @@ export default function UnionBeachHeadquarters() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Main Featured Photo */}
               <div className="lg:col-span-2 lg:row-span-2">
-                <ReactPlayer
+                <YoutubeEmbed videoId={'8gN8QvMfEEw'} height={'100%'} width={'100%'} title="Apresentação -  STIP Reservas"/>
+                {/* <ReactPlayer
                   src="https://www.youtube.com/watch?v=8gN8QvMfEEw"
                   controls
                   width="100%"
                   height="100%"
-                />
+                /> */}
               </div>
 
               {/* Quartos */}
