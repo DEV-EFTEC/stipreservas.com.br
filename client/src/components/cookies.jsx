@@ -116,9 +116,9 @@ export default function CookieBanner() {
           <p className="text-sm text-muted-foreground">Utilizamos cookies para melhorar sua experiência. Vídeos incorporados (YouTube) podem definir cookies de terceiros. Você pode aceitar todos os cookies ou gerenciar suas preferências.</p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col lg:flex-row gap-2">
           <Button onClick={acceptAll}>Aceitar todos</Button>
-          <Button variant="outline" onClick={rejectNonEssential}>Recusar não-essenciais</Button>
+          <Button onClick={rejectNonEssential}>Recusar não-essenciais</Button>
           <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
               <Button variant="ghost">Configurações</Button>
