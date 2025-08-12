@@ -2,8 +2,10 @@ import { Resend } from "resend";
 import * as userModel from "../models/userModel.js";
 import * as bookingModel from "../models/bookingModel.js";
 import * as dependentsModel from "#models/dependentsModel.js";
+import * as associatesModel from "#models/associatesModel.js";
 import * as guestsModel from "#models/guestsModel.js";
 import * as childrenModel from "#models/childrenModel.js";
+import * as stepchildrenModel from "#models/stepchildrenModel.js";
 import * as holderModel from "#models/holderModel.js";
 import * as paymentService from "#services/paymentService.js";
 import _ from "lodash";
@@ -43,17 +45,156 @@ export async function findBookingsByUser(userId, page, limit) {
   };
 }
 
+export async function findInvitesByUser(userId, page, limit) {
+  const newPage = parseInt(page) || 1;
+  const newLimit = parseInt(limit) || 10;
+  const offset = (page - 1) * limit;
+
+  const invites = await associatesModel.findInvitesByUser(
+    userId,
+    newLimit,
+    offset
+  );
+  const [{ count }] = await associatesModel.inviteCountByUser(userId);
+  return {
+    data: invites,
+    pagination: {
+      total: parseInt(count),
+      page: newPage,
+      limit: newLimit,
+      total_pages: Math.ceil(count / newLimit),
+    },
+  };
+}
+
+export async function findInviteById(id) {
+  return associatesModel.findInviteById(id);
+}
+
 export async function createBooking(bookingData) {
   return await bookingModel.createBooking(bookingData);
 }
 
 export async function updateBooking(data) {
   const { id, ...payload } = data;
+  if (payload?.status === "awaiting_invites") {
+    const associates = await associatesModel.getAssociatesByBooking(id);
+    const booking = await bookingModel.getBookingComplete(id);
+
+    for (const asc of associates) {
+      await resend.emails.send({
+        from: "STIP reservas <info@stip-reservas.com.br>",
+        to: "devlyh.testing@gmail.com",
+        subject: "Você foi convidado para uma reserva!",
+        html: `<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Convite para reserva</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #00598a;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header img {
+        height: 50px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+      }
+      p {
+        font-size: 14px;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        margin: 20px 0;
+        background-color: #00bcff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #ffffff50;
+        text-align: center;
+      }
+      a {
+          color: #00bcff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://firebasestorage.googleapis.com/v0/b/stip-reservas.firebasestorage.app/o/documents%2Femail-items%2Fstip-reservas-logo.png?alt=media&token=022056f8-a52b-4e41-bf07-8391264d5463" alt="Logo Sindicato" />
+      </div>
+
+      <h1>Você recebeu um convite!</h1>
+
+      <p>Olá <strong>${asc.name}</strong>,</p>
+
+      <p>
+        Você recebeu um convite do associado ${booking.holders[0].name} para a reserva <strong>#${booking.id.slice(0, 8)}</strong>!
+      </p>
+
+      <p>
+        Acesse a plataforma para enviar os documentos necessários. O prazo é de 24 horas para o envio dos documentos.
+      </p>
+
+      <p>
+        Você pode visualizar os detalhes da sua reserva acessando a área do associado:
+      </p>
+
+      <p style="text-align: center">
+        <a href="${process.env.CLIENT_URL}/associado/home" class="button">Ver reserva</a>
+      </p>
+
+      <p>
+        Se o botão acima não funcionar, copie e cole o seguinte link no seu navegador:<br />
+        <a href="${process.env.CLIENT_URL}/associado/home">${process.env.CLIENT_URL}/associado/home</a>
+      </p>
+
+      <div class="footer">
+        Esta é uma mensagem automática. Por favor, não responda este e-mail.
+      </div>
+    </div>
+  </body>
+</html>
+`,
+      });
+    }
+  }
   return await bookingModel.updateBooking(id, payload);
 }
 
 export async function getBookingComplete(id) {
   return await bookingModel.getBookingComplete(id);
+}
+
+export async function getLocalBookingComplete(date) {
+  return await bookingModel.getLocalBookingComplete(date);
 }
 
 export async function getParticipants(bookingId) {
@@ -95,12 +236,18 @@ export async function createParticipantsBooking(
   children,
   guests,
   dependents,
+  associates,
+  stepchildren,
   holders
 ) {
   const tasks = [];
 
   if (children.length > 0) {
     tasks.push(childrenModel.createChildByBooking(children));
+  }
+
+  if (stepchildren.length > 0) {
+    tasks.push(stepchildrenModel.createStepchildByBooking(stepchildren));
   }
 
   if (guests.length > 0) {
@@ -111,6 +258,24 @@ export async function createParticipantsBooking(
     tasks.push(dependentsModel.createDependentByBooking(dependents));
   }
 
+  if (associates.length > 0) {
+    const allAssociateBookings = associates.map((a) => a.associate_booking);
+    const allAssociateInvites = associates.map(
+      (a) => a.associate_booking_invite
+    );
+
+    if (allAssociateBookings.length > 0) {
+      tasks.push(
+        associatesModel.createAssociateByBooking(allAssociateBookings)
+      );
+    }
+
+    if (allAssociateInvites.length > 0) {
+      tasks.push(
+        associatesModel.createAssociateInviteByBooking(allAssociateInvites)
+      );
+    }
+  }
   if (holders.length > 0) {
     tasks.push(holderModel.createHolderByBooking(holders));
   }
@@ -123,6 +288,7 @@ export async function updateParticipantsBooking(
   children,
   guests,
   dependents,
+  stepchildren,
   holders
 ) {
   const tasks = [];
@@ -138,6 +304,19 @@ export async function updateParticipantsBooking(
       })
     );
     tasks.push(...childrenUpdates);
+  }
+
+  if (stepchildren.length > 0) {
+    const stepchildrenUpdates = stepchildren.map((stepchild) =>
+      stepchildrenModel.updateStepchildByBooking({
+        stepchild_id: stepchild.id,
+        check_in: stepchild.check_in,
+        check_out: stepchild.check_out,
+        room_id: stepchild.room_id,
+        booking_id,
+      })
+    );
+    tasks.push(...stepchildrenUpdates);
   }
 
   if (guests.length > 0) {
@@ -300,6 +479,434 @@ export async function approveBooking(id, user_id, value) {
   }
 }
 
+export async function updateStatusInvite(id, status, associate_invited_id) {
+  const [booking] = await associatesModel.updateStatusInvite(
+    id,
+    status,
+    associate_invited_id
+  );
+  if (status === "accepted") {
+    await resend.emails.send({
+      from: "STIP reservas <info@stip-reservas.com.br>",
+      to: [booking.holder_email],
+      subject: "Um convite foi aceito!",
+      html: `<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Convite aceito</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #00598a;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header img {
+        height: 50px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+      }
+      p {
+        font-size: 14px;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        margin: 20px 0;
+        background-color: #00bcff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #ffffff50;
+        text-align: center;
+      }
+      a {
+          color: #00bcff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://firebasestorage.googleapis.com/v0/b/stip-reservas.firebasestorage.app/o/documents%2Femail-items%2Fstip-reservas-logo.png?alt=media&token=022056f8-a52b-4e41-bf07-8391264d5463" alt="Logo Sindicato" />
+      </div>
+
+      <h1>Um convite foi aceito!</h1>
+
+      <p>Olá <strong>${booking.holder_name}</strong>,</p>
+
+      <p>
+        O convite para a sua solicitação de reserva <strong>#${booking.id.slice(0, 8)}</strong> foi
+        <strong>aceito</strong> por ${booking.invited_name}.
+      </p>
+
+      <p>
+        Você pode visualizar os detalhes da sua reserva acessando a área do associado:
+      </p>
+
+      <p style="text-align: center">
+        <a href="${process.env.CLIENT_URL}/associado/home" class="button">Ver minha reserva</a>
+      </p>
+
+      <p>
+        Se o botão acima não funcionar, copie e cole o seguinte link no seu navegador:<br />
+        <a href="${process.env.CLIENT_URL}/associado/home">${process.env.CLIENT_URL}/associado/home</a>
+      </p>
+
+      <div class="footer">
+        Esta é uma mensagem automática. Por favor, não responda este e-mail.
+      </div>
+    </div>
+  </body>
+</html>
+`,
+    });
+
+    return { success: true };
+  } else {
+    await resend.emails.send({
+      from: "STIP reservas <info@stip-reservas.com.br>",
+      to: [booking.holder_email],
+      subject: "Um convite foi recusado.",
+      html: `<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Convite recusado</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #00598a;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header img {
+        height: 50px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+      }
+      p {
+        font-size: 14px;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        margin: 20px 0;
+        background-color: #00bcff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #ffffff50;
+        text-align: center;
+      }
+      a {
+          color: #00bcff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://firebasestorage.googleapis.com/v0/b/stip-reservas.firebasestorage.app/o/documents%2Femail-items%2Fstip-reservas-logo.png?alt=media&token=022056f8-a52b-4e41-bf07-8391264d5463" alt="Logo Sindicato" />
+      </div>
+
+      <h1>Um convite foi recusado.</h1>
+
+      <p>Olá <strong>${booking.holder_name}</strong>,</p>
+
+      <p>
+        O convite para a sua solicitação de reserva <strong>#${booking.id.slice(0, 8)}</strong> foi
+        <strong>recusado</strong> por ${booking.invited_name}.
+      </p>
+
+      <p>
+        Você pode visualizar os detalhes da sua reserva acessando a área do associado:
+      </p>
+
+      <p style="text-align: center">
+        <a href="${process.env.CLIENT_URL}/associado/home" class="button">Ver minha reserva</a>
+      </p>
+
+      <p>
+        Se o botão acima não funcionar, copie e cole o seguinte link no seu navegador:<br />
+        <a href="${process.env.CLIENT_URL}/associado/home">${process.env.CLIENT_URL}/associado/home</a>
+      </p>
+
+      <div class="footer">
+        Esta é uma mensagem automática. Por favor, não responda este e-mail.
+      </div>
+    </div>
+  </body>
+</html>
+`,
+    });
+    return { success: false };
+  }
+}
+
+export async function updateInvite(id, data) {
+  const { updated, hasPending, allInfo } = await associatesModel.updateInvite(
+    id,
+    data
+  );
+
+  if (hasPending === false) {
+    await bookingModel.updateBooking(updated.booking_id, {
+      status: "pending_approval",
+      expires_at: null,
+    });
+
+    await resend.emails.send({
+      from: "STIP reservas <info@stip-reservas.com.br>",
+      to: [allInfo.holder_email],
+      subject: "Todos os convites foram respondidos!",
+      html: `<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Convite aceito</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #00598a;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header img {
+        height: 50px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+      }
+      p {
+        font-size: 14px;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        margin: 20px 0;
+        background-color: #00bcff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #ffffff50;
+        text-align: center;
+      }
+      a {
+          color: #00bcff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://firebasestorage.googleapis.com/v0/b/stip-reservas.firebasestorage.app/o/documents%2Femail-items%2Fstip-reservas-logo.png?alt=media&token=022056f8-a52b-4e41-bf07-8391264d5463" alt="Logo Sindicato" />
+      </div>
+
+      <h1>Todos os convites foram respondidos!</h1>
+
+      <p>Olá <strong>${allInfo.holder_name}</strong>,</p>
+
+      <p>
+        Os convites para a sua solicitação de reserva <strong>#${updated.booking_id.slice(0, 8)}</strong> foram
+        <strong>respondidos</strong>. Agora é só aguardar a aprovação de toda a documentação.
+      </p>
+
+      <p>
+        Você pode visualizar os detalhes da sua reserva e ver as respostas ao convite acessando a área do associado:
+      </p>
+
+      <p style="text-align: center">
+        <a href="${process.env.CLIENT_URL}/associado/home" class="button">Ver minha solicitação</a>
+      </p>
+
+      <p>
+        Se o botão acima não funcionar, copie e cole o seguinte link no seu navegador:<br />
+        <a href="${process.env.CLIENT_URL}/associado/home">${process.env.CLIENT_URL}/associado/home</a>
+      </p>
+
+      <div class="footer">
+        Esta é uma mensagem automática. Por favor, não responda este e-mail.
+      </div>
+    </div>
+  </body>
+</html>
+`,
+    });
+  }
+
+  await resend.emails.send({
+    from: "STIP reservas <info@stip-reservas.com.br>",
+    to: [allInfo.holder_email],
+    subject: "Documentação de um conviado enviada!",
+    html: `<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Convite aceito</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #00598a;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header img {
+        height: 50px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+      }
+      p {
+        font-size: 14px;
+        color: #ffffff;
+        line-height: 1.6;
+      }
+      .button {
+        display: inline-block;
+        padding: 12px 24px;
+        margin: 20px 0;
+        background-color: #00bcff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #ffffff50;
+        text-align: center;
+      }
+      a {
+          color: #00bcff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://firebasestorage.googleapis.com/v0/b/stip-reservas.firebasestorage.app/o/documents%2Femail-items%2Fstip-reservas-logo.png?alt=media&token=022056f8-a52b-4e41-bf07-8391264d5463" alt="Logo Sindicato" />
+      </div>
+
+      <h1>Documentação enviada!</h1>
+
+      <p>Olá <strong>${allInfo.holder_name}</strong>,</p>
+
+      <p>
+        A documentação obrigatória <strong>#${updated.booking_id.slice(0, 8)}</strong> foi
+        <strong>enviada</strong> por ${allInfo.invited_name}.
+      </p>
+
+      <p>
+        Você pode visualizar os detalhes da sua reserva acessando a área do associado:
+      </p>
+
+      <p style="text-align: center">
+        <a href="${process.env.CLIENT_URL}/associado/home" class="button">Ver minha solicitação</a>
+      </p>
+
+      <p>
+        Se o botão acima não funcionar, copie e cole o seguinte link no seu navegador:<br />
+        <a href="${process.env.CLIENT_URL}/associado/home">${process.env.CLIENT_URL}/associado/home</a>
+      </p>
+
+      <div class="footer">
+        Esta é uma mensagem automática. Por favor, não responda este e-mail.
+      </div>
+    </div>
+  </body>
+</html>
+`,
+  });
+
+  return { success: true };
+}
+
 export async function refuseBooking(id, user_id, justification) {
   const booking = await bookingModel.findBookingById(id);
   const user = await userModel.findUserById(user_id);
@@ -423,6 +1030,7 @@ export async function updateParticipants(
   children,
   guests,
   dependents,
+  associates,
   word_card_file_status,
   receipt_picture_status
 ) {
@@ -456,6 +1064,16 @@ export async function updateParticipants(
       })
     );
     tasks.push(...dependentsUpdates);
+  }
+
+  if (associates.length > 0) {
+    const associatesUpdates = associates.map((inv) =>
+      associatesModel.updateAssociateInvite(inv.id, {
+        word_card_file_status: inv.word_card_file_status,
+        receipt_picture_status: inv.receipt_picture_status,
+      })
+    );
+    tasks.push(...associatesUpdates);
   }
 
   await bookingModel.updateBooking(booking_id, {

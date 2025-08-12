@@ -1,4 +1,5 @@
 import * as userService from "../services/userService.js";
+import * as userModel from "../models/userModel.js";
 import * as enterpriseService from "../services/enterpriseService.js";
 import logger from "#core/logger.js";
 
@@ -17,15 +18,40 @@ export async function signIn(req, res) {
   }
 }
 
+export async function verifyPassword(req, res) {
+  try {
+    const { cpf } = req.user;
+    const { password } = req.body;
+    const result = await userService.verifyPassword(cpf, password);
+
+    if (!result)
+      return res.status(401).json({ message: "CPF ou Senha Inválidos." });
+
+    res.status(200).json(result);
+  } catch (err) {
+    logger.error("Error on signin", { err });
+    res.status(500).json({ error: err.message });
+  }
+}
+
 export async function register(req, res) {
   try {
     const { token, enterprise, cnpj, ...userData } = req.body;
     const enterpriseId = await enterpriseService.createEnterprise({
-      cnpj: enterprise.cnpj.replaceAll('.', '').replace('-', ''),
-      ...enterprise
+      cnpj: enterprise.cnpj.replaceAll(".", "").replace("-", ""),
+      ...enterprise,
     });
     const result = await userService.registerUser(
-      { ...userData, enterprise_id: enterpriseId, mobile_phone: userData.mobile_phone.replaceAll(' ', '').replace('+', '').replace('(', '').replace(')','').replace('-','') },
+      {
+        ...userData,
+        enterprise_id: enterpriseId,
+        mobile_phone: userData.mobile_phone
+          .replaceAll(" ", "")
+          .replace("+", "")
+          .replace("(", "")
+          .replace(")", "")
+          .replace("-", ""),
+      },
       token
     );
 
@@ -88,10 +114,58 @@ export async function updateUser(req, res) {
   try {
     const { id } = req.params;
     const user = await userService.updateUser(id, req.body);
-    const { password, ...newUser } = user;
-    res.status(200).json(newUser);
+    res.status(200).json(user);
   } catch (err) {
     logger.error("Error on createdependents", { err });
     res.status(500).json({ error: "Erro ao atualizar dependents" });
+  }
+}
+
+export async function createUserLocal(req, res) {
+  try {
+    const { role } = req.user;
+
+    if (role !== "admin") {
+      res.status(401).json({ message: "Não autorizado" });
+    }
+
+    const user = await userService.createUserLocal(req.body);
+    res.status(200).json(user);
+  } catch (err) {
+    logger.error("Error on createUserLocal", { err });
+    res.status(500).json({ error: "Erro ao createUserLocal" });
+  }
+}
+
+export async function findNoAssociate(req, res) {
+  try {
+    const { role } = req.user;
+
+    if (role !== "admin") {
+      res.status(401).json({ message: "Não autorizado" });
+    }
+
+    const users = await userService.findNoAssociate();
+    res.status(200).json(users);
+  } catch (err) {
+    logger.error("Error on findNoAssociate", { err });
+    res.status(500).json({ error: "Erro ao findNoAssociate" });
+  }
+}
+
+export async function generateNewPasswordToUser(req, res) {
+  try {
+    const { role } = req.user;
+    const { userId } = req.body;
+
+    if (role !== "admin") {
+      res.status(401).json({ message: "Não autorizado" });
+    }
+
+    const password = await userModel.generateNewPasswordToUser(userId);
+    res.status(200).json(password);
+  } catch (err) {
+    logger.error("Error on findNoAssociate", { err });
+    res.status(500).json({ error: "Erro ao findNoAssociate" });
   }
 }

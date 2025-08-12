@@ -14,3 +14,7 @@ export async function createEnterprise(data) {
 
   return id;
 }
+
+export async function getEnterpriseById(id) {
+  return db("enterprises").select("*").where({ id }).first();
+}

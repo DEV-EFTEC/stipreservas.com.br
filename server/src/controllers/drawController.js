@@ -22,11 +22,14 @@ export async function getDrawById(req, res) {
 
 export async function findDrawsByUser(req, res) {
   try {
-    const { user_id, page, limit } = req.query;
+    const { page, limit } = req.query;
+    const user_id = req.user.id;
     const result = await drawService.findDrawsByUser(user_id, page, limit);
 
     if (!result)
-      return res.status(404).json({ message: "Nenhuma inscrição em sorteio encontrada." });
+      return res
+        .status(404)
+        .json({ message: "Nenhuma inscrição em sorteio encontrada." });
 
     res.status(200).json(result);
   } catch (err) {
@@ -159,7 +162,9 @@ export async function getDrawApplyComplete(req, res) {
     const result = await drawService.getDrawApplyComplete(draw_apply_id);
 
     if (!result)
-      return res.status(404).json({ message: "Nenhuma reserva de sorteio encontrada." });
+      return res
+        .status(404)
+        .json({ message: "Nenhuma reserva de sorteio encontrada." });
 
     res.status(200).json(result);
   } catch (err) {
@@ -216,7 +221,11 @@ export async function approveDraw(req, res) {
 export async function refuseDraw(req, res) {
   try {
     const { draw_apply_id, user_id, justification } = req.body;
-    const result = await drawService.refuseDraw(draw_apply_id, user_id, justification);
+    const result = await drawService.refuseDraw(
+      draw_apply_id,
+      user_id,
+      justification
+    );
     res.status(200).json(result);
   } catch (err) {
     logger.error("Error on refuseDraw", err);

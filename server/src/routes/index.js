@@ -2,6 +2,7 @@ import userRoutes from "./user.routes.js";
 import bookingRoutes from "./booking.routes.js";
 import roomRoutes from "./room.routes.js";
 import childrenRoutes from "./children.routes.js";
+import stepchildrenRoutes from "./stepchildren.routes.js";
 import dependentsRoutes from "./dependents.routes.js";
 import guestsRoutes from "./guests.routes.js";
 import paymentsBookingsRoutes from "./payments-bookings.routes.js";
@@ -20,6 +21,7 @@ export default (app) => {
   app.use("/bookings", auth, bookingRoutes);
   app.use("/rooms", auth, roomRoutes);
   app.use("/children", auth, childrenRoutes);
+  app.use("/stepchildren", auth, stepchildrenRoutes);
   app.use("/dependents", auth, dependentsRoutes);
   app.use("/guests", auth, guestsRoutes);
   app.use("/payments-bookings", paymentsBookingsRoutes);
