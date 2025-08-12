@@ -28,7 +28,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "../ui/admin/sidebar"
+} from "../ui/local/sidebar"
 import { useAuth } from "@/hooks/useAuth"
 
 export function NavUser({

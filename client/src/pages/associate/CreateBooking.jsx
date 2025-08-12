@@ -87,6 +87,7 @@ export default function CreateBooking() {
           dependents: [],
           guests: [],
           children: [],
+          stepchildren: [],
           associates: []
         })
       });

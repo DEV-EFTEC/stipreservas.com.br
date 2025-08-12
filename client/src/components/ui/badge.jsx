@@ -27,6 +27,8 @@ const badgeVariants = cva(
           "border-transparent bg-teal-600 text-teal-50 [a&]:hover:bg-teal-400/90",
         expired:
           "border-transparent bg-gray-500 text-white [a&]:hover:bg-gray-500/90",
+        finished:
+          "border-transparent bg-gray-500 text-white [a&]:hover:bg-gray-500/90",
         closed:
           "border-transparent bg-stone-300 text-black [a&]:hover:bg-stone-300/90",
         approved:

@@ -31,8 +31,6 @@ export default function FinishBook() {
   const { socket } = useSocket();
   const { user } = useAuth();
   const [booking, setBooking] = useState();
-  // const totalPrice = useBookingPrice(booking);
-  const [totalPriceBooking, setTotalPriceBooking] = useState(0)
 
   useEffect(() => {
     (async () => {
@@ -49,8 +47,8 @@ export default function FinishBook() {
       method: "POST",
       body: JSON.stringify({
         id: booking_id,
-        status: "awaiting_invites",
-        expires_at: addDays(new Date(), 1)
+        status: booking.associates.length > 0 ? "awaiting_invites" : "pending_approval",
+        expires_at: booking.associates.length > 0 ? addDays(new Date(), 1) : null
       })
     });
 
@@ -69,38 +67,40 @@ export default function FinishBook() {
   }
 
   return (
-    <section className="flex w-full p-20 justify-between">
+    <section className="w-full xl:p-20 pr-2 overflow-y-auto">
       {
         booking
         &&
-        <section className="w-full">
+        <section className="w-full pr-2 overflow-y-auto">
           <GlobalBreadcrumb />
-          <div className="flex gap-12 items-end mb-8">
+          <div className="flex gap-12 items-end mb-8 flex-wrap">
             <Text heading="h1">Detalhes da solicitação</Text>
             <div className="flex items-center gap-2">
               <Label>Solicitação</Label>
               <Badge variant="">#{booking && booking.id.slice(0, 8)}</Badge>
             </div>
           </div>
-          <section className="flex flex-column w-full space-x-16 justify-between">
-            <section className="w-[55%] flex-column space-y-8">
+          <section className="flex flex-column w-full justify-between flex-wrap lg:space-x-16">
+            <section className="w-full md:w-[90%] lg:w-[80%] xl:w-[100%] flex-column space-y-8">
               <Card>
                 <CardHeader>
                   <CardTitle>Resumo da Solicitação</CardTitle>
                   <CardDescription>Aqui estão as informações básicas da solicitação</CardDescription>
                 </CardHeader>
-                <CardContent className={'flex justify-between space-x-6'}>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Solicitação</p>
-                    <Badge className={'w-full'}>#{booking && booking.id.slice(0, 8)}</Badge>
-                  </div>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Status</p>
-                    <Badge className={'w-full'} variant={booking.status}>{enumStatus[booking.status]}</Badge>
-                  </div>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Criada em</p>
-                    <Badge className={'w-full'} variant={'secondary'}>{format(booking.utc_created_on, "dd/MM/yyyy 'às' HH:mm")}</Badge>
+                <CardContent>
+                  <div className={'flex justify-between space-y-4 flex-wrap md:flex-nowrap md:space-x-4 md:space-y-0'}>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Solicitação</p>
+                      <Badge className={'w-full'}>#{booking && booking.id.slice(0, 8)}</Badge>
+                    </div>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Status</p>
+                      <Badge className={'w-full'} variant={booking.status}>{enumStatus[booking.status]}</Badge>
+                    </div>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Criada em</p>
+                      <Badge className={'w-full'} variant={'secondary'}>{format(booking.utc_created_on, "dd/MM/yyyy 'às' HH:mm")}</Badge>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -108,38 +108,40 @@ export default function FinishBook() {
                 <CardHeader>
                   <CardTitle>Informações de Estadia</CardTitle>
                 </CardHeader>
-                <CardContent className={'flex justify-between space-x-6'}>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm">Data de entrada</p>
-                    <Badge variant="secondary" className={'w-full'}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
-                  </div>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Data de saída</p>
-                    <Badge variant="secondary" className={'w-full'}>{format(booking.check_out, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
-                  </div>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Diária(s)</p>
-                    <Badge variant="secondary" className={'w-full'}>{differenceInDays(booking.check_out, booking.check_in)} dia(s)</Badge>
-                  </div>
-                  <div className="flex-column w-full items-center justify-center text-center">
-                    <p className="text-sm text-center">Quarto(s)</p>
-                    <Badge variant="secondary" className={'w-full'}>
-                      {booking.rooms.map(r => (
-                        <>
-                          <p>Nº {r.number}</p>
-                          <div className="flex">
-                            <Users size={16}></Users>{r.capacity}
-                          </div>
-                          {
-                            r.preferential
-                            &&
-                            <Badge variant={"preferential"}>
-                              <Accessibility size={16} />
-                            </Badge>
-                          }
-                        </>
-                      ))}
-                    </Badge>
+                <CardContent className={''}>
+                  <div className="flex flex-col w-full items-center justify-center text-center md:flex-row md:space-x-4">
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm">Data de entrada</p>
+                      <Badge variant="secondary" className={'w-full'}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
+                    </div>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Data de saída</p>
+                      <Badge variant="secondary" className={'w-full'}>{format(booking.check_out, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
+                    </div>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Diária(s)</p>
+                      <Badge variant="secondary" className={'w-full'}>{differenceInDays(booking.check_out, booking.check_in)} dia(s)</Badge>
+                    </div>
+                    <div className="flex-column w-full items-center justify-center text-center">
+                      <p className="text-sm text-center">Quarto(s)</p>
+                      <Badge variant="secondary" className={'w-full'}>
+                        {booking.rooms.map(r => (
+                          <>
+                            <p>Nº {r.number}</p>
+                            <div className="flex">
+                              <Users size={16}></Users>{r.capacity}
+                            </div>
+                            {
+                              r.preferential
+                              &&
+                              <Badge variant={"preferential"}>
+                                <Accessibility size={16} />
+                              </Badge>
+                            }
+                          </>
+                        ))}
+                      </Badge>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -153,7 +155,7 @@ export default function FinishBook() {
                     <p className="font-medium text-slate-500 mb-1">Títular</p>
                     <Card>
                       <CardHeader>
-                        <CardTitle className={'flex items-center gap-4'}>
+                        <CardTitle className={'flex items-center gap-4 flex-wrap'}>
                           {user.name}
                           <Badge variant={user.associate_role}>
                             {enumAssociateRole[user.associate_role]}
@@ -161,7 +163,7 @@ export default function FinishBook() {
                           <Badge variant={'cpf_details'}>CPF {user.cpf}</Badge>
                         </CardTitle>
                       </CardHeader>
-                      <CardContent className="flex justify-between flex-wrap">
+                      <CardContent className='w-full'>
                         <FileUploadBlock
                           label="Holerite recente"
                           id="holerite"
@@ -350,6 +352,61 @@ export default function FinishBook() {
                     </div>
                   }
                   {
+                    booking.stepchildren.length > 0
+                    &&
+                    <div className="mt-5">
+                      <p className="font-medium text-slate-500 mb-1">Enteados ({booking.stepchildren.length})</p>
+                      <div className="flex-col space-y-4">
+                        {
+                          booking.stepchildren.map((stepchi, index) => (
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className={'flex items-center gap-4'}>
+                                  {stepchi.name}
+                                  <Badge variant={'cpf_details'}>CPF {stepchi.cpf}</Badge>
+                                  {
+                                    stepchi.disability
+                                    &&
+                                    <Badge variant="preferential">
+                                      Preferêncial
+                                    </Badge>
+                                  }
+                                  <Badge variant={'secondary'}>Data de nascimento: {format(stepchi.birth_date, 'dd/MM/yyyy')}</Badge>
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className={'flex justify-between'}>
+                                <FileUploadBlock
+                                  label="Documento com foto"
+                                  id={"stepchi_picture" + index}
+                                  associationId={user.id}
+                                  documentType={'documento_com_foto'}
+                                  allowEdit={false}
+                                  documentsAssociation={'stepchildren'}
+                                  userId={user.id}
+                                  value={stepchi ? stepchi.url_document_picture : ""}
+                                />
+                                {
+                                  stepchi.disability
+                                  &&
+                                  <FileUploadBlock
+                                    label="Documento comprobatório"
+                                    id={"stepchi_url_medical_report" + index}
+                                    associationId={user.id}
+                                    documentType={'doc_comprobatorio'}
+                                    documentsAssociation={'stepchildren'}
+                                    allowEdit={false}
+                                    userId={user.id}
+                                    value={stepchi ? stepchi.url_medical_report : ""}
+                                  />
+                                }
+                              </CardContent>
+                            </Card>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  }
+                  {
                     booking.associates.length > 0
                     &&
                     <div className="mt-5">
@@ -393,9 +450,9 @@ export default function FinishBook() {
                 </CardContent>
               </Card>
             </section>
-            <div className="relative w-[30%]">
-              <div className={'fixed bottom-10 right-20 w-fit'}>
-                <Card className={'w-[250px] gap-0'}>
+            <div className="mt-6 w-full lg:relative lg:w-[30%] mb-8">
+              <div className={'lg:right-10 lg:bottom-10 lg:w-fit lg:fixed w-full'}>
+                <Card className={'w-full lg:w-[250px] gap-0 mb-5'}>
                   <CardHeader>
                     <CardTitle className={'text-sm text-zinc-500 mb-1'}>
                       Valor total da reserva

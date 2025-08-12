@@ -122,7 +122,7 @@ export default function GetRoom() {
   }
 
   return (
-    <section className="flex w-full p-20 justify-between">
+    <section className="w-full xl:flex xl:justify-between 2xl:gap-24 xl:gap-8 xl:p-20 pr-2 overflow-y-auto">
       <section className="w-[80%]">
         <GlobalBreadcrumb />
         <div className="flex gap-12 items-end mb-8">

@@ -23,6 +23,7 @@ export default function RoomCard({
 }) {
   const bookingFee = userType === "partner" ? room.partner_booking_fee_per_day : room.contributor_booking_fee_per_day;
   const guestFee = userType === "partner" ? room.partner_guest_fee_per_day : room.contributor_guest_fee_per_day;
+  const stepchildFee = userType === "partner" ? room.partner_stepchild_fee_per_day : room.contributor_stepchild_fee_per_day;
 
   const formattedCurrency = (value) =>
     Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
@@ -62,6 +63,13 @@ export default function RoomCard({
             <p className="text-sm">Por convidado</p>
             <div className="flex items-center space-x-2">
               <p className="text-xl font-bold">{formattedCurrency(guestFee)}</p>
+              <Text heading="small">por dia</Text>
+            </div>
+          </div>
+          <div>
+            <p className="text-sm">Por enteado</p>
+            <div className="flex items-center space-x-2">
+              <p className="text-xl font-bold">{formattedCurrency(stepchildFee)}</p>
               <Text heading="small">por dia</Text>
             </div>
           </div>

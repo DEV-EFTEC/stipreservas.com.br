@@ -1,4 +1,11 @@
-export function checkBookingStatus(booking, dependents = [], guests = [], children = []) {
+export function checkBookingStatus(
+  booking,
+  dependents = [],
+  guests = [],
+  children = [],
+  associates = [],
+  stepchildren = []
+) {
   const issues = {
     neutral: [],
     refused: [],
@@ -6,52 +13,82 @@ export function checkBookingStatus(booking, dependents = [], guests = [], childr
 
   // Campos principais
   const mainFields = [
-    { path: 'word_card_file_status', label: 'Carteira de Trabalho Digital' },
-    { path: 'receipt_picture_status', label: 'Holerite recente' }
+    { path: "word_card_file_status", label: "Carteira de Trabalho Digital" },
+    { path: "receipt_picture_status", label: "Holerite recente" },
   ];
 
-  mainFields.forEach(field => {
+  mainFields.forEach((field) => {
     const value = booking[field.path];
-    if (value === 'neutral') issues.neutral.push(field.label);
-    else if (value === 'refused') issues.refused.push(field.label);
+    if (value === "neutral") issues.neutral.push(field.label);
+    else if (value === "refused") issues.refused.push(field.label);
   });
 
   // Função auxiliar para verificar cada grupo
   const checkGroup = (group, groupName) => {
-    group.forEach(item => {
-      if (item.medical_report_status === 'neutral' && item.disability === true) {
+    group.forEach((item) => {
+      if (
+        item.medical_report_status === "neutral" &&
+        item.disability === true
+      ) {
         issues.neutral.push(`${item.name} - Laudo médico`);
-      } else if (item.medical_report_status === 'refused') {
+      } else if (item.medical_report_status === "refused") {
         issues.refused.push(`${item.name} - Laudo médico`);
       }
 
-      if (item.document_picture_status === 'neutral') {
+      if (item.document_picture_status === "neutral") {
         issues.neutral.push(`${item.name} - Documento com foto`);
-      } else if (item.document_picture_status === 'refused') {
+      } else if (item.document_picture_status === "refused") {
         issues.refused.push(`${item.name} - Documento com foto`);
       }
     });
   };
 
-  checkGroup(children, 'children');
-  checkGroup(guests, 'guests');
-  checkGroup(dependents, 'dependents');
+  const checkGroupAssociates = (group, groupName) => {
+    group.forEach((item) => {
+      if (item.receipt_picture_status === "neutral") {
+        issues.neutral.push(`${item.name} - Holerite recente`);
+      } else if (item.receipt_picture_status === "refused") {
+        issues.refused.push(`${item.name} - Holerite recente`);
+      }
+
+      if (item.word_card_file_status === "neutral") {
+        issues.neutral.push(`${item.name} - Carteira de Trabalho Digital`);
+      } else if (item.word_card_file_status === "refused") {
+        issues.refused.push(`${item.name} - Carteira de Trabalho Digital`);
+      }
+
+      if (item.document_picture_status === "neutral") {
+        issues.neutral.push(`${item.name} - Documento com foto`);
+      } else if (item.document_picture_status === "refused") {
+        issues.refused.push(`${item.name} - Documento com foto`);
+      }
+    });
+  };
+
+  checkGroup(children, "children");
+  checkGroup(guests, "guests");
+  checkGroup(dependents, "dependents");
+  checkGroup(stepchildren, "stepchildren");
+  checkGroupAssociates(associates, "associates");
 
   if (issues.neutral.length === 0 && issues.refused.length === 0) {
-    return { status: 'approved', message: 'Todos os documentos foram aprovados.' };
+    return {
+      status: "approved",
+      message: "Todos os documentos foram aprovados.",
+    };
   }
 
   if (issues.refused.length > 0) {
     return {
-      status: 'refused',
-      message: 'Alguns documentos foram recusados.',
+      status: "refused",
+      message: "Alguns documentos foram recusados.",
       details: issues.refused,
     };
   }
 
   return {
-    status: 'neutral',
-    message: 'Você esqueceu de revisar os seguintes documentos:',
+    status: "neutral",
+    message: "Você esqueceu de revisar os seguintes documentos:",
     details: issues.neutral,
   };
 }

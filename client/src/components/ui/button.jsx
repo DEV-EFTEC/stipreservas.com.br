@@ -28,6 +28,12 @@ const buttonVariants = cva(
           "bg-teal-500 text-primary-foreground shadow-xs hover:bg-teal-500/80",
         refused:
           "bg-red-700 text-primary-foreground shadow-xs hover:bg-red-700/80",
+        awaiting_documents:
+          "bg-indigo-400 text-primary-foreground shadow-xs hover:bg-indigo-400/80",
+        not_presence:
+          "bg-amber-600 text-primary-foreground shadow-xs hover:bg-amber-600/80",
+        check_in_confirmed:
+          "bg-green-700 text-primary-foreground shadow-xs hover:bg-green-700/80",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

@@ -19,17 +19,13 @@ import Guests from "./Guests";
 import Children from "./Children";
 import { checkBookingStatus } from "@/lib/checkBookingStatus";
 import { toast } from "sonner";
+import Associates from "./Associates";
+import StepChildren from "./Stepchildren";
 
 export default function ApproveDocuments() {
   const { user } = useAuth();
   const { booking, loadingBooking, saveBooking, setBooking } = useBooking();
   const navigate = useNavigate();
-  const [dependentsParcial, setDependentsParcial] = useState([]);
-  const [guestsParcial, setGuestsParcial] = useState([]);
-  const [childrenParcial, setChildrenParcial] = useState([]);
-  const [selectedDependents, setSelectedDependents] = useState([]);
-  const [selectedGuests, setSelectedGuests] = useState([]);
-  const [selectedChildren, setSelectedChildren] = useState([]);
   const [bookingStatus, setBookingStatus] = useState();
   const [finalPath, setFinalPath] = useState('');
 
@@ -51,6 +47,18 @@ export default function ApproveDocuments() {
     resetList: setChildren
   } = useDynamicList([]);
 
+  const {
+    list: stepchildren,
+    updateItem: updateStepchild,
+    resetList: setStepchildren
+  } = useDynamicList([]);
+
+  const {
+    list: associates,
+    updateItem: updateAssociate,
+    resetList: setAssociates
+  } = useDynamicList([]);
+
   useEffect(() => {
     if (!booking || loadingBooking) return;
 
@@ -60,27 +68,12 @@ export default function ApproveDocuments() {
         setDependents(response.dependents);
         setGuests(response.guests);
         setChildren(response.children);
+        setAssociates(response.associates);
+        setStepchildren(response.stepchildren);
       }
     };
 
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const response_dep = await apiRequest(`/dependents/get-dependents?id=${user.id}`, {
-        method: "GET"
-      });
-      const response_gue = await apiRequest(`/guests/get-guests?id=${user.id}`, {
-        method: "GET"
-      });
-      const response_chi = await apiRequest(`/children/get-children?id=${user.id}`, {
-        method: "GET"
-      });
-      setDependentsParcial(response_dep);
-      setGuestsParcial(response_gue);
-      setChildrenParcial(response_chi);
-    })();
   }, []);
 
   useEffect(() => {
@@ -91,12 +84,12 @@ export default function ApproveDocuments() {
       guests_quantity: guests.length,
       children_age_max_quantity: children.length,
     });
-  }, [dependents.length, guests.length, children.length]);
+  }, [dependents.length, guests.length, children.length, associates.length, stepchildren.length]);
 
   useEffect(() => {
     if (!booking) return;
 
-    const status = checkBookingStatus(booking, dependents, guests, children);
+    const status = checkBookingStatus(booking, dependents, guests, children, associates, stepchildren);
     setBookingStatus(status.status);
 
     if (status.status === 'neutral') {
@@ -121,7 +114,7 @@ export default function ApproveDocuments() {
       setFinalPath(`/admin/enviar-recusa/${booking.id}`);
     }
 
-  }, [booking, dependents, guests, children]);
+  }, [booking, dependents, guests, children, associates, stepchildren]);
 
   async function handleSubmit() {
     await apiRequest(`/bookings/update-participants/${booking.id}`, {
@@ -130,64 +123,14 @@ export default function ApproveDocuments() {
         dependents: dependents.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
         guests: guests.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
         children: children.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
+        stepchildren: children.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
+        associates: children.map(({ id, word_card_file_status, receipt_picture_status, document_picture_status }) => ({ id, word_card_file_status, receipt_picture_status, document_picture_status })),
         word_card_file_status: booking.word_card_file_status,
         receipt_picture_status: booking.receipt_picture_status
       })
     });
 
-    alert(finalPath)
-
     navigate(finalPath);
-  }
-
-  const enumSaveEntity = {
-    'd': '/dependents/update-dependent',
-    'g': '/guests/update-guest',
-    'c': '/children/update-child'
-  }
-
-  const entitySetters = {
-    d: setDependents,
-    g: setGuests,
-    c: setChildren,
-  };
-
-  const enumSetSaveEntity = (key, result) => {
-    const setter = entitySetters[key];
-    if (!setter) return;
-
-    setter(prevState => {
-      const exists = prevState.some(item => item.cpf === result.cpf);
-      if (exists) {
-        return prevState.map(item =>
-          item.cpf === result.cpf ? { ...result, is_saved: true } : item
-        );
-      } else {
-        return [...prevState, { ...result, is_saved: true }];
-      }
-    });
-  };
-
-  async function saveEntity(key, entity) {
-    const { is_saved, id, medical_report_status, document_picture_status, ...newEntity } = entity;
-    const result = await apiRequest(`${enumSaveEntity[key]}/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({
-        medical_report_status,
-        document_picture_status,
-      })
-    });
-
-    if (result) {
-      enumSetSaveEntity(key, result);
-    };
-  }
-
-  function deleteEntity(key, entity) {
-    setDependents(prevState => {
-      const newState = prevState.filter(e => e.id !== entity.id);
-      return newState;
-    });
   }
 
   return (
@@ -261,34 +204,24 @@ export default function ApproveDocuments() {
             booking.url_receipt_picture &&
             <>
               <Dependents
-                setDependents={setDependents}
-                setSelectedDependents={setSelectedDependents}
-                dependentsParcial={dependentsParcial}
-                selectedDependents={selectedDependents}
                 dependents={dependents}
                 updateDependent={updateDependent}
-                saveEntity={saveEntity}
-                deleteEntity={deleteEntity}
               />
               <Guests
-                setGuests={setGuests}
-                setSelectedGuests={setSelectedGuests}
-                guestsParcial={guestsParcial}
-                selectedGuests={selectedGuests}
                 guests={guests}
                 updateGuest={updateGuest}
-                saveEntity={saveEntity}
-                deleteEntity={deleteEntity}
               />
               <Children
-                setChildren={setChildren}
-                setSelectedChildren={setSelectedChildren}
-                childrenParcial={childrenParcial}
-                selectedChildren={selectedChildren}
                 children={children}
                 updateChild={updateChild}
-                saveEntity={saveEntity}
-                deleteEntity={deleteEntity}
+              />
+              <StepChildren
+                stepchildren={stepchildren}
+                updateStepchild={updateStepchild}
+              />
+              <Associates
+                associates={associates}
+                updateAssociate={updateAssociate}
               />
             </>
           }

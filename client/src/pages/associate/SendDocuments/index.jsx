@@ -23,6 +23,7 @@ import DatePickerBirth from "@/components/DatePickerBirth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import Stepchildren from "./Stepchildren";
 
 export default function SendDocuments() {
   const { user } = useAuth();
@@ -31,9 +32,11 @@ export default function SendDocuments() {
   const [dependentsParcial, setDependentsParcial] = useState([]);
   const [guestsParcial, setGuestsParcial] = useState([]);
   const [childrenParcial, setChildrenParcial] = useState([]);
+  const [stepchildrenParcial, setStepchildrenParcial] = useState([]);
   const [selectedDependents, setSelectedDependents] = useState([]);
   const [selectedGuests, setSelectedGuests] = useState([]);
   const [selectedChildren, setSelectedChildren] = useState([]);
+  const [selectedStepchildren, setSelectedStepchildren] = useState([]);
   const [selectedAssociates, setSelectedAssociates] = useState([]);
   const [cpf, setCpf] = useState();
 
@@ -55,6 +58,12 @@ export default function SendDocuments() {
     resetList: setChildren
   } = useDynamicList([]);
 
+  const {
+    list: stepchildren,
+    updateItem: updateStepchild,
+    resetList: setStepchildren
+  } = useDynamicList([]);
+
   useEffect(() => {
     if (!booking || loadingBooking) return;
 
@@ -64,6 +73,7 @@ export default function SendDocuments() {
         setDependents(response.dependents);
         setGuests(response.guests);
         setChildren(response.children);
+        setStepchildren(response.stepchildren);
       }
     };
 
@@ -99,9 +109,13 @@ export default function SendDocuments() {
       const response_chi = await apiRequest(`/children/get-children`, {
         method: "GET"
       });
+      const response_ste = await apiRequest(`/stepchildren/get-stepchildren`, {
+        method: "GET"
+      });
       setDependentsParcial(response_dep);
       setGuestsParcial(response_gue);
       setChildrenParcial(response_chi);
+      setStepchildrenParcial(response_ste);
     })();
   }, []);
 
@@ -122,6 +136,7 @@ export default function SendDocuments() {
         dependents: dependents.map(({ id }) => ({ dependent_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
         guests: guests.map(({ id }) => ({ guest_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
         children: children.map(({ id }) => ({ child_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
+        stepchildren: stepchildren.map(({ id }) => ({ stepchild_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
         associates: selectedAssociates.map(({ id }) => ({
           associate_booking: {
             associate_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out
@@ -156,13 +171,15 @@ export default function SendDocuments() {
   const enumSaveEntity = {
     'd': '/dependents',
     'g': '/guests',
-    'c': '/children'
+    'c': '/children',
+    's': '/stepchildren'
   }
 
   const entitySetters = {
     d: setDependents,
     g: setGuests,
     c: setChildren,
+    s: setStepchildren,
   };
 
   const enumSetSaveEntity = (key, result) => {
@@ -197,18 +214,38 @@ export default function SendDocuments() {
   }
 
   function deleteEntity(key, entity) {
-    setDependents(prevState => {
-      const newState = prevState.filter(e => e.id !== entity.id);
-      return newState;
-    });
+    if (key === 's') {
+      setStepchildren(prevState => {
+        const newState = prevState.filter(e => e.id !== entity.id);
+        return newState;
+      });
+    }
+    if (key === 'd') {
+      setDependents(prevState => {
+        const newState = prevState.filter(e => e.id !== entity.id);
+        return newState;
+      });
+    }
+    if (key === 'c') {
+      setChildren(prevState => {
+        const newState = prevState.filter(e => e.id !== entity.id);
+        return newState;
+      });
+    }
+    if (key === 'g') {
+      setGuests(prevState => {
+        const newState = prevState.filter(e => e.id !== entity.id);
+        return newState;
+      });
+    }
   }
 
   return (
     <>
-      <section className="w-full xl:flex xl:justify-between 2xl:space-x-24 xl:space-x-8 xl:p-20 pr-2 overflow-y-auto">
+      <section className="w-full xl:flex xl:justify-between 2xl:gap-24 xl:gap-8 xl:p-20 pr-2 overflow-y-auto">
         <section className="w-fit">
           <GlobalBreadcrumb />
-          <div className="flex space-x-12 items-end mb-8 flex-wrap 2xl:flex-nowrap">
+          <div className="flex gap-12 items-end mb-8 flex-wrap 2xl:flex-nowrap">
             <Text heading="h1">Envio de Documentos</Text>
             <div className="flex items-center gap-2">
               <Label>Solicitação</Label>
@@ -216,8 +253,8 @@ export default function SendDocuments() {
             </div>
           </div>
           <Text heading="h2">Documentos do titular</Text>
-          <Card className="w-full mb-7 mt-5">
-            <CardContent className="flex w-full flex-wrap space-y-4 lg:flex-nowrap lg:space-y-0 lg:space-x-4">
+          <Card className="w-fit md:w-full mb-7 mt-5">
+            <CardContent className="flex flex-wrap lg:flex-nowrap gap-4 p-0 m-0 w-fit">
               <FileUploadBlock
                 label="Holerite recente"
                 id="holerite"
@@ -268,6 +305,16 @@ export default function SendDocuments() {
                 saveEntity={saveEntity}
                 deleteEntity={deleteEntity}
               />
+              <Stepchildren
+                setStepChild={setStepchildren}
+                setSelectedStepChildren={setSelectedStepchildren}
+                stepChildrenParcial={stepchildrenParcial}
+                selectedStepChildren={selectedStepchildren}
+                stepchildren={stepchildren}
+                updateStepChild={updateStepchild}
+                saveEntity={saveEntity}
+                deleteEntity={deleteEntity}
+              />
               <Guests
                 setGuests={setGuests}
                 setSelectedGuests={setSelectedGuests}
@@ -311,7 +358,7 @@ export default function SendDocuments() {
                               </div>
                             </header>
                             <div className="flex flex-col gap-8 mb-8">
-                              <div className="flex gap-15">
+                              <div className="flex flex-col md:flex-row gap-4 md:gap-15">
                                 <LabeledInput
                                   label={"Nome"}
                                   onChange={(e) => updateChild(index, "name", e.target.value)}
@@ -331,7 +378,7 @@ export default function SendDocuments() {
                                   id={"asc_cpf" + index}
                                   key={"asc_cpf" + index} />
                               </div>
-                              <div className="flex gap-15">
+                              <div className="flex flex-col md:flex-row gap-4 md:gap-15">
                                 <div className="flex flex-col w-80 gap-2">
                                   <Label>Data de Nascimento</Label>
                                   <DatePickerBirth
@@ -348,6 +395,7 @@ export default function SendDocuments() {
                                   documentsAssociation={'children'}
                                   userId={user.id}
                                   allowEdit={false}
+                                  allowView={false}
                                   setFile={(url) => updateChild(index, "url_document_picture", url)}
                                   value={asc ? asc.url_document_picture : ""}
                                 />
@@ -364,7 +412,7 @@ export default function SendDocuments() {
             </>
           }
         </section>
-        <Aside action={handleSubmit} />
+        <Aside action={handleSubmit} isDisabled={booking.url_word_card_file === null || booking.url_receipt_picture === null && true}/>
       </section>
     </>
   );

@@ -10,12 +10,15 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 import { SidebarProvider as AssociateSidebarProvider, SidebarTrigger as AssociateSidebarTrigger } from './components/ui/sidebar';
 import { SidebarProvider as AdminSidebarProvider, SidebarTrigger as AdminSidebarTrigger } from './components/ui/admin/sidebar';
+import { SidebarProvider as LocalSidebarProvider, SidebarTrigger as LocalSidebarTrigger } from './components/ui/local/sidebar';
 
 import { AppSidebar as AssociateSidebar } from './components/associate/AppSidebar';
+import { AppSidebar as LocalSidebar } from './components/local/AppSidebar';
 import { AppSidebar as AdminSidebar } from './components/admin/AppSidebar';
 import { Home as AssociateHome } from './pages/associate/Home/index';
 import { Profile as AssociateProfile } from './pages/associate/Profile.jsx';
 import { Home as AdminHome } from './pages/admin/Home/index';
+import { Home as LocalHome } from './pages/local/Home/index';
 
 import App from './App';
 import SignIn from "./pages/SignIn";
@@ -59,6 +62,7 @@ import FinishBookAdmin from './pages/admin/FinishBookAdmin';
 import BookingSettingsAdmin from './pages/admin/BookingSettingsAdmin';
 import { GenerateRegisterLink } from './pages/admin/GenerateRegisterLink';
 import { CreateSystemUser } from './pages/admin/CreateSystemUser';
+import SendDocumentsInvited from './pages/associate/SendDocumentsInvited';
 
 let router = createBrowserRouter([
   {
@@ -231,6 +235,22 @@ let router = createBrowserRouter([
               <AssociateSidebar />
               <AssociateSidebarTrigger />
               <SendDocumentsDraw />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/convite/enviar-documentos",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <SendDocumentsInvited />
             </BookingProvider>
           </AssociateSidebarProvider>
         </SocketProvider>
@@ -625,6 +645,22 @@ let router = createBrowserRouter([
               <CreateSystemUser />
             </BookingProvider>
           </AdminSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/local/home",
+    element: (
+      <ProtectedRoute role={"local"}>
+        <SocketProvider>
+          <LocalSidebarProvider>
+            <BookingProvider>
+              <LocalSidebar />
+              <LocalSidebarTrigger />
+              <LocalHome />
+            </BookingProvider>
+          </LocalSidebarProvider>
         </SocketProvider>
       </ProtectedRoute>
     )

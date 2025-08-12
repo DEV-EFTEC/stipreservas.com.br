@@ -23,6 +23,7 @@ function calculateTotalPrice(booking) {
 
   let total = 0;
   const roomOccupancy = {};
+  const associate_role = booking.holders[0].associate_role;
 
   booking.rooms.forEach((room) => {
     roomOccupancy[room.id] = new Set();
@@ -37,9 +38,9 @@ function calculateTotalPrice(booking) {
     range.forEach(date => roomOccupancy[roomId].add(date));
   }
 
-  if (booking.holders[0].associate_role === 'partner' && booking.partner_presence) {
+  if (associate_role === 'partner' && booking.partner_presence) {
     addPersonToRoom(booking.holders[0]);
-  } else if (booking.holders[0].associate_role === 'contributor') {
+  } else if (associate_role === 'contributor') {
     addPersonToRoom(booking.holders[0]);
   }
 
@@ -47,9 +48,11 @@ function calculateTotalPrice(booking) {
 
   booking.guests?.forEach(guest => addPersonToRoom(guest));
 
+  booking.stepchildren?.forEach(sc => addPersonToRoom(sc));
+
   Object.entries(roomOccupancy).forEach(([roomId, dates]) => {
     const room = booking.rooms.find(r => r.id === roomId);
-    total += dates.size * Number(booking.holders[0].associate_role == 'partner' ? room.partner_booking_fee_per_day : room.contributor_booking_fee_per_day);
+    total += dates.size * Number(associate_role == 'partner' ? room.partner_booking_fee_per_day : room.contributor_booking_fee_per_day);
   });
 
   booking.guests?.forEach((guest) => {
@@ -57,7 +60,15 @@ function calculateTotalPrice(booking) {
     if (!room || !guest.check_in || !guest.check_out) return;
 
     const range = getDateRange(new Date(guest.check_in), new Date(guest.check_out));
-    total += range.length * Number(booking.holders[0].associate_role == 'partner' ? room.partner_guest_fee_per_day : room.contributor_guest_fee_per_day);
+    total += range.length * Number(associate_role == 'partner' ? room.partner_guest_fee_per_day : room.contributor_guest_fee_per_day);
+  });
+
+  booking.stepchildren?.forEach((stepchild) => {
+    const room = booking.rooms.find(r => r.id === stepchild.room_id);
+    if (!room || !stepchild.check_in || !stepchild.check_out) return;
+
+    const range = getDateRange(new Date(stepchild.check_in), new Date(stepchild.check_out));
+    total += range.length * Number(associate_role == 'partner' ? room.partner_stepchild_fee_per_day : room.contributor_stepchild_fee_per_day);
   });
 
   return {

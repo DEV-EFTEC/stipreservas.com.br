@@ -31,63 +31,104 @@ export default function BookingTable({ title, people, rooms, onChangeRoom, onCha
           </TooltipProvider>
         }
       </div>
-      <Table className={'border'}>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nome</TableHead>
-            <TableHead>CPF</TableHead>
-            <TableHead>Quarto</TableHead>
-            <TableHead>Data de entrada</TableHead>
-            <TableHead>Data de saída</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {people.map(person => (
-            <TableRow key={person.id + person.name}>
-              <TableCell className="w-1/5">{person.name}</TableCell>
-              <TableCell className="w-1/5">{person.cpf}</TableCell>
-              <TableCell className="w-1/5">
-                <Select
-                  value={person.room_id}
-                  onValueChange={(value) => onChangeRoom(person.id, value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o quarto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Quartos</SelectLabel>
-                      {rooms.map(room => (
-                        <SelectItem key={room.id} value={room.id}>
-                          Quarto {room.number < 10 ? `0${room.number}` : room.number}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </TableCell>
-              <TableCell className="w-1/5">
-                <Input
-                  type="date"
-                  value={format(new Date(person.check_in), 'yyyy-MM-dd')}
-                  min={format(new Date(person.check_in), 'yyyy-MM-dd')}
-                  max={format(new Date(person.check_out), 'yyyy-MM-dd')}
-                  onChange={(value) => onChangeCheckIn(person.id, value)}
-                />
-              </TableCell>
-              <TableCell className="w-1/5">
-                <Input
-                  type="date"
-                  value={format(new Date(person.check_out), 'yyyy-MM-dd')}
-                  min={format(new Date(person.check_in), 'yyyy-MM-dd')}
-                  max={format(new Date(person.check_out), 'yyyy-MM-dd')}
-                  onChange={(value) => onChangeCheckOut(person.id, value)}
-                />
-              </TableCell>
+      <div className="hidden md:block w-full overflow-x-auto">
+        <Table className={'min-w-[600px] border'}>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nome</TableHead>
+              <TableHead>CPF</TableHead>
+              <TableHead>Quarto</TableHead>
+              <TableHead>Data de entrada</TableHead>
+              <TableHead>Data de saída</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {people.map(person => (
+              <TableRow key={person.id + person.name}>
+                <TableCell className="w-1/5">{person.name}</TableCell>
+                <TableCell className="w-1/5">{person.cpf}</TableCell>
+                <TableCell className="w-1/5">
+                  <Select
+                    value={person.room_id}
+                    onValueChange={(value) => onChangeRoom(person.id, value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o quarto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Quartos</SelectLabel>
+                        {rooms.map(room => (
+                          <SelectItem key={room.id} value={room.id}>
+                            Quarto {room.number < 10 ? `0${room.number}` : room.number}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </TableCell>
+                <TableCell className="w-1/5">
+                  <Input
+                    type="date"
+                    value={format(new Date(person.check_in), 'yyyy-MM-dd')}
+                    min={format(new Date(person.check_in), 'yyyy-MM-dd')}
+                    max={format(new Date(person.check_out), 'yyyy-MM-dd')}
+                    onChange={(value) => onChangeCheckIn(person.id, value)}
+                  />
+                </TableCell>
+                <TableCell className="w-1/5">
+                  <Input
+                    type="date"
+                    value={format(new Date(person.check_out), 'yyyy-MM-dd')}
+                    min={format(new Date(person.check_in), 'yyyy-MM-dd')}
+                    max={format(new Date(person.check_out), 'yyyy-MM-dd')}
+                    onChange={(value) => onChangeCheckOut(person.id, value)}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="block md:hidden space-y-4">
+        {people.map(person => (
+          <div key={person.id} className="p-4 border rounded-md space-y-2">
+            <p className="font-semibold">{person.name}</p>
+            <p className="text-sm text-gray-500">{person.cpf}</p>
+            <div className="flex items-center gap-2">
+              <p>Quarto</p>
+              <Select
+                value={person.room_id}
+                onValueChange={(value) => onChangeRoom(person.id, value)}
+              >
+                <SelectTrigger className={"w-full"}>
+                  <SelectValue placeholder="Selecione o quarto" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Quartos</SelectLabel>
+                    {rooms.map(room => (
+                      <SelectItem key={room.id} value={room.id}>
+                        Quarto {room.number < 10 ? `0${room.number}` : room.number}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <Input
+              type="date"
+              value={format(new Date(person.check_in), 'yyyy-MM-dd')}
+              onChange={(value) => onChangeCheckIn(person.id, value)}
+            />
+            <Input
+              type="date"
+              value={format(new Date(person.check_out), 'yyyy-MM-dd')}
+              onChange={(value) => onChangeCheckOut(person.id, value)}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

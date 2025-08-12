@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { childModel } from "@/models/childModel";
+import { stepchildModel } from "@/models/stepchildModel";
 import { UserRound } from "lucide-react";
 import { columns } from "@/components/associate/ParcialName/columns";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
@@ -31,7 +31,7 @@ import validarCpf from "validar-cpf";
 import { toast } from "sonner";
 import MonthYearCalendar from "@/components/month-year-calendar";
 
-export default function Children({ setChildren, setSelectedChildren, childrenParcial, selectedChildren, children, updateChild, saveEntity, deleteEntity }) {
+export default function Stepchildren({ setStepChild, setSelectedStepChildren, stepChildrenParcial, selectedStepChildren, stepchildren, updateStepChild, saveEntity, deleteEntity }) {
   const { user } = useAuth();
 
   return (
@@ -39,29 +39,29 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
       <>
         <hr className="my-14" />
         <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between flex-wrap">
-          <Text heading="h2">Documentos dos menores de 5 anos</Text>
+          <Text heading="h2">Documentos de enteados</Text>
           <div className="flex gap-2">
-            <Button onClick={() => setChildren(prevState => [...prevState, childModel])}>Criar acompanhante</Button>
+            <Button onClick={() => setStepChild(prevState => [...prevState, stepchildModel])}>Criar acompanhante</Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="secondary">Importar</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Importar crianças</AlertDialogTitle>
+                  <AlertDialogTitle>Importar acompanhante</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Caso você já tenha feito reservas pela plataforma, salvamos as crianças informadas nas reservas anteriores.
+                    Caso você já tenha feito reservas pela plataforma, salvamos o acompanhante informado nas reservas anteriores.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <DataTable
                   columns={columns}
-                  data={childrenParcial}
-                  onSelectionChange={(data) => setSelectedChildren(data.map(item => ({ ...item, is_saved: true })))}
+                  data={stepChildrenParcial}
+                  onSelectionChange={(data) => setSelectedStepChildren(data.map(item => ({ ...item, is_saved: true })))}
                 />
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
                   <AlertDialogAction onClick={() => {
-                    setChildren(prevState => [...prevState, ...selectedChildren])
+                    setStepChild(prevState => [...prevState, ...selectedStepChildren])
                   }}>Continuar</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -70,82 +70,78 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
         </div>
       </>
       {
-        children.length > 0
+        stepchildren.length > 0
         &&
         <>
           <div className="flex flex-col gap-8 mt-4">
-            {children.map((chi, index) => (
+            {stepchildren.map((ste, index) => (
               <Card className="w-fit">
                 <CardContent>
                   <header className="flex w-full justify-between items-center">
                     <div className="flex items-center gap-2 mb-4">
                       <UserRound strokeWidth={3} className="text-blue-500" width={20} />
-                      <Text heading={'h3'}>{chi.name ? chi.name : `Criança ${index + 1}`}</Text>
-                      <Badge variant="">#{chi.id?.slice(0, 8)}</Badge>
+                      <Text heading={'h3'}>{ste.name ? ste.name : `Enteado ${index + 1}`}</Text>
+                      <Badge variant="">#{ste.id?.slice(0, 8)}</Badge>
                     </div>
                   </header>
                   <div className="flex flex-col gap-8 mb-8">
                     <div className="flex flex-col md:flex-row gap-4 md:gap-15">
                       <LabeledInput
                         label={"Nome"}
-                        onChange={(e) => updateChild(index, "name", e.target.value)}
-                        value={chi.name}
-                        id={"chi_name" + index}
-                        key={"chi_name" + index} />
+                        onChange={(e) => updateStepChild(index, "name", e.target.value)}
+                        value={ste.name}
+                        id={"ste_name" + index}
+                        key={"ste_name" + index} />
                       <LabeledInput
                         label={"CPF"}
                         onChange={(e) => {
                           const value = maskCPF(e.target.value);
-                          updateChild(index, "cpf", value);
+                          updateStepChild(index, "cpf", value);
                           return value;
                         }}
-                        value={chi.cpf}
-                        id={"chi_cpf" + index}
-                        key={"chi_cpf" + index} />
+                        value={ste.cpf}
+                        id={"ste_cpf" + index}
+                        key={"ste_cpf" + index} />
                     </div>
                     <div className="flex flex-col md:flex-row gap-4 md:gap-15">
                       <div className="flex flex-col w-80 gap-2">
                         <Label>Data de Nascimento</Label>
-                        <MonthYearCalendar
-                          date={new Date(chi.birth_date || '2000-01-01')}
-                          setDate={(newDate) => updateChild(index, "birth_date", newDate)}
-                          isChild={true}
-                        />
+                        <MonthYearCalendar date={new Date(ste.birth_date) || '2000-01-01'} setDate={(newDate) => updateStepChild(index, "birth_date", newDate)} />
                       </div>
                       <FileUploadBlock
                         label="Documento com foto"
-                        id={"chi_picture" + index}
+                        id={"ste_picture" + index}
                         associationId={user.id}
                         documentType={'documento_com_foto'}
-                        documentsAssociation={'children'}
+                        documentsAssociation={'stepchildren'}
                         userId={user.id}
-                        setFile={(url) => updateChild(index, "url_document_picture", url)}
-                        value={chi ? chi.url_document_picture : ""}
+                        setFile={(url) => updateStepChild(index, "url_document_picture", url)}
+                        value={ste ? ste.url_document_picture : ""}
                       />
                     </div>
                   </div>
                   {
-                    chi.disability == true ?
+                    ste.disability == true ?
                       <div className="mb-8">
                         <FileUploadBlock
                           label="Documento comprobatório"
-                          id={"chi_url_medical_report" + index}
+                          id={"ste_url_medical_report" + index}
                           associationId={user.id}
                           documentType={'doc_comprobatorio'}
-                          documentsAssociation={'children'}
+                          documentsAssociation={'stepchildren'}
                           userId={user.id}
-                          setFile={(url) => updateChild(index, "url_medical_report", url)}
-                          value={chi ? chi.url_medical_report : ""}
+                          setFile={(url) => updateStepChild(index, "url_medical_report", url)}
+                          value={ste ? ste.url_medical_report : ""}
                         />
                       </div>
                       :
                       <></>
                   }
                   <div className="items-top flex space-x-2 mb-4">
-                    <Checkbox id="chi_disability" onCheckedChange={(checked) => { updateChild(index, "disability", checked) }} checked={chi.disability} />
+                    <Checkbox id="ste_disability" onCheckedChange={(checked) => { updateStepChild(index, "disability", checked) }} checked={ste.disability} />
                     <div className="grid gap-1.5 leading-none">
                       <label
-                        htmlFor="chi_disability"
+                        htmlFor="ste_disability"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         Possui dificuldade de locomoção ou laudo médico
@@ -156,10 +152,10 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                     </div>
                   </div>
                   <div className="items-top flex space-x-2">
-                    <Checkbox id="chi_has_not_cpf" onCheckedChange={(checked) => { updateChild(index, "has_not_cpf", checked) }} checked={chi.has_not_cpf} />
+                    <Checkbox id="ste_has_not_cpf" onCheckedChange={(checked) => { updateStepChild(index, "has_not_cpf", checked) }} checked={ste.has_not_cpf} />
                     <div className="grid gap-1.5 leading-none">
                       <label
-                        htmlFor="chi_has_not_cpf"
+                        htmlFor="ste_has_not_cpf"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         Não possui CPF
@@ -170,20 +166,20 @@ export default function Children({ setChildren, setSelectedChildren, childrenPar
                     </div>
                   </div>
                   {
-                    !chi.is_saved
+                    !ste.is_saved
                     &&
-                    <div className="flex items-center justify-end w-full space-x-8">
-                      <Button variant={'secondary'} onClick={() => deleteEntity('c', chi)}>Cancelar</Button>
+                    <div className="flex items-center mt-4 md:mt-0 md:justify-end w-full space-x-8">
+                      <Button variant={'secondary'} onClick={() => deleteEntity('s', ste)}>Cancelar</Button>
                       <Button variant="default" onClick={async () => {
-                        const cpf = chi?.cpf || "";
-                        const hasNotCpf = !!chi?.has_not_cpf;
+                        const cpf = ste?.cpf || "";
+                        const hasNotCpf = !!ste?.has_not_cpf;
 
                         if (validarCpf(cpf) && !hasNotCpf) {
-                          await saveEntity('c', chi);
+                          await saveEntity('s', ste);
                         } else if (cpf.trim().length === 0 && hasNotCpf) {
-                          await saveEntity('c', chi);
+                          await saveEntity('s', ste);
                         } else {
-                          toast.error(`CPF inválido para criança ${chi?.name || ''}`);
+                          toast.error(`CPF inválido para enteado(a) ${ste?.name || ''}`);
                         }
                       }}>
                         Salvar

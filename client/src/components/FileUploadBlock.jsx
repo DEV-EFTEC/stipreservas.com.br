@@ -25,7 +25,8 @@ export function FileUploadBlock({
   documentType,
   setFile,
   value,
-  allowEdit = true
+  allowEdit = true,
+  allowView = true
 }) {
   const [preview, setPreview] = useState(value);
   const [fileName, setFileName] = useState("");
@@ -119,7 +120,7 @@ export function FileUploadBlock({
   }
 
   return (
-    <div className="flex flex-col w-80 gap-2">
+    <div className="flex flex-col w-full sm:w-80 gap-2">
       <div className="flex w-full justify-between">
         <Label htmlFor={id}>{label}</Label>
         {tooltip && (
@@ -145,10 +146,13 @@ export function FileUploadBlock({
       ) : preview ? (
         <div className="relative w-full">
           <div
-            className="flex items-center border rounded-md px-3 py-2 gap-3 bg-white cursor-pointer truncate"
+            className={`flex items-center border rounded-md px-3 py-2 gap-3 bg-white truncate ${allowView ? "cursor-pointer" : "cursor-not-allowed opacity-70"
+              }`}
             onClick={() => {
-              setShowModal(true);
-              setIsPreviewLoaded(false);
+              if (allowView) {
+                setShowModal(true);
+                setIsPreviewLoaded(false);
+              }
             }}
           >
             <div className="w-10 h-10 flex-shrink-0 overflow-hidden rounded-md border">
@@ -194,16 +198,18 @@ export function FileUploadBlock({
           )}
         </div>
       ) : (
-        <Input
-          type="file"
-          id={id}
-          onChange={handleFileChange}
-          accept="image/*,application/pdf"
-          className={'w-full'}
-        />
+        allowEdit && (
+          <Input
+            type="file"
+            id={id}
+            onChange={handleFileChange}
+            accept="image/*,application/pdf"
+            className={'w-full'}
+          />
+        )
       )}
 
-      {showModal && (
+      {allowView && showModal && (
         <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 px-20 py-10"
           onClick={() => setShowModal(false)}

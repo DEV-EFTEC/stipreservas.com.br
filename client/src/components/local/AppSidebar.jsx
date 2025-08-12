@@ -16,7 +16,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "../ui/admin/sidebar"
+} from "../ui/local/sidebar"
 import logo from "../../assets/stip-logo.svg"
 import { useAuth } from "@/hooks/useAuth"
 

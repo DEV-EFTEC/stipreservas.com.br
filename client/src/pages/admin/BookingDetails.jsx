@@ -68,7 +68,7 @@ export function BookingDetails() {
           </div>
 
           <section className="flex flex-column w-full space-x-16 justify-between">
-            <section className="w-[55%] flex-column space-y-8">
+            <section className="w-[75%] flex-column space-y-8">
               <Card>
                 <CardHeader>
                   <CardTitle>Resumo da Solicitação</CardTitle>
@@ -116,7 +116,7 @@ export function BookingDetails() {
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Diária(s)</p>
-                    <Badge variant="secondary" className={'w-full'}>{eachDayOfInterval({start: new Date(booking.check_out), end: new Date(booking.check_in)}).length} dia(s)</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length} dia(s)</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Quarto(s)</p>
@@ -333,6 +333,75 @@ export function BookingDetails() {
                                     value={chi ? chi.url_medical_report : ""}
                                   />
                                 }
+                              </CardContent>
+                            </Card>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  }
+                  {
+                    booking.associates.length > 0
+                    &&
+                    <div className="mt-5">
+                      <p className="font-medium text-slate-500 mb-1">Outros associados ({booking.associates.length})</p>
+                      <div className="flex-col space-y-4">
+                        {
+                          booking.associates.map((associate, index) => (
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className={'flex items-center gap-4'}>
+                                  {associate.name}
+                                  <Badge variant={associate.associate_role}>
+                                    {enumAssociateRole[associate.associate_role]}
+                                  </Badge>
+                                  <Badge variant={'cpf_details'}>CPF {associate.cpf}</Badge>
+                                  {
+                                    associate.disability
+                                    &&
+                                    <Badge variant="preferential">
+                                      Preferêncial
+                                    </Badge>
+                                  }
+                                  <Badge variant={'secondary'}>Data de nascimento: {format(associate.birth_date, 'dd/MM/yyyy')}</Badge>
+                                  {
+                                    associate.status === 'accepted' &&
+                                    <Badge variant={'approved'}>Convite aceito</Badge>
+                                  }
+                                  {
+                                    associate.status === 'accepted' ?
+                                      associate.url_receipt_picture === null |
+                                        associate.url_word_card_file === null ?
+                                        <Badge variant={'refused'}>Falta holerite e CLT Digital</Badge> : <></> : <></>
+                                  }
+                                  {
+                                    associate.status === 'accepted' ?
+                                      associate.url_receipt_picture !== null &&
+                                        associate.url_word_card_file !== null ?
+                                        <Badge variant={'approved'}>Documentos enviados</Badge> : <></> : <></>
+                                  }
+                                  {
+                                    associate.status === 'refused' &&
+                                    <Badge variant={'refused'}>Convite recusado</Badge>
+                                  }
+                                  {
+                                    associate.status === 'pending' &&
+                                    <Badge variant={'pending_approval'}>Aguardando responsta</Badge>
+                                  }
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className={'flex justify-between'}>
+                                <FileUploadBlock
+                                  label="Documento com foto"
+                                  id={"associate_picture" + index}
+                                  associationId={associate.id}
+                                  documentType={'documento_com_foto'}
+                                  documentsAssociation={'associate'}
+                                  userId={associate.id}
+                                  allowEdit={false}
+                                  allowView={false}
+                                  value={associate ? associate.url_document_picture : ""}
+                                />
                               </CardContent>
                             </Card>
                           ))

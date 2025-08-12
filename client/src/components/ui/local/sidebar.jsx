@@ -401,7 +401,7 @@ function SidebarGroupAction({
       data-slot="sidebar-group-action"
       data-sidebar="group-action"
       className={cn(
-        "bg-zinc-50 ring-sidebar-ring hover:bg-slate-900 hover:bg-zinc-50 absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "bg-zinc-50 ring-sidebar-ring hover:bg-amber-900 absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         // Increases the hit area of the button on mobile.
         "after:absolute after:-inset-2 md:after:hidden",
         "group-data-[collapsible=icon]:hidden",
@@ -451,13 +451,13 @@ function SidebarMenuItem({
 }
 
 const sidebarMenuButtonVariants = cva(
-  "text-zinc-50 peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sky-500 transition-[width,height,padding] hover:bg-slate-900 hover:text-zinc-50 focus-visible:ring-2 active:bg-slate-900 active:text-zinc-50 disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-slate-900 data-[active=true]:font-medium data-[active=true]:text-zinc-50 data-[state=open]:hover:bg-slate-900 data-[state=open]:hover:text-zinc-50 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+  "text-zinc-50 peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sky-500 transition-[width,height,padding] hover:bg-amber-900 hover:text-zinc-50 focus-visible:ring-2 active:bg-slate-900 active:text-zinc-50 disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-slate-900 data-[active=true]:font-medium data-[active=true]:text-zinc-50 data-[state=open]:hover:bg-amber-900 data-[state=open]:hover:text-zinc-50 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "hover:bg-slate-900 hover:text-zinc-50",
+        default: "hover:bg-amber-900 hover:text-zinc-50",
         outline:
-          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-slate-900 hover:bg-zinc-50 hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
+          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-amber-900 hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
       },
       size: {
         default: "h-8 text-sm",
@@ -529,7 +529,7 @@ function SidebarMenuAction({
       data-slot="sidebar-menu-action"
       data-sidebar="menu-action"
       className={cn(
-        "bg-zinc-50 ring-sidebar-ring hover:bg-slate-900 hover:bg-zinc-50 peer-hover/menu-button:bg-sky-500 absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "bg-zinc-50 ring-sidebar-ring hover:bg-amber-900 peer-hover/menu-button:bg-sky-500 absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         // Increases the hit area of the button on mobile.
         "after:absolute after:-inset-2 md:after:hidden",
         "peer-data-[size=sm]/menu-button:top-1",
@@ -642,7 +642,7 @@ function SidebarMenuSubButton({
       data-size={size}
       data-active={isActive}
       className={cn(
-        "bg-zinc-50/0 text-zinc-50 ring-sidebar-ring hover:bg-slate-900 hover:text-zinc-50 active:bg-slate-900 active:text-zinc-50 [&>svg]:bg-zinc-50 flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+        "bg-zinc-50/0 text-zinc-50 ring-sidebar-ring hover:bg-amber-900 hover:text-zinc-50 active:bg-slate-900 active:text-zinc-50 [&>svg]:bg-zinc-50 flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
         "data-[active=true]:bg-slate-900 data-[active=true]:bg-zinc-50",
         size === "sm" && "text-xs",
         size === "md" && "text-sm",

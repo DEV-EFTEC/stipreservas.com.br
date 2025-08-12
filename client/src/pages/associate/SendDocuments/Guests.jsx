@@ -29,6 +29,7 @@ import { useAuth } from "@/hooks/useAuth";
 import maskCPF from "@/lib/maskCPF";
 import validarCpf from "validar-cpf";
 import { toast } from "sonner";
+import MonthYearCalendar from "@/components/month-year-calendar";
 
 export default function Guests({ setGuests, setSelectedGuests, guestsParcial, selectedGuests, guests, updateGuest, saveEntity, deleteEntity }) {
   const { user } = useAuth();
@@ -37,33 +38,35 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
     <>
       <>
         <hr className="my-14" />
-        <div className="w-full flex items-center justify-between">
+        <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between flex-wrap">
           <Text heading="h2">Documentos dos convidados</Text>
-          <Button onClick={() => setGuests(prevState => [...prevState, guestModel])}>Criar convidado</Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="secondary">Importar convidados</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Importar convidados</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Caso você já tenha feito reservas pela plataforma, salvamos os convidados informados nas reservas anteriores.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <DataTable
-                columns={columns}
-                data={guestsParcial}
-                onSelectionChange={(data) => setSelectedGuests(data.map(item => ({ ...item, is_saved: true })))}
-              />
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={() => {
-                  setGuests(prevState => [...prevState, ...selectedGuests])
-                }}>Continuar</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <div className="flex gap-2">
+            <Button onClick={() => setGuests(prevState => [...prevState, guestModel])}>Criar acompanhante</Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="secondary">Importar</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Importar convidados</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Caso você já tenha feito reservas pela plataforma, salvamos os convidados informados nas reservas anteriores.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <DataTable
+                  columns={columns}
+                  data={guestsParcial}
+                  onSelectionChange={(data) => setSelectedGuests(data.map(item => ({ ...item, is_saved: true })))}
+                />
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => {
+                    setGuests(prevState => [...prevState, ...selectedGuests])
+                  }}>Continuar</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       </>
       {
@@ -82,7 +85,7 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                     </div>
                   </header>
                   <div className="flex flex-col gap-8 mb-8">
-                    <div className="flex gap-15">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-15">
                       <LabeledInput
                         label={"Nome"}
                         onChange={(e) => updateGuest(index, "name", e.target.value)}
@@ -100,10 +103,10 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                         id={"gue_cpf" + index}
                         key={"gue_cpf" + index} />
                     </div>
-                    <div className="flex gap-15">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-15">
                       <div className="flex flex-col w-80 gap-2">
                         <Label>Data de Nascimento</Label>
-                        <DatePickerBirth
+                        <MonthYearCalendar
                           date={new Date(gue.birth_date || '2000-01-01')}
                           setDate={(newDate) => updateGuest(index, "birth_date", newDate)}
                         />
@@ -154,7 +157,7 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                   {
                     !gue.is_saved
                     &&
-                    <div className="flex items-center justify-end w-full space-x-8">
+                    <div className="flex items-center mt-4 md:mt-0 md:justify-end w-full space-x-8">
                       <Button variant={'secondary'} onClick={() => deleteEntity('g', gue)}>Cancelar</Button>
                       <Button variant={'default'} onClick={async () => {
                         if (validarCpf(gue.cpf)) {

@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Accessibility, ChevronRight, Copy, Download, Edit, Eye, Info, Mail, ScanQrCode, Users, X, XCircle } from "lucide-react";
+import { Accessibility, ChevronRight, Copy, Download, Edit, Eye, Info, Mail, ScanQrCode, Send, Users, X, XCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
@@ -28,7 +28,6 @@ import { toast } from "sonner";
 import html2pdf from 'html2pdf.js';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import LexicalViewer from "@/components/lexical-viewer";
-import { rangeIncludesDate } from "react-day-picker";
 
 export default function BookingDetails() {
   const location = useLocation();
@@ -44,6 +43,10 @@ export default function BookingDetails() {
   const [payment, setPayment] = useState();
   const [isHighSeason, setIsHighSeason] = useState(true);
   const [isDisabledRefund, setIsDisabledRefund] = useState(true);
+  const [hasAssociates, setHasAssociates] = useState();
+  const [invitedAssociate, setInvitedAssociate] = useState();
+  const [inviteStatus, setInviteStatus] = useState();
+  const [hasDocuments, setHasDocuments] = useState();
 
   useEffect(() => {
     if (!socket) return;
@@ -81,7 +84,15 @@ export default function BookingDetails() {
       const response = await apiRequest(`/bookings/get-booking-complete?booking_id=${booking_id}`, {
         method: "GET"
       });
+      const invAsc = response.associates.find(
+        inv => inv.associate_invited_id === user.id
+      )
+      console.log(invAsc)
       setBooking(response);
+      setHasAssociates(response.associates.length > 0);
+      setInvitedAssociate(invAsc);
+      setInviteStatus(invAsc?.status);
+      setHasDocuments(invAsc?.url_receipt_picture && invAsc?.url_word_card_file);
     })()
   }, [])
 
@@ -173,6 +184,10 @@ export default function BookingDetails() {
     }
   }
 
+  function handleNavigateSendDocuments(invite_id) {
+    navigate(`/associado/convite/enviar-documentos?invite_id=${invite_id}`);
+  }
+
   function generateAuthorizationHTML(booking, user) {
     const formatDate = (date) => format(new Date(date), 'dd/MM/yyyy');
     const formatPeriod = `${formatDate(booking.check_in)} à ${formatDate(booking.check_out)}`;
@@ -195,6 +210,7 @@ export default function BookingDetails() {
       ${booking.dependents.map(dep => mapPerson(dep, 'Dependente')).join('')}
       ${booking.guests.map(gue => mapPerson(gue, 'Convidado')).join('')}
       ${booking.children.map(chi => mapPerson(chi, 'Criança')).join('')}
+      ${booking.stepchildren.map(chi => mapPerson(chi, 'Enteado')).join('')}
       ${booking.associates.map(chi => mapPerson(chi, 'Outros associados')).join('')}
     `;
     };
@@ -204,10 +220,11 @@ export default function BookingDetails() {
     return `
     <div style="font-family: 'DM Sans', sans-serif; color: #333;">
       <h1 style="color: #00598a; font-size: 24px; font-weight:bold;">STIP Reservas - autorização #${booking.id.slice(0, 8)}</h1>
+      <h2 style="color: #00598a; font-size: 18px; font-weight:bold;">Endereço Sede Praia: Rua Olinda, 76, Balneário de Shangri-lá</h2>
       <table style="width: 100%; border-collapse: collapse;">
         <tr><th style="text-align:left">Titular</th><td>${user.name}</td></tr>
         <tr><th style="text-align:left">Documento</th><td>${user.cpf}</td></tr>
-        <tr><th style="text-align:left">Empresa</th><td>${user.work_company || '-'}</td></tr>
+        <tr><th style="text-align:left">Empresa</th><td>${user.enterprise.name || '-'}</td></tr>
         <tr><th style="text-align:left">Período</th><td>${formatPeriod}</td></tr>
         <tr><th style="text-align:left">Quarto(s)</th><td>${roomNumbers}</td></tr>
       </table>
@@ -278,9 +295,11 @@ export default function BookingDetails() {
       })
 
       if (success) {
-        toast.success("Convite aceito com sucesso!")
+        toast.success("Convite aceito com sucesso!");
+        setInviteStatus('accepted');
       } else {
-        toast.warning("COnvite recusado com sucesso.")
+        toast.warning("Convite recusado com sucesso.");
+        setInviteStatus('refused');
       }
     } catch (err) {
       console.error(err)
@@ -302,17 +321,68 @@ export default function BookingDetails() {
             </div>
           </div>
 
-          <Alert className={'w-fit mb-8'} variant={'info'}>
-            <Mail />
-            <AlertTitle>Convite realizado por {booking.holders[0].name}</AlertTitle>
-            <AlertDescription>
-              Olá! Você foi convidado para a solicitação #{booking.id.slice(0, 8)}.
-              <div className="flex space-x-4">
-                <Button variant={'positive'} onClick={() => updateStatusInvite("accepted")}>Aceitar convite</Button>
-                <Button variant={'destructive'} onClick={() => updateStatusInvite("refused")}>Recusar</Button>
-              </div>
-            </AlertDescription>
-          </Alert>
+          {hasAssociates && invitedAssociate && (
+            <Alert className="w-fit mb-8" variant="info">
+              <Mail />
+              <AlertTitle>
+                Convite realizado por {booking.holders[0].name}
+              </AlertTitle>
+              <AlertDescription>
+                <p className="mb-2">
+                  Olá! Você foi convidado para a solicitação #{booking.id.slice(0, 8)}.
+                </p>
+
+                {inviteStatus === "accepted" && (
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="bg-green-100 text-green-800 text-sm px-2 py-1 rounded">
+                      Aceito
+                    </span>
+                    <span className="text-sm text-green-700">
+                      Você já aceitou este convite.
+                    </span>
+                  </div>
+                )}
+
+                {inviteStatus === "refused" && (
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="bg-rose-100 text-rose-800 text-sm px-2 py-1 rounded">
+                      Recusado
+                    </span>
+                    <span className="text-sm text-rose-700">
+                      Você recusou este convite.
+                    </span>
+                  </div>
+                )}
+
+                {inviteStatus === "accepted" && !hasDocuments && (
+                  <div className="flex items-start gap-2 bg-red-50 border border-red-200 p-2 rounded">
+
+                    <p className="text-sm text-red-700">
+                      Faltam documentos: por favor envie o holerite recente e a CLT Digital.
+                    </p>
+                  </div>
+                )}
+
+                {inviteStatus === "accepted" && hasDocuments && (
+                  <div className="flex items-center gap-2 bg-green-50 border border-green-200 p-2 rounded">
+                    <span className="text-green-500 text-lg">✅</span>
+                    <p className="text-sm text-green-700">
+                      Todos os documentos foram enviados.
+                    </p>
+                  </div>
+                )}
+                {
+                  inviteStatus === "pending" && (
+                    <div className="flex gap-2 justify-end w-full">
+                      <Button variant={'positive'} onClick={() => updateStatusInvite('accepted')}>Aceitar</Button>
+                      <Button variant={'destructive'} onClick={() => updateStatusInvite('refused')}>Rejeitar</Button>
+                    </div>
+                  )
+                }
+              </AlertDescription>
+            </Alert>
+
+          )}
 
           <section className="flex flex-column w-full justify-between flex-wrap lg:space-x-16">
             <section className="w-full md:w-[90%] lg:w-[80%] xl:w-[100%] flex-column space-y-8">
@@ -415,6 +485,7 @@ export default function BookingDetails() {
                           userId={booking.holders[0].id}
                           key={'holerite_sender'}
                           allowEdit={false}
+                          allowView={false}
                           value={booking ? booking.url_receipt_picture : ""}
                         />
                         <FileUploadBlock
@@ -425,6 +496,7 @@ export default function BookingDetails() {
                           documentsAssociation={'holder'}
                           userId={booking.holders[0].id}
                           allowEdit={false}
+                          allowView={false}
                           value={booking ? booking.url_word_card_file : ""}
                         />
                       </CardContent>
@@ -462,6 +534,7 @@ export default function BookingDetails() {
                                   documentsAssociation={'dependents'}
                                   userId={user.id}
                                   allowEdit={false}
+                                  allowView={false}
                                   value={dep ? dep.url_document_picture : ""}
                                 />
                                 {
@@ -475,6 +548,7 @@ export default function BookingDetails() {
                                     documentsAssociation={'dependents'}
                                     userId={user.id}
                                     allowEdit={false}
+                                    allowView={false}
                                     value={dep ? dep.url_medical_report : ""}
                                   />
                                 }
@@ -517,6 +591,7 @@ export default function BookingDetails() {
                                   documentsAssociation={'guests'}
                                   userId={user.id}
                                   allowEdit={false}
+                                  allowView={false}
                                   value={gue ? gue.url_document_picture : ""}
                                 />
                               </CardContent>
@@ -531,6 +606,7 @@ export default function BookingDetails() {
                                   documentsAssociation={'guests'}
                                   userId={user.id}
                                   allowEdit={false}
+                                  allowView={false}
                                   value={gue ? gue.url_medical_report : ""}
                                 />
                               }
@@ -572,6 +648,7 @@ export default function BookingDetails() {
                                   documentsAssociation={'children'}
                                   userId={user.id}
                                   allowEdit={false}
+                                  allowView={false}
                                   value={chi ? chi.url_document_picture : ""}
                                 />
                                 {
@@ -585,7 +662,63 @@ export default function BookingDetails() {
                                     documentsAssociation={'children'}
                                     userId={user.id}
                                     allowEdit={false}
+                                    allowView={false}
                                     value={chi ? chi.url_medical_report : ""}
+                                  />
+                                }
+                              </CardContent>
+                            </Card>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  }
+                  {
+                    booking.stepchildren.length > 0
+                    &&
+                    <div className="mt-5">
+                      <p className="font-medium text-slate-500 mb-1">Enteados ({booking.stepchildren.length})</p>
+                      <div className="flex-col space-y-4">
+                        {
+                          booking.stepchildren.map((stepchi, index) => (
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className={'flex items-center gap-4'}>
+                                  {stepchi.name}
+                                  <Badge variant={'cpf_details'}>CPF {stepchi.cpf}</Badge>
+                                  {
+                                    stepchi.disability
+                                    &&
+                                    <Badge variant="preferential">
+                                      Preferêncial
+                                    </Badge>
+                                  }
+                                  <Badge variant={'secondary'}>Data de nascimento: {format(stepchi.birth_date, 'dd/MM/yyyy')}</Badge>
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className={'flex justify-between'}>
+                                <FileUploadBlock
+                                  label="Documento com foto"
+                                  id={"stepchi_picture" + index}
+                                  associationId={user.id}
+                                  documentType={'documento_com_foto'}
+                                  allowEdit={false}
+                                  documentsAssociation={'stepchildren'}
+                                  userId={user.id}
+                                  value={stepchi ? stepchi.url_document_picture : ""}
+                                />
+                                {
+                                  stepchi.disability
+                                  &&
+                                  <FileUploadBlock
+                                    label="Documento comprobatório"
+                                    id={"stepchi_url_medical_report" + index}
+                                    associationId={user.id}
+                                    documentType={'doc_comprobatorio'}
+                                    documentsAssociation={'stepchildren'}
+                                    allowEdit={false}
+                                    userId={user.id}
+                                    value={stepchi ? stepchi.url_medical_report : ""}
                                   />
                                 }
                               </CardContent>
@@ -602,32 +735,57 @@ export default function BookingDetails() {
                       <p className="font-medium text-slate-500 mb-1">Outros associados ({booking.associates.length})</p>
                       <div className="flex-col space-y-4">
                         {
-                          booking.associates.map((associates, index) => (
+                          booking.associates.map((associate, index) => (
                             <Card>
                               <CardHeader>
                                 <CardTitle className={'flex items-center gap-4'}>
-                                  {associates.name}
-                                  <Badge variant={'cpf_details'}>CPF {associates.cpf}</Badge>
+                                  {associate.name}
+                                  <Badge variant={'cpf_details'}>CPF {associate.cpf}</Badge>
                                   {
-                                    associates.disability
+                                    associate.disability
                                     &&
                                     <Badge variant="preferential">
                                       Preferêncial
                                     </Badge>
                                   }
-                                  <Badge variant={'secondary'}>Data de nascimento: {format(associates.birth_date, 'dd/MM/yyyy')}</Badge>
+                                  <Badge variant={'secondary'}>Data de nascimento: {format(associate.birth_date, 'dd/MM/yyyy')}</Badge>
+                                  {
+                                    associate.status === 'accepted' &&
+                                    <Badge variant={'approved'}>Convite aceito</Badge>
+                                  }
+                                  {
+                                    associate.status === 'accepted' &&
+                                    associate.url_receipt_picture === null |
+                                    associate.url_word_card_file === null &&
+                                    <Badge variant={'refused'}>Falta holerite e CLT Digital</Badge>
+                                  }
+                                  {
+                                    associate.status === 'accepted' &&
+                                    associate.url_receipt_picture !== null &&
+                                    associate.url_word_card_file !== null &&
+                                    <Badge variant={'approved'}>Todos os documentos foram enviados</Badge>
+                                  }
+                                  {
+                                    associate.status === 'refused' &&
+                                    <Badge variant={'refused'}>Convite recusado</Badge>
+                                  }
+                                  {
+                                    associate.status === 'pending' &&
+                                    <Badge variant={'pending_approval'}>Aguardando responsta</Badge>
+                                  }
                                 </CardTitle>
                               </CardHeader>
                               <CardContent className={'flex justify-between'}>
                                 <FileUploadBlock
                                   label="Documento com foto"
-                                  id={"associates_picture" + index}
-                                  associationId={associates.id}
+                                  id={"associate_picture" + index}
+                                  associationId={associate.id}
                                   documentType={'documento_com_foto'}
-                                  documentsAssociation={'associates'}
-                                  userId={associates.id}
+                                  documentsAssociation={'associate'}
+                                  userId={associate.id}
                                   allowEdit={false}
-                                  value={associates ? associates.url_document_picture : ""}
+                                  allowView={false}
+                                  value={associate ? associate.url_document_picture : ""}
                                 />
                               </CardContent>
                             </Card>
@@ -686,13 +844,21 @@ export default function BookingDetails() {
                 {
                   booking.status === 'refused'
                   &&
-                  <Button className={'mt-4 w-full'} variant={'refused'} onClick={handleUpdateToSend}>Realizar alterções e reenviar<Edit /></Button>
+                  <Button className={'mt-4 w-full'} variant={'refused'} onClick={handleUpdateToSend}>Realizar alterações e reenviar<Edit /></Button>
+                }
+                {
+                  inviteStatus === "accepted" && !hasDocuments
+                  &&
+                  <Button className={'mt-4 w-full flex flex-col h-fit'} variant={'awaiting_documents'} onClick={() => handleNavigateSendDocuments(invitedAssociate.invite_id)}>
+                    <div className="flex items-center gap-4">
+                      <Send />Enviar documentos
+                    </div>Convite #{invitedAssociate.invite_id.slice(0, 8)}</Button>
                 }
                 {/* {
                   isHighSeason &&
                   <Alert variant={'destructive'} className={'w-[250px]'}>
                     <Info />
-                    Lembre-se: Estamos em alta temporada.<br />Não haverá reembolsos por conta da alta demanda.
+                    Lembre-se: Estamos em alta temporada.<br />Não haverá reembolsos por conta da alta demanda e tempo indisponível para realocação.
                   </Alert>
                 } */}
                 {
