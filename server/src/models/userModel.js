@@ -118,7 +118,7 @@ export async function createUserLocal(data) {
       birth_date: new Date("1999-01-01"),
       associate_role: "none",
       mobile_phone: "+5541999999999",
-      enterprise_id: "73fd6447-1ecd-4710-aa1a-18586434d486",
+      enterprise_id: "c98e2bd7-b5eb-4f30-b7f4-abe17c09028a",
       role: data.role,
     })
     .returning("id", "role");

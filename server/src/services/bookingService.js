@@ -84,7 +84,7 @@ export async function updateBooking(data) {
     for (const asc of associates) {
       await resend.emails.send({
         from: "STIP reservas <info@stip-reservas.com.br>",
-        to: "devlyh.testing@gmail.com",
+        to: [asc.email],
         subject: "Você foi convidado para uma reserva!",
         html: `<!DOCTYPE html>
 <html lang="pt-br">
