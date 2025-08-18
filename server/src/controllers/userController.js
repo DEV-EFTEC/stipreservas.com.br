@@ -44,7 +44,7 @@ export async function register(req, res) {
     const result = await userService.registerUser(
       {
         ...userData,
-        enterprise_id: enterpriseId,
+        enterprise_id: enterpriseId.id,
         mobile_phone: userData.mobile_phone
           .replaceAll(" ", "")
           .replace("+", "")

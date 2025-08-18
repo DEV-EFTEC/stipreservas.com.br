@@ -25,6 +25,7 @@ import Text from "@/components/Text";
 import maskCNPJ from "@/lib/maskCNPJ";
 import maskPhone from "@/lib/maskPhone";
 import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -133,6 +134,7 @@ export default function Register() {
     return (
         <section className="flex flex-col items-center justify-center h-full bg-radial from-sky-800 to-sky-950 py-30 overflow-y-auto space-y-8">
             <StipLogo />
+            <Toaster richColors/>
             {
                 tokenIsValid
                     ?
