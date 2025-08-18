@@ -89,7 +89,9 @@ export default function CreateBookingAdmin() {
           ],
           dependents: [],
           guests: [],
-          children: []
+          children: [],
+          associates: [],
+          stepchildren: [],
         })
       });
       saveBooking({ ...result, holders });

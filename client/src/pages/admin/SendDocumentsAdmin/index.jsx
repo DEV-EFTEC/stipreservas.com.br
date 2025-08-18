@@ -30,6 +30,8 @@ export default function SendDocumentsAdmin() {
   const [selectedDependents, setSelectedDependents] = useState([]);
   const [selectedGuests, setSelectedGuests] = useState([]);
   const [selectedChildren, setSelectedChildren] = useState([]);
+  const [selectedAssociates, setSelectedAssociates] = useState([]);
+  const [selectedStepchildren, setSelectedStepchildren] = useState([]);
 
   const {
     list: dependents,
@@ -107,7 +109,9 @@ export default function SendDocumentsAdmin() {
         dependents: dependents.map(({ id }) => ({ dependent_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
         guests: guests.map(({ id }) => ({ guest_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
         children: children.map(({ id }) => ({ child_id: id, booking_id: booking.id, check_in: booking.check_in, check_out: booking.check_out })),
-        holders: []
+        holders: [],
+        associates: [],
+        stepchildren: [],
       })
     });
 

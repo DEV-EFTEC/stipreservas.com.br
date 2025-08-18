@@ -50,6 +50,8 @@ export default function BookingSettingsAdmin() {
         children: booking.children.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
         dependents: booking.dependents.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
         guests: booking.guests.map(({ id, check_in, check_out, room_id }) => ({ id, check_in, check_out, room_id })),
+        stepchildren: [],
+        associates: [],
       })
     })
     if (response) {
