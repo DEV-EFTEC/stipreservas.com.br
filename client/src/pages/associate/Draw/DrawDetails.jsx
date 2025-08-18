@@ -158,127 +158,90 @@ export default function DrawDetails() {
     }
   }
 
+  function generateAuthorizationHTML(booking, user) {
+    const formatDate = (date) => format(new Date(date), 'dd/MM/yyyy');
+    const formatPeriod = `${formatDate(booking.check_in)} à ${formatDate(booking.check_out)}`;
+    const totalDays = eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length;
+
+    const renderPeopleRows = () => {
+      let count = 1;
+
+      const mapPerson = (person, tipo) => `
+      <tr>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${count++}</td>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${person.name}</td>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${person.cpf === "" ? "Não possui CPF" : person.cpf}</td>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${totalDays} dias</td>
+        <td style="padding: 8px 10px; border: 1px solid #ddd;">${tipo}</td>
+      </tr>
+    `;
+
+      return `
+      ${booking.dependents.map(dep => mapPerson(dep, 'Dependente')).join('')}
+      ${booking.guests.map(gue => mapPerson(gue, 'Convidado')).join('')}
+      ${booking.children.map(chi => mapPerson(chi, 'Criança')).join('')}
+      ${booking.stepchildren.map(chi => mapPerson(chi, 'Enteado')).join('')}
+      ${booking.associates.map(chi => mapPerson(chi, 'Outros associados')).join('')}
+    `;
+    };
+
+    const roomNumbers = booking.rooms.map(r => r.number).join(', ');
+
+    return `
+    <div style="font-family: 'DM Sans', sans-serif; color: #333;">
+      <h1 style="color: #00598a; font-size: 24px; font-weight:bold;">STIP Reservas - autorização #${booking.id.slice(0, 8)}</h1>
+      <h2 style="color: #00598a; font-size: 18px; font-weight:bold;">Endereço Sede Praia: Rua Olinda, 76, Balneário de Shangri-lá</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><th style="text-align:left">Titular</th><td>${user.name}</td></tr>
+        <tr><th style="text-align:left">Documento</th><td>${user.cpf}</td></tr>
+        <tr><th style="text-align:left">Empresa</th><td>${user.enterprise.name || '-'}</td></tr>
+        <tr><th style="text-align:left">Período</th><td>${formatPeriod}</td></tr>
+        <tr><th style="text-align:left">Quarto(s)</th><td>${roomNumbers}</td></tr>
+      </table>
+
+      <h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 16px; font-weight:bold;">Acompanhantes</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead style="line-height:48px;">
+          <tr style="background:#00598a; color:#FFFFFF;">
+            <th>#</th><th>Nome</th><th>Nº Documento</th><th>Estadia</th><th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${renderPeopleRows()}
+        </tbody>
+      </table>
+
+      <h3 style="margin-top: 24px;">IMPORTANTE: Termos & Condições</h3>
+      <ol>
+        <li>A autorização terá validade das 8h do primeiro dia até as 17h do último dia informado;</li>
+        <li>Não será permitida a entrada de pessoas não cadastradas na autorização;</li>
+        <li>O desrespeito às normas resultará na perda do direito de uso da colônia de férias;</li>
+        <li>Pulseiras de identificação são obrigatórias. Perda = R$ 3,00/unidade;</li>
+        <li>É proibida a entrada com animais de estimação;</li>
+        <li>Cancelamentos até 3 dias antes do check-in (baixa temporada) permitem reembolso;</li>
+        <li>Cancelamentos em alta temporada não serão reembolsados por não ser possível a realocação para outro inscrito;</li>
+        <li>Check-in: das 8h às 18h;</li>
+        <li>Check-out: até 17h;</li>
+        <li>Cancelamento somente via plataforma STIP Reservas.</li>
+      </ol>
+
+      <h3 style="margin-top: 24px;">ATENÇÃO! É necessário levar:</h3>
+      <ul>
+        <li>Roupa de cama e itens de higiene pessoal;</li>
+        <li>Detergente, esponja e pano de prato;</li>
+        <li>A limpeza do quarto é de responsabilidade do hóspede;</li>
+        <li>Cuide do kit de limpeza disponibilizado.</li>
+      </ul>
+
+      <footer style="margin-top: 20px; line-height:24px; font-size: 12px; text-align: center; color:#bbb;">
+        <p>Documento gerado eletronicamente via STIP Reservas em ${new Date().getFullYear()}.</p>
+      </footer>
+    </div>
+  `;
+  }
+
   function handleDownloadAuthorization() {
-    const htmlString = `<div style="padding: 0; font-family: 'DM Sans', Arial, sans-serif; color: #333; background-color: #fff;page-break-inside: avoid;">
-  <h1 style="font-size: 28px; color: #00598a; margin-bottom: 8px;">STIP Reservas</h1>
-  <h2 style="font-size: 20px; margin-bottom: 24px; color: #111;">Autorização #A8374U</h2>
-
-  <div>
-    <h3
-      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
-      Informações Gerais
-    </h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;page-break-inside: avoid;">
-      <tbody>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Titular</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Jeremias Seles de Almeida</td>
-        </tr>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Documento</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">79668010</td>
-        </tr>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Empresa</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">PANI. MERC. AHU LTDA</td>
-        </tr>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Período</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">21/06/2025 à 22/06/2025</td>
-        </tr>
-        <tr>
-          <th style="text-align: left; padding: 8px 10px; border: 1px solid #ddd;">Quarto(s)</th>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">13</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div>
-    <h3
-      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
-      Acompanhantes
-    </h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px;page-break-inside: avoid;">
-      <thead>
-        <tr style="background-color: #f8f8f8; font-weight: bold;">
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">#</th>
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">Nome</th>
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">Nº Documento</th>
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">Estadia</th>
-          <th style="padding: 8px 10px; border: 1px solid #ddd;">Tipo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">1</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Clemilda dos Santos Silva</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">919104399-91</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">2 dias</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Dependente</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">2</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Gabriel Santos de Almeida</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">139626939-80</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">2 dias</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Dependente</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">3</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Laura Mariana da Silva</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">155144439-90</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">2 dias</td>
-          <td style="padding: 8px 10px; border: 1px solid #ddd;">Convidado</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div>
-    <h3
-      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
-      IMPORTANTE: Termos & Condições
-    </h3>
-    <ol style="margin-bottom: 8px; padding-left: 0; text-indent: 0;list-style-type:decimal;page-break-inside: avoid;">
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">1. A autorização terá validade das 8h do primeiro dia até as 17h do
-        último dia informado;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">2. Não será permitida a entrada de pessoas não cadastradas na
-        autorização;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">3. O desrespeito às normas resultará na perda do direito de uso da
-        colônia de férias;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">4. Pulseiras de identificação são obrigatórias. Perda = R$
-        3,00/unidade;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">5. É proibida a entrada com animais de estimação;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">6. Cancelamentos até 1 dia antes do check-in (baixa temporada)
-        permitem reembolso;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">7. Cancelamentos até 3 dias antes do check-in (alta temporada)
-        permitem reembolso;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">8. Check-in: das 8h às 18h;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">9. Check-out: até 17h;</li>
-      <li style="margin-bottom: 8px; padding-left: 0; text-indent: 0;">10. Cancelamento somente via plataforma STIP Reservas.</li>
-    </ol>
-  </div>
-
-  <div>
-    <h3
-      style="font-size: 18px; margin-top: 32px; margin-bottom: 12px; border-bottom: 2px solid #00598a; padding-bottom: 4px; color: #222;page-break-inside: avoid;">
-      ATENÇÃO! É necessário levar:
-    </h3>
-    <ul style="margin-left: 1.5rem; margin-top: 8px; list-style-type: disc;page-break-inside: avoid;">
-      <li style="margin-bottom: 8px; line-height: 1.5;page-break-inside: avoid;">Roupa de cama e itens de higiene pessoal;</li>
-      <li style="margin-bottom: 8px; line-height: 1.5;">Detergente, esponja e pano de prato;</li>
-      <li style="margin-bottom: 8px; line-height: 1.5;">A limpeza do quarto é de responsabilidade do hóspede;</li>
-      <li style="margin-bottom: 8px; line-height: 1.5;">Cuide do kit de limpeza disponibilizado.</li>
-    </ul>
-  </div>
-
-  <div>
-    <footer style="margin-top: 40px; font-size: 12px; color: #666; text-align: center;page-break-inside: avoid; padding: 10px;">
-      <p style="page-break-inside: avoid;">Documento gerado eletronicamente via STIP Reservas em 2025.</p>
-    </footer>
-  </div>
-</div>`
+    const htmlString = generateAuthorizationHTML(booking, user);
 
     const opt = {
       margin: 0.5,

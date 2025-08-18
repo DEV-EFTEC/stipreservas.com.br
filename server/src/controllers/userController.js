@@ -36,7 +36,7 @@ export async function verifyPassword(req, res) {
 
 export async function register(req, res) {
   try {
-    const { token, enterprise, cnpj, ...userData } = req.body;
+    const { token, enterprise, cnpj, enterprise_name, ...userData } = req.body;
     const enterpriseId = await enterpriseService.createEnterprise({
       cnpj: enterprise.cnpj.replaceAll(".", "").replace("-", ""),
       ...enterprise,

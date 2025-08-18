@@ -6,6 +6,10 @@ export async function bookingPaided(req, res) {
   const { body } = req;
 
   try {
+    if (!body.payment?.externalReference?.startsWith("STIPreservas-")) {
+      return res.status(200).send("Ignorado");
+    }
+
     const payment = await paymentService.updatePaymentByAsaasPaymentId(
       body.payment.id,
       "payments",

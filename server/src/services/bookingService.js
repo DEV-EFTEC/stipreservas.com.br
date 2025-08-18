@@ -469,7 +469,7 @@ export async function approveBooking(id, user_id, value) {
     const payment = await paymentService.createPayment("payments", {
       booking_id: id,
       user_id: user_id,
-      value: 5.0,
+      value,
       due_date: booking.expires_at.toISOString().split("T")[0],
     });
 

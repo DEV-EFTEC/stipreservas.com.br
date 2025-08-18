@@ -24,6 +24,7 @@ import { useEffect, useState } from "react";
 import Text from "@/components/Text";
 import maskCNPJ from "@/lib/maskCNPJ";
 import maskPhone from "@/lib/maskPhone";
+import { toast } from "sonner";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -31,7 +32,8 @@ export default function Register() {
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get("token");
     const [tokenIsValid, setTokenIsValid] = useState();
-    const [enterprise, setEnterprise] = useState()
+    const [enterprise, setEnterprise] = useState();
+    const [enableEnterpriseName, setEnableEnterpriseName] = useState(false);
 
     const formSchema = z.object({
         cpf: z.string().min(14, { message: "Deve ter no mínimo de 14 caracteres." }).refine((cpf) => validarCpf(cpf), {
@@ -44,6 +46,7 @@ export default function Register() {
         birth_date: z.string(),
         role: z.string(),
         cnpj: z.string(),
+        enterprise_name: z.string(),
         mobile_phone: z.string(),
         associate_role: z.enum(["partner", "contributor"]),
         password: z.string()
@@ -54,6 +57,7 @@ export default function Register() {
         defaultValues: {
             cpf: "",
             cnpj: "",
+            enterprise_name: "",
             name: "",
             email: "",
             birth_date: "",
@@ -102,13 +106,29 @@ export default function Register() {
             (async () => {
                 const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjOnlyNumbers}`);
                 const result = await res.json();
-                setEnterprise({
-                    cnpj: result.cnpj,
-                    name: result.razao_social
-                });
+                if (result.type === 'bad_request') {
+                    toast.error(result.message)
+                    setEnableEnterpriseName(true)
+                } else if (result.type === 'not_found') {
+                    toast.info(result.message);
+                    setEnableEnterpriseName(true);
+                } else {
+                    setEnterprise({
+                        cnpj: result.cnpj,
+                        name: result.razao_social
+                    });
+                }
             })();
         }
     }, [watchedCnpj]);
+
+    useEffect(() => {
+        setEnterprise({
+            cnpj: watchedCnpj,
+            name: form.watch("enterprise_name")
+        }
+        );
+    }, [form.watch("enterprise_name")])
 
     return (
         <section className="flex flex-col items-center justify-center h-full bg-radial from-sky-800 to-sky-950 py-30 overflow-y-auto space-y-8">
@@ -181,6 +201,27 @@ export default function Register() {
                                     </FormItem>
                                 )}
                             />
+                            {
+                                enableEnterpriseName
+                                &&
+                                <FormField
+                                    control={form.control}
+                                    name="enterprise_name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Nome da empresa (Razão Social)</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="RAZAO SOCIAL LTDA"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(e.target.value)}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            }
                             <FormField
                                 control={form.control}
                                 name="mobile_phone"

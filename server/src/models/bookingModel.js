@@ -111,7 +111,7 @@ export async function getBookingComplete(id) {
 export async function getLocalBookingComplete(date) {
   // 1. Buscar bookings com check_in OU check_out no dia
   const bookings = await db("bookings")
-    .where("status", "approved")
+    .whereIn("status", ["approved", "finished"])
     .andWhere(function () {
       this.where("check_in", date).orWhere("check_out", date);
     });
@@ -134,27 +134,27 @@ export async function getLocalBookingComplete(date) {
   ] = await Promise.all([
     db("guests_bookings as gb")
       .join("guests as g", "gb.guest_id", "g.id")
-      .select("gb.booking_id", "g.*")
+      .select("gb.*", "g.*")
       .whereIn("gb.booking_id", bookingIds),
 
     db("dependents_bookings as db")
       .join("dependents as d", "db.dependent_id", "d.id")
-      .select("db.booking_id", "d.*")
+      .select("db.*", "d.*")
       .whereIn("db.booking_id", bookingIds),
 
     db("children_bookings as cb")
       .join("children as c", "cb.child_id", "c.id")
-      .select("cb.booking_id", "c.*")
+      .select("cb.*", "c.*")
       .whereIn("cb.booking_id", bookingIds),
 
     db("stepchildren_bookings as sb")
       .join("stepchildren as s", "sb.stepchild_id", "s.id")
-      .select("sb.booking_id", "s.*")
+      .select("sb.*", "s.*")
       .whereIn("sb.booking_id", bookingIds),
 
     db("holders_bookings as hb")
       .join("users as u", "hb.holder_id", "u.id")
-      .select("hb.booking_id", "u.*")
+      .select("hb.*", "u.*")
       .whereIn("hb.booking_id", bookingIds),
 
     db("associates_bookings as ab")
@@ -165,12 +165,12 @@ export async function getLocalBookingComplete(date) {
           "ab.associate_id"
         );
       })
-      .select("ab.booking_id", "u.*", "abi.id as invite_id", "u.password")
+      .select("ab.*", "u.*", "abi.id as invite_id", "u.password")
       .whereIn("ab.booking_id", bookingIds),
 
     db("booking_rooms as br")
       .join("rooms as r", "br.room_id", "r.id")
-      .select("br.booking_id", "r.*")
+      .select("br.*", "r.*")
       .whereIn("br.booking_id", bookingIds),
   ]);
 

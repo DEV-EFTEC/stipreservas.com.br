@@ -55,6 +55,14 @@ const badgeVariants = cva(
           "border-transparent bg-teal-600 text-white [a&]:hover:bg-secondary/90",
         drawn:
           "border-transparent bg-pink-400 text-white [a&]:hover:bg-secondary/90",
+        not_present:
+          "border-red-200 bg-red-100 text-red-800 [a&]:hover:bg-secondary/90",
+        check_in_confirmed:
+          "border-green-200 bg-green-100 text-green-800 [a&]:hover:bg-secondary/90",
+        check_out_confirmed:
+          "border-blue-200 bg-blue-100 text-blue-800 [a&]:hover:bg-secondary/90",
+        pending:
+          "border-yellow-200 bg-yellow-100 text-yellow-800 [a&]:hover:bg-secondary/90",
         not_drawn:
           "border-transparent bg-red-800 text-white [a&]:hover:bg-secondary/90",
         awaiting_draw:

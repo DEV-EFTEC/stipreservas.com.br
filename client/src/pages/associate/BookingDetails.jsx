@@ -191,7 +191,7 @@ export default function BookingDetails() {
   function generateAuthorizationHTML(booking, user) {
     const formatDate = (date) => format(new Date(date), 'dd/MM/yyyy');
     const formatPeriod = `${formatDate(booking.check_in)} à ${formatDate(booking.check_out)}`;
-    const totalDays = differenceInDays(new Date(booking.check_out), new Date(booking.check_in));
+    const totalDays = eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length;
 
     const renderPeopleRows = () => {
       let count = 1;
@@ -248,7 +248,7 @@ export default function BookingDetails() {
         <li>O desrespeito às normas resultará na perda do direito de uso da colônia de férias;</li>
         <li>Pulseiras de identificação são obrigatórias. Perda = R$ 3,00/unidade;</li>
         <li>É proibida a entrada com animais de estimação;</li>
-        <li>Cancelamentos até 1 dia antes do check-in (baixa temporada) permitem reembolso;</li>
+        <li>Cancelamentos até 3 dias antes do check-in (baixa temporada) permitem reembolso;</li>
         <li>Cancelamentos em alta temporada não serão reembolsados por não ser possível a realocação para outro inscrito;</li>
         <li>Check-in: das 8h às 18h;</li>
         <li>Check-out: até 17h;</li>
@@ -854,24 +854,17 @@ export default function BookingDetails() {
                       <Send />Enviar documentos
                     </div>Convite #{invitedAssociate.invite_id.slice(0, 8)}</Button>
                 }
-                {/* {
-                  isHighSeason &&
-                  <Alert variant={'destructive'} className={'w-[250px]'}>
-                    <Info />
-                    Lembre-se: Estamos em alta temporada.<br />Não haverá reembolsos por conta da alta demanda e tempo indisponível para realocação.
-                  </Alert>
-                } */}
                 {
                   booking.status === 'approved'
                   &&
                   <div className="w-[250px]">
                     <Button className={'mt-4 w-full'} onClick={handleDownloadAuthorization}>Baixar autorização<Download /></Button>
                     {
-                      !isHighSeason
+                      ((new Date(booking.check_in) - new Date()) / (1000 * 60 * 60 * 24)) >= 3
                         ?
                         <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleCancel}>Cancelar solicitação<X /></Button>
                         :
-                        <Button className={'mt-4 w-full'} onClick={handleGetRefund} variant={"destructive"} disabled={isDisabledRefund}>Cancelar e solicitar reembolso<XCircle /></Button>
+                        <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleCancel} disabled>Cancelar solicitação<X /></Button>
                     }
                   </div>
                 }

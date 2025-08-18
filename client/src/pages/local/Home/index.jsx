@@ -36,7 +36,7 @@ export function Home() {
           bookings.length > 0
             ?
             bookings.map(boo => (
-              <CardLocalBooking key={boo.id} {...boo} />
+              <CardLocalBooking key={boo.id} {...boo} booking={boo}/>
             ))
             :
             <p>Nenhuma reserva para o dia {format(date, 'dd/MM/yyyy')}</p>

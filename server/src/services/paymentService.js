@@ -3,6 +3,7 @@ import * as bookingModel from "#models/bookingModel.js";
 import * as userModel from "#models/userModel.js";
 import { apiAsaas } from "#lib/asaas.js";
 import logger from "#core/logger.js";
+import randomBytes from "randombytes";
 
 export async function createCustomer(user) {
   const { id, name, cpf, email, mobile_phone } = user;
@@ -36,6 +37,7 @@ async function createPaymentLink(
         billingType: "PIX",
         value,
         dueDate: due_date,
+        externalReference: `STIPreservas-${randomBytes(6).toString("base64").slice(0, 6)}`,
       }),
     });
 
@@ -76,9 +78,6 @@ async function findPaymentById(id) {
 export async function createPayment(table, mock) {
   const { booking_id, user_id, value, due_date } = mock;
   const user = await paymentModel.findCustomerIdByUser(user_id);
-
-  console.log("===========")
-  console.log(user)
 
   try {
     if (user.asaas_customer_id && user.asaas_customer_id.trim() !== "") {
@@ -142,8 +141,7 @@ export async function updatePaymentByAsaasPaymentId(id, table, status) {
 
 export async function refundPayment(id, table) {
   try {
-    const { asaas_payment_id } =
-      await paymentModel.findPaymentByBooking(id);
+    const { asaas_payment_id } = await paymentModel.findPaymentByBooking(id);
 
     paymentModel.updatePaymentByAsaasPaymentId(asaas_payment_id, table, {
       status_role: "refund_solicitation",
@@ -155,7 +153,7 @@ export async function refundPayment(id, table) {
       method: "POST",
     });
 
-    return { booking_id: id, status: 'refund_solicitation', asaas };
+    return { booking_id: id, status: "refund_solicitation", asaas };
   } catch (err) {
     return logger.error(err);
   }
