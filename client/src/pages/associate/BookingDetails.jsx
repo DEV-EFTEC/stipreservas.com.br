@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import html2pdf from 'html2pdf.js';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import LexicalViewer from "@/components/lexical-viewer";
+import { fmtPlainBR, fmtPlainDateBR } from "@/lib/fmtPlainBR";
 
 export default function BookingDetails() {
   const location = useLocation();
@@ -189,8 +190,7 @@ export default function BookingDetails() {
   }
 
   function generateAuthorizationHTML(booking, user) {
-    const formatDate = (date) => format(new Date(date), 'dd/MM/yyyy');
-    const formatPeriod = `${formatDate(booking.check_in)} à ${formatDate(booking.check_out)}`;
+    const formatPeriod = `${fmtPlainDateBR(booking.check_in)} à ${fmtPlainDateBR(booking.check_out)}`;
     const totalDays = eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length;
 
     const renderPeopleRows = () => {
@@ -425,11 +425,11 @@ export default function BookingDetails() {
                 <CardContent className={'flex justify-between space-y-4 flex-wrap md:flex-nowrap md:space-x-4 md:space-y-0'}>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm">Data de entrada</p>
-                    <Badge variant="secondary" className={'w-full'}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{fmtPlainBR(booking.check_in)}</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Data de saída</p>
-                    <Badge variant="secondary" className={'w-full'}>{format(booking.check_out, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{fmtPlainBR(booking.check_out)}</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Diária(s)</p>

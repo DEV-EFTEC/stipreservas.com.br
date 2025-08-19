@@ -167,21 +167,28 @@ export function Home() {
           <TabsTrigger value="invites">Convites</TabsTrigger>
         </TabsList>
         <TabsContent value="bookings">
-          <DataTable
-            columns={columns}
-            data={bookings}
-            nextPage={() => setPage(prevState => prevState + 1)}
-            previousPage={
-              () => setPage(prevState => {
-                if (prevState > 1) {
-                  return prevState - 1
-                } else {
-                  return 1
-                }
-              })
+          <div className="none xl:block">
+            <DataTable
+              columns={columns}
+              data={bookings}
+              nextPage={() => setPage(prevState => prevState + 1)}
+              previousPage={
+                () => setPage(prevState => {
+                  if (prevState > 1) {
+                    return prevState - 1
+                  } else {
+                    return 1
+                  }
+                })
+              }
+              pagination={paginationData}
+            />
+          </div>
+          {/* <div>
+            {
+              bookings
             }
-            pagination={paginationData}
-          />
+          </div> */}
         </TabsContent>
         <TabsContent value="draw_applies">
           {

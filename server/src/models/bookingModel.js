@@ -1,5 +1,9 @@
 import knex from "knex";
 import knexConfig from "../../knexfile.js";
+import {
+  normalizeArrToPlainDate,
+  normalizeRowToPlainDate,
+} from "#lib/to-business-iso.js";
 const environment = process.env.NODE_ENV || "development";
 const db = knex(knexConfig[environment]);
 
@@ -21,7 +25,7 @@ export async function createBooking(data) {
   const [updatedBooking] = await db("bookings")
     .where({ id: book.id })
     .update({
-      expires_at: db.raw(`"utc_created_on" + interval '30 minutes'`),
+      expires_at: db.raw(`"utc_created_on" + interval '1 hour'`),
     })
     .returning("*");
 
@@ -41,6 +45,8 @@ export async function deleteBooking(id) {
     await trx("guests_bookings").where({ booking_id: id }).delete();
     await trx("children_bookings").where({ booking_id: id }).delete();
     await trx("dependents_bookings").where({ booking_id: id }).delete();
+    await trx("associates_bookings").where({ booking_id: id }).delete();
+    await trx("stepchildren_bookings").where({ booking_id: id }).delete();
     await trx("booking_rooms").where({ booking_id: id }).delete();
 
     await trx("bookings").where({ id }).delete();
@@ -94,17 +100,26 @@ export async function getBookingComplete(id) {
   ]);
 
   const booking = await db("bookings").where({ id }).first();
-  const newAssociates = associates.map(({ password, ...rest }) => rest);
+  const bookingN = normalizeRowToPlainDate(booking);
+  const guestsN = normalizeArrToPlainDate(guests);
+  const depsN = normalizeArrToPlainDate(dependents);
+  const childrenN = normalizeArrToPlainDate(children);
+  const stepsN = normalizeArrToPlainDate(stepchildren);
+  const holdersN = normalizeArrToPlainDate(holders);
+  const roomsN = normalizeArrToPlainDate(rooms);
+  const associatesN = normalizeArrToPlainDate(associates).map(
+    ({ password, ...r }) => r
+  );
 
   return {
-    ...booking,
-    guests,
-    dependents,
-    children,
-    stepchildren,
-    holders,
-    rooms,
-    associates: newAssociates,
+    ...bookingN,
+    guests: guestsN,
+    dependents: depsN,
+    children: childrenN,
+    stepchildren: stepsN,
+    holders: holdersN,
+    rooms: roomsN,
+    associates: associatesN,
   };
 }
 

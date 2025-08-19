@@ -1,15 +1,17 @@
 import * as bookingService from "../services/bookingService.js";
 import logger from "#core/logger.js";
+import { normalizeRowToPlainDate } from "#lib/to-business-iso.js";
 
 export async function findBookingById(req, res) {
   try {
     const { id } = req.query;
     const result = await bookingService.findBookingById(id);
+    const bookingN = normalizeRowToPlainDate(result);
 
     if (!result)
       return res.status(404).json({ message: "Nenhuma reserva encontrada." });
 
-    res.status(200).json(result);
+    res.status(200).json(bookingN);
   } catch (err) {
     logger.error("Error on findBookingById", { err });
     res.status(500).json({ error: err.message });
@@ -40,11 +42,7 @@ export async function findInvitesByUser(req, res) {
   try {
     const { page, limit } = req.query;
     const user_id = req.user.id;
-    const result = await bookingService.findInvitesByUser(
-      user_id,
-      page,
-      limit
-    );
+    const result = await bookingService.findInvitesByUser(user_id, page, limit);
 
     if (!result)
       return res.status(404).json({ message: "Nenhum convite encontrado." });
@@ -85,7 +83,11 @@ export async function updateStatusInvite(req, res) {
   try {
     const { id } = req.params;
     const { status, associate_invited_id } = req.body;
-    const result = await bookingService.updateStatusInvite(id, status, associate_invited_id);
+    const result = await bookingService.updateStatusInvite(
+      id,
+      status,
+      associate_invited_id
+    );
     res.status(200).json(result);
   } catch (err) {
     logger.error("Erro em updateStatusInvite", { err });
@@ -179,7 +181,8 @@ export async function getAllBookings(req, res) {
 
 export async function createParticipantsBooking(req, res) {
   try {
-    const { children, guests, dependents, associates, stepchildren, holders } = req.body;
+    const { children, guests, dependents, associates, stepchildren, holders } =
+      req.body;
     const result = await bookingService.createParticipantsBooking(
       children,
       guests,
@@ -227,8 +230,8 @@ export async function approveBooking(req, res) {
 
     const message = {
       booking_id,
-      status: result.status
-    }
+      status: result.status,
+    };
 
     io.to(`user:${user_id}`).emit("booking:approved", message);
 
@@ -252,8 +255,8 @@ export async function refuseBooking(req, res) {
 
     const message = {
       booking_id,
-      status: result.status
-    }
+      status: result.status,
+    };
 
     io.to(`user:${user_id}`).emit("booking:refused", message);
 

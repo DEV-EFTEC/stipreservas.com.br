@@ -10,9 +10,9 @@ export async function createEnterprise(data) {
     return existing.id;
   }
 
-  const [id] = await db("enterprises").insert(data).returning("id");
+  const [enterprise] = await db("enterprises").insert(data).returning("id");
 
-  return id;
+  return enterprise.id;
 }
 
 export async function getEnterpriseById(id) {
