@@ -30,39 +30,138 @@ import maskCPF from "@/lib/maskCPF";
 import validarCpf from "validar-cpf";
 import { toast } from "sonner";
 import MonthYearCalendar from "@/components/month-year-calendar";
+import { useEffect, useState } from "react";
 
 export default function Dependents({ setDependents, setSelectedDependents, dependentsParcial, selectedDependents, dependents, updateDependent, saveEntity, deleteEntity }) {
   const { user } = useAuth();
 
+  const [localSelected, setLocalSelected] = useState(new Set());
+
+  useEffect(() => {
+    const byId = new Set(selectedDependents?.map(d => d.id));
+    setLocalSelected(new Set(byId));
+  }, [selectedDependents]);
+
+  const toggleSelect = (id) => {
+    setLocalSelected(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const handleContinueImport = () => {
+    const selected = dependentsParcial.filter(d => localSelected.has(d.id))
+      .map(item => ({ ...item, is_saved: true }));
+
+    // evita duplicados por id
+    setDependents(prev => {
+      const idsExist = new Set(prev.map(p => p.id));
+      const merged = [
+        ...prev,
+        ...selected.filter(s => !idsExist.has(s.id))
+      ];
+      return merged;
+    });
+
+    // se você quiser refletir para o estado externo:
+    setSelectedDependents?.(selected);
+  };
+
   return (
     <>
       <>
-        <hr className="my-14" />
+        <hr className="my-4" />
         <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between flex-wrap">
-          <Text heading="h2">Documentos dos dependentes</Text>
+          <Text heading="h2">Dependentes</Text>
           <div className="flex gap-2">
             <Button onClick={() => setDependents(prevState => [...prevState, dependentModel])}>Criar acompanhante</Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="secondary">Importar</Button>
+                <Button variant="outline">Importar</Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="w-[calc(100%-24px)] max-w-[640px] p-0">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Importar dependentes</AlertDialogTitle>
-                  <AlertDialogDescription>
+                  <AlertDialogTitle className="w-[calc(100%-24px)] max-w-[640px] p-0">Importar dependentes</AlertDialogTitle>
+                  <AlertDialogDescription className="w-[calc(100%-24px)] max-w-[640px] p-0">
                     Caso você já tenha feito reservas pela plataforma, salvamos os dependentes informados nas reservas anteriores.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <DataTable
-                  columns={columns}
-                  data={dependentsParcial}
-                  onSelectionChange={(data) => setSelectedDependents(data.map(item => ({ ...item, is_saved: true })))}
-                />
-                <AlertDialogFooter>
+                <div className="hidden md:block">
+                  <DataTable
+                    columns={columns}
+                    data={dependentsParcial}
+                    onSelectionChange={(data) => setSelectedDependents(data.map(item => ({ ...item, is_saved: true })))}
+                  />
+                </div>
+                <div className="max-h-[60vh] overflow-y-auto px-5 pb-5 block md:hidden">
+                  {/* Cabeçalho estilo tabela só no >= sm */}
+                  <div className="hidden sm:grid grid-cols-[32px_1fr_1fr_1fr] gap-3 px-2 py-2 text-xs font-medium text-slate-500">
+                    <div />
+                    <div>Nome</div>
+                    <div>CPF</div>
+                    <div>Data de nascimento</div>
+                  </div>
+
+                  {/* Lista responsiva */}
+                  <ul className="space-y-2">
+                    {dependentsParcial?.map((d) => {
+                      const checked = localSelected.has(d.id);
+                      const checkboxId = `dep-check-${d.id}`;
+                      return (
+                        <li
+                          key={d.id}
+                          className="rounded-lg border border-slate-200 bg-white p-3 sm:grid sm:grid-cols-[32px_1fr_1fr_1fr] sm:items-center sm:gap-3"
+                        >
+                          {/* checkbox */}
+                          <div className="flex items-start sm:items-center">
+                            <input
+                              id={checkboxId}
+                              type="checkbox"
+                              className="h-5 w-5 mt-0.5 sm:mt-0"
+                              checked={checked}
+                              onChange={() => toggleSelect(d.id)}
+                            />
+                          </div>
+
+                          {/* Nome */}
+                          <div className="mt-2 sm:mt-0">
+                            <label
+                              htmlFor={checkboxId}
+                              className="text-sm font-medium text-slate-900"
+                            >
+                              {d.name}
+                            </label>
+
+                            {/* No mobile, mostramos os rótulos internos */}
+                            <div className="sm:hidden mt-1 text-xs text-slate-600 space-y-0.5">
+                              <div><span className="font-medium">CPF:</span> {d.cpf}</div>
+                              <div><span className="font-medium">Nascimento:</span> {d.birth_date || d.birth}</div>
+                            </div>
+                          </div>
+
+                          {/* Colunas extras só no >= sm */}
+                          <div className="hidden sm:block text-sm text-slate-700">{d.cpf}</div>
+                          <div className="hidden sm:block text-sm text-slate-700">{d.birth_date || d.birth}</div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+                <AlertDialogFooter className="w-[calc(100%-24px)] max-w-[640px] p-0 hidden md:block">
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
                   <AlertDialogAction onClick={() => {
                     setDependents(prevState => [...prevState, ...selectedDependents])
                   }}>Continuar</AlertDialogAction>
+                </AlertDialogFooter>
+                <AlertDialogFooter className="w-[calc(100%-24px)] max-w-[640px] p-0 block md:hidden">
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    disabled={!localSelected.size}
+                    onClick={handleContinueImport}
+                  >
+                    Continuar
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

@@ -18,7 +18,7 @@ import Dependents from "./Dependents";
 import Guests from "./Guests";
 import Children from "./Children";
 import LabeledInput from "@/components/LabeledInput";
-import { UserRound } from "lucide-react";
+import { Plus, UserRound } from "lucide-react";
 import DatePickerBirth from "@/components/DatePickerBirth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -243,9 +243,9 @@ export default function SendDocuments() {
   return (
     <>
       <section className="w-full xl:flex xl:justify-between 2xl:gap-24 xl:gap-8 xl:p-20 pr-2 overflow-y-auto">
-        <section className="w-fit">
+        <section className="w-fit mb-45">
           <GlobalBreadcrumb />
-          <div className="flex gap-12 items-end mb-8 flex-wrap 2xl:flex-nowrap">
+          <div className="flex gap-2 items-end mb-8 flex-wrap 2xl:flex-nowrap">
             <Text heading="h1">Envio de Documentos</Text>
             <div className="flex items-center gap-2">
               <Label>Solicitação</Label>
@@ -335,12 +335,12 @@ export default function SendDocuments() {
                 saveEntity={saveEntity}
                 deleteEntity={deleteEntity}
               />
-              <hr className="my-14" />
+              <hr className="my-4" />
               <div className="w-full flex justify-between flex-col">
                 <Text heading="h2">Outros associados</Text>
                 <div className="flex w-fit space-x-4">
                   <Input onChange={(e) => setCpf(e.target.value)} placeholder="Digite o CPF do associado" />
-                  <Button onClick={searchUser}>Procurar</Button>
+                  <Button onClick={searchUser}><Plus />  Associado</Button>
                 </div>
                 {
                   selectedAssociates.length > 0

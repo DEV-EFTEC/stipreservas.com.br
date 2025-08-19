@@ -37,14 +37,14 @@ export default function Stepchildren({ setStepChild, setSelectedStepChildren, st
   return (
     <>
       <>
-        <hr className="my-14" />
+        <hr className="my-4" />
         <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between flex-wrap">
-          <Text heading="h2">Documentos de enteados</Text>
+          <Text heading="h2">Enteados</Text>
           <div className="flex gap-2">
             <Button onClick={() => setStepChild(prevState => [...prevState, stepchildModel])}>Criar acompanhante</Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="secondary">Importar</Button>
+                <Button variant="outline">Importar</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>

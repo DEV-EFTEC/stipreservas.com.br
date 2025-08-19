@@ -123,15 +123,15 @@ export default function GetRoom() {
 
   return (
     <section className="w-full xl:flex xl:justify-between 2xl:gap-24 xl:gap-8 xl:p-20 pr-2 overflow-y-auto">
-      <section className="w-[80%]">
+      <section className="w-[100%] mb-45 md:mb-40">
         <GlobalBreadcrumb />
         <div className="flex gap-12 items-end mb-8">
-          <div className="flex flex-col space-y-4 mb-6">
+          <div className="flex flex-col gap-4 mb-6">
             <Text heading={"h1"}>Escolha de quartos</Text>
             <Text heading={"h2"}>Quartos disponíveis para reserva</Text>
           </div>
         </div>
-        <section className="grid xl:grid-cols-3 gap-3 sm:grid-cols-1 lg:grid-cols-2 md:grid-cols-1 w-full">
+        <section className="grid xl:grid-cols-3 gap-3 grid-cols-1 lg:grid-cols-2 w-full">
           {
             rooms.map((room) => (
               <RoomCard

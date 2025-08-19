@@ -20,12 +20,15 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        link_cancel: "text-red-500 underline-offset-4 hover:underline",
         positive:
           "bg-green-500 text-primary-foreground shadow-xs hover:bg-green-500/80",
         payment_pending:
           "bg-orange-500 text-primary-foreground shadow-xs hover:bg-orange-500/80",
         selected:
           "bg-teal-500 text-primary-foreground shadow-xs hover:bg-teal-500/80",
+        to_select:
+          "bg-green-500 text-primary-foreground shadow-xs hover:bg-green-500/80",
         refused:
           "bg-red-700 text-primary-foreground shadow-xs hover:bg-red-700/80",
         awaiting_documents:

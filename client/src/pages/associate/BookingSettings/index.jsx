@@ -84,7 +84,7 @@ export default function BookingSettings() {
       {
         booking &&
         <>
-          <section className="w-fit">
+          <section className="w-fit mb-45">
             <GlobalBreadcrumb />
             <div>
               <div className="flex gap-12 items-end mb-4 flex-wrap">

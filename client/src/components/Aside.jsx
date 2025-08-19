@@ -127,10 +127,12 @@ export default function Aside({ action, isDisabled }) {
   const navigate = useNavigate();
 
   return (
-    <footer className="flex flex-col mt-16 gap-8 w-full xl:w-[50%]">
-      <Summary />
-      <Button variant={"positive"} onClick={action} disabled={isDisabled}>Ir para a próxima etapa <ChevronRight /></Button>
-      <Button variant={"destructive"} onClick={() => navigate("/associado/home")}>Cancelar <XIcon /></Button>
-    </footer>
+    <div className="fixed bottom-0 w-full left-0 bg-white border-t rounded-t-xl p-4 flex items-center justify-center">
+      <footer className="flex flex-col gap-4 w-full xl:w-[50%]">
+        <Summary />
+        <Button variant={"positive"} onClick={action} disabled={isDisabled}>Ir para a próxima etapa <ChevronRight /></Button>
+        <Button variant={"link_cancel"} onClick={() => navigate("/associado/home")}>Cancelar <XIcon /></Button>
+      </footer>
+    </div>
   )
 }

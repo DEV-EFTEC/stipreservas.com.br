@@ -315,10 +315,6 @@ export default function BookingDetails() {
           <GlobalBreadcrumb />
           <div className="flex gap-12 items-end mb-8 flex-wrap">
             <Text heading="h1">Detalhes da solicitação</Text>
-            <div className="flex items-center gap-2">
-              <Label>Solicitação</Label>
-              <Badge variant="">#{booking && booking.id.slice(0, 8)}</Badge>
-            </div>
           </div>
 
           {hasAssociates && invitedAssociate && (
@@ -512,7 +508,7 @@ export default function BookingDetails() {
                           booking.dependents.map((dep, index) => (
                             <Card>
                               <CardHeader>
-                                <CardTitle className={'flex items-center gap-4'}>
+                                <CardTitle className={'flex items-center gap-4 flex-wrap'}>
                                   {dep.name}
                                   <Badge variant={'cpf_details'}>CPF {dep.cpf}</Badge>
                                   {
@@ -834,7 +830,7 @@ export default function BookingDetails() {
                 {
                   booking.status === 'pending_approval'
                   &&
-                  <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleCancel}>Cancelar solicitação<X /></Button>
+                  <Button className={'my-4 w-full'} variant={'destructive'} onClick={handleCancel}>Cancelar solicitação<X /></Button>
                 }
                 {
                   booking.status === 'payment_pending'

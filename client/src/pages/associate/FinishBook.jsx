@@ -197,7 +197,7 @@ export default function FinishBook() {
                           booking.dependents.map((dep, index) => (
                             <Card>
                               <CardHeader>
-                                <CardTitle className={'flex items-center gap-4'}>
+                                <CardTitle className={'flex items-center gap-4 flex-wrap'}>
                                   {dep.name}
                                   <Badge variant={'cpf_details'}>CPF {dep.cpf}</Badge>
                                   {

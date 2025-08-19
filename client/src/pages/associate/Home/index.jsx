@@ -135,7 +135,6 @@ export function Home() {
 
   return (
     <section className="w-full xl:p-20 pr-2 overflow-y-auto">
-      <GlobalBreadcrumb />
       <div className="flex xl:flex-row flex-col w-full justify-between items-center mb-10">
         <Text heading={'h1'}>Suas solicitações recentes</Text>
         <Button variant="positive" onClick={() => navigate("/associado/criar-reserva")} className={"w-[100%] mt-4 xl:w-fit xl:mt-0"}><PlusIcon /> Criar uma nova solicitação</Button>

@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Unauthorized() {
+export default function NotFound() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ export default function Unauthorized() {
 
   return (
     <>
-      <h1>Sem permissão</h1>
+      <h1>Rota não encontrada</h1>
     </>
   )
 }

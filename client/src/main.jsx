@@ -63,6 +63,7 @@ import BookingSettingsAdmin from './pages/admin/BookingSettingsAdmin';
 import { GenerateRegisterLink } from './pages/admin/GenerateRegisterLink';
 import { CreateSystemUser } from './pages/admin/CreateSystemUser';
 import SendDocumentsInvited from './pages/associate/SendDocumentsInvited';
+import NotFound from './pages/NotFound';
 
 let router = createBrowserRouter([
   {
@@ -668,6 +669,14 @@ let router = createBrowserRouter([
   {
     path: "/unauthorized",
     element: <Unauthorized />
+  },
+  {
+    path: "/*",
+    element: (
+      <ProtectedRoute>
+        <NotFound />
+      </ProtectedRoute>
+    )
   }
 ])
 

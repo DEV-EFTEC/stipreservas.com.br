@@ -17,11 +17,11 @@ export default function BookingCardMobile({ check_in, check_out, expires_at, utc
       <div className="mt-2 space-y-1 text-sm">
         <p><strong>Entrada:</strong> {fmtPlainDateBR(check_in)}</p>
         <p><strong>Saída:</strong> {fmtPlainDateBR(check_out)}</p>
-        <p><strong>Criada em:</strong> {format(utc_created_on, 'dd/MM/yyyy às HH:mm')}</p>
+        <p><strong>Criada em:</strong> {format(utc_created_on, "dd/MM/yyyy 'às' HH:mm")}</p>
       </div>
 
       <div className="mt-3">
-        <Button size="sm" variant="outline" onClick={() => navigate(`/associado/solicitacao/${id.slice(0, 8)}?booking_id=${id}`)}>
+        <Button className={'w-full'} variant="outline" onClick={() => navigate(`/associado/solicitacao/${id.slice(0, 8)}?booking_id=${id}`)}>
           {
             status === "incomplete"
             ?

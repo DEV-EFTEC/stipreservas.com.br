@@ -113,7 +113,7 @@ export default function CreateBooking() {
         !loading
         &&
         <section className="w-full xl:p-20 pr-2 overflow-y-auto">
-          <section className="w-full">
+          <section className="w-full mb-45">
             <GlobalBreadcrumb />
             <div className="flex flex-col space-y-4 mb-6">
               <Text heading={"h1"}>Nova solicitação</Text>
@@ -241,14 +241,14 @@ export default function CreateBooking() {
                 <div>
                   <Text heading={'h2'}>Dados da reserva</Text>
                 </div>
-                <div>
+                <div className="mb-4">
                   <Label className={"mb-2"}>Data de Entrada e Saída</Label>
                   <DatePickerWithRange date={date} setDate={setDate} associate_role={user.associate_role} />
                 </div>
               </form>
             </Form>
-            <Aside action={form.handleSubmit(onSubmit)} isDisabled={date.from === null ? true : false} />
           </section>
+          <Aside action={form.handleSubmit(onSubmit)} isDisabled={date.from === null ? true : false} />
         </section>
       }
     </>

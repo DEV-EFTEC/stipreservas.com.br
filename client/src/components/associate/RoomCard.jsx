@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogContent, AlertDialogTrigger, AlertDialogCancel, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { UsersRound, Building, Accessibility } from "lucide-react";
+import { UsersRound, Building, Accessibility, Star, StarOff } from "lucide-react";
 import Text from "@/components/Text";
 
 const enumFloor = {
@@ -29,87 +29,170 @@ export default function RoomCard({
     Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 
   return (
-    <Card className={`flex flex-col justify-between ${isSelected && "border-teal-500"}`}>
-      <CardContent>
-        <Text heading={"h4"}>Quarto {room.number < 10 ? `0${room.number}` : room.number}</Text>
-        <div className="flex flex-col space-y-2 mt-4">
-          <div className="flex items-center space-x-4">
-            <UsersRound size={16} strokeWidth={3} />
-            <p className="text-sm font-medium">Capacidade: {room.capacity}</p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Building size={16} strokeWidth={3} />
-            <p className="text-sm font-medium">{enumFloor[room.floor]}</p>
-          </div>
-          {room.preferential && (
-            <Badge variant="preferential">
-              <Accessibility size={20} strokeWidth={3} />
-              <p className="text-sm font-normal">Preferencial</p>
-            </Badge>
-          )}
-        </div>
-      </CardContent>
-
-      <CardContent>
-        <div className="mb-5 flex flex-col space-y-2">
-          <div>
-            <p className="text-sm">Taxa de reserva</p>
-            <div className="flex items-center space-x-2">
-              <p className="text-xl font-bold">{formattedCurrency(bookingFee)}</p>
-              <Text heading="small">por dia</Text>
+    <>
+      <Card className={`hidden md:flex flex-col justify-between ${isSelected && "border-teal-500"}`}>
+        <CardContent>
+          <Text heading={"h4"}>Quarto {room.number < 10 ? `0${room.number}` : room.number}</Text>
+          <div className="flex flex-col space-y-2 mt-4">
+            <div className="flex items-center space-x-4">
+              <UsersRound size={16} strokeWidth={3} />
+              <p className="text-sm font-medium">Capacidade: {room.capacity}</p>
             </div>
-          </div>
-          <div>
-            <p className="text-sm">Por convidado</p>
-            <div className="flex items-center space-x-2">
-              <p className="text-xl font-bold">{formattedCurrency(guestFee)}</p>
-              <Text heading="small">por dia</Text>
+            <div className="flex items-center space-x-4">
+              <Building size={16} strokeWidth={3} />
+              <p className="text-sm font-medium">{enumFloor[room.floor]}</p>
             </div>
-          </div>
-          <div>
-            <p className="text-sm">Por enteado</p>
-            <div className="flex items-center space-x-2">
-              <p className="text-xl font-bold">{formattedCurrency(stepchildFee)}</p>
-              <Text heading="small">por dia</Text>
-            </div>
-          </div>
-        </div>
-
-        {room.preferential ? (
-          <AlertDialog>
-            {isSelected ? (
-              <Button variant="selected" className="w-full" onClick={onUnselect} disabled={isUpdate}>
-                Cancelar seleção
-              </Button>
-            ) : (
-              <AlertDialogTrigger asChild>
-                <Button className="w-full" onClick={onSelect} disabled={!canSelectMore || isUpdate}>
-                  Selecionar
-                </Button>
-              </AlertDialogTrigger>
+            {room.preferential && (
+              <Badge variant="preferential">
+                <Accessibility size={20} strokeWidth={3} />
+                <p className="text-sm font-normal">Preferencial</p>
+              </Badge>
             )}
-            <AlertDialogContent className="bg-amber-400">
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-white">Atenção!</AlertDialogTitle>
-                <AlertDialogDescription className="text-white">
-                  Você está selecionando um quarto preferencial. Caso haja uma solicitação com laudo médico, você será realocado com aviso prévio.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Fechar</AlertDialogCancel>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        ) : isSelected ? (
-          <Button variant="selected" className="w-full" onClick={onUnselect} disabled={isUpdate}>
-            Cancelar seleção
-          </Button>
-        ) : (
-          <Button className="w-full" onClick={onSelect} disabled={!canSelectMore || isUpdate}>
-            Selecionar
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+          </div>
+        </CardContent>
+
+        <CardContent>
+          <div className="mb-5 flex flex-col space-y-2">
+            <div>
+              <p className="text-sm">Taxa de reserva</p>
+              <div className="flex items-center space-x-2">
+                <p className="text-xl font-bold">{formattedCurrency(bookingFee)}</p>
+                <Text heading="small">por dia</Text>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm">Por convidado</p>
+              <div className="flex items-center space-x-2">
+                <p className="text-xl font-bold">{formattedCurrency(guestFee)}</p>
+                <Text heading="small">por dia</Text>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm">Por enteado</p>
+              <div className="flex items-center space-x-2">
+                <p className="text-xl font-bold">{formattedCurrency(stepchildFee)}</p>
+                <Text heading="small">por dia</Text>
+              </div>
+            </div>
+          </div>
+
+          {room.preferential ? (
+            <AlertDialog>
+              {isSelected ? (
+                <Button variant="selected" className="w-full" onClick={onUnselect} disabled={isUpdate}>
+                  Cancelar seleção
+                </Button>
+              ) : (
+                <AlertDialogTrigger asChild>
+                  <Button className="w-full" onClick={onSelect} disabled={!canSelectMore || isUpdate}>
+                    Selecionar
+                  </Button>
+                </AlertDialogTrigger>
+              )}
+              <AlertDialogContent className="bg-amber-400">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-white">Atenção!</AlertDialogTitle>
+                  <AlertDialogDescription className="text-white">
+                    Você está selecionando um quarto preferencial. Caso haja uma solicitação com laudo médico, você será realocado com aviso prévio.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Fechar</AlertDialogCancel>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : isSelected ? (
+            <Button variant="selected" className="w-full" onClick={onUnselect} disabled={isUpdate}>
+              Cancelar seleção
+            </Button>
+          ) : (
+            <Button className="w-full" onClick={onSelect} disabled={!canSelectMore || isUpdate}>
+              Selecionar
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+      <Card className={`flex md:hidden flex-col justify-between ${isSelected && "border-teal-500 w-full"}`}>
+        <CardContent className={'flex items-center gap-2'}>
+          <Text heading={"h3"}>Quarto {room.number < 10 ? `0${room.number}` : room.number}</Text>
+          <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              <UsersRound size={16} strokeWidth={3} />
+              <p className="text-sm font-medium">{room.capacity}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Building size={16} strokeWidth={3} />
+              <p className="text-sm font-medium">{enumFloor[room.floor]}</p>
+            </div>
+            {room.preferential && (
+              <Badge variant="preferential">
+                <Accessibility size={20} strokeWidth={3} />
+              </Badge>
+            )}
+          </div>
+        </CardContent>
+
+        <CardContent>
+          <div className="mb-5 flex flex-wrap gap-4">
+            <div>
+              <p className="text-sm">Taxa de reserva</p>
+              <div className="flex items-center space-x-2">
+                <p className="text-md font-bold">{formattedCurrency(bookingFee)}</p>
+                <Text heading="small">por dia</Text>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm">Por convidado</p>
+              <div className="flex items-center space-x-2">
+                <p className="text-md font-bold">{formattedCurrency(guestFee)}</p>
+                <Text heading="small">por dia</Text>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm">Por enteado</p>
+              <div className="flex items-center space-x-2">
+                <p className="text-md font-bold">{formattedCurrency(stepchildFee)}</p>
+                <Text heading="small">por dia</Text>
+              </div>
+            </div>
+          </div>
+
+          {room.preferential ? (
+            <AlertDialog>
+              {isSelected ? (
+                <Button variant="selected" className="w-full" onClick={onUnselect} disabled={isUpdate}>
+                  Cancelar seleção
+                </Button>
+              ) : (
+                <AlertDialogTrigger asChild>
+                  <Button className="w-full" onClick={onSelect} disabled={!canSelectMore || isUpdate}>
+                    Selecionar
+                  </Button>
+                </AlertDialogTrigger>
+              )}
+              <AlertDialogContent className="bg-amber-400">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-white">Atenção!</AlertDialogTitle>
+                  <AlertDialogDescription className="text-white">
+                    Você está selecionando um quarto preferencial. Caso haja uma solicitação com laudo médico, você será realocado com aviso prévio.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Fechar</AlertDialogCancel>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : isSelected ? (
+            <Button variant="selected" className="w-full" onClick={onUnselect} disabled={isUpdate}>
+              <StarOff className="h-4 w-4 text-white" />Cancelar seleção
+            </Button>
+          ) : (
+            <Button variant="to_select" className="w-full" onClick={onSelect} disabled={!canSelectMore || isUpdate}>
+              <Star className="h-4 w-4 text-white" /> Escolher
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 }
