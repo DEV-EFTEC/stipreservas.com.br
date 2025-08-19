@@ -62,10 +62,10 @@ export default function SignIn() {
     }
 
     return (
-        <section className="flex flex-col items-center justify-center h-screen bg-radial from-sky-800 to-sky-950 space-y-8">
+        <section className="flex flex-col items-center justify-center h-screen bg-radial from-sky-800 to-sky-950 gap-8">
             <StipLogo />
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-white w-sm p-10 rounded-xl">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="bg-white p-4 md:p-10 rounded-xl w-5/6 md:w-2/6 spce-y-10">
                     <div className="flex items-center justify-center text-black">
                         <h2 className="text-2xl font-bold">Seja bem-vindo!</h2>
                     </div>

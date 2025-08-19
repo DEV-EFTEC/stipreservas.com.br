@@ -26,6 +26,7 @@ import SedePraiaEstacionamento from "./assets/SedePraiaEstacionamento.jpg"
 import SedePraiaPiscina from "./assets/SedePraiaPiscina.jpg"
 import ReactPlayer from 'react-player'
 import CookieBanner, { YoutubeEmbed } from "./components/cookies"
+import EfTecLogo from "./assets/eftec-logo"
 
 export default function UnionBeachHeadquarters() {
   return (
@@ -60,7 +61,12 @@ export default function UnionBeachHeadquarters() {
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center gap-4">
+              <Button className="bg-white text-sky-900 hover:bg-zinc-100 font-semibold" size="sm" asChild>
+                <a href={'/signin'}>
+                  Entrar
+                </a>
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -70,7 +76,7 @@ export default function UnionBeachHeadquarters() {
                   mobileMenu?.classList.toggle("hidden")
                 }}
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </Button>
@@ -228,7 +234,7 @@ export default function UnionBeachHeadquarters() {
               <Card className="border-sky-200 hover:shadow-lg transition-shadow text-center">
                 <CardContent className="p-6">
                   <div className="bg-sky-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <Waves className="h-8 w-8 text-sky-900" />
+                    <Waves className="min-h-8 min-w-8 text-sky-900" />
                   </div>
                   <h4 className="font-semibold text-zinc-900 mb-2">Acesso Direto à Praia</h4>
                   <p className="text-zinc-600 text-sm">Apenas 1 quadra de distância</p>
@@ -369,7 +375,7 @@ export default function UnionBeachHeadquarters() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Main Featured Photo */}
               <div className="lg:col-span-2 lg:row-span-2">
-                <YoutubeEmbed videoId={'8gN8QvMfEEw'} height={'100%'} width={'100%'} title="Apresentação -  STIP Reservas"/>
+                <YoutubeEmbed videoId={'8gN8QvMfEEw'} height={'100%'} width={'100%'} title="Apresentação -  STIP Reservas" />
                 {/* <ReactPlayer
                   src="https://www.youtube.com/watch?v=8gN8QvMfEEw"
                   controls
@@ -698,7 +704,6 @@ export default function UnionBeachHeadquarters() {
 
                 <div className="mt-8 p-4 bg-amber-50 rounded-lg border border-amber-200">
                   <div className="flex items-start space-x-3">
-                    <Gift className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                     <div>
                       <h4 className="font-semibold text-amber-800 mb-2">Importante</h4>
                       <p className="text-amber-700 text-sm">
@@ -728,7 +733,7 @@ export default function UnionBeachHeadquarters() {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-8">
                 <div className="flex items-start space-x-4">
-                  <MessageCircle className="h-8 w-8 text-sky-300 mt-1" />
+                  <MessageCircle className="min-h-8 min-w-8 text-sky-300 mt-1" />
                   <div>
                     <h3 className="text-xl font-semibold mb-2">WhatsApp Oficial</h3>
                     <p className="text-sky-100 mb-4">
@@ -744,7 +749,7 @@ export default function UnionBeachHeadquarters() {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <MapPin className="h-8 w-8 text-sky-300 mt-1" />
+                  <MapPin className="min-h-8 min-w-8 text-sky-300 mt-1" />
                   <div>
                     <h3 className="text-xl font-semibold mb-2">Localização</h3>
                     <p className="text-sky-100">
@@ -755,7 +760,7 @@ export default function UnionBeachHeadquarters() {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <Calendar className="h-8 w-8 text-sky-300 mt-1" />
+                  <Calendar className="min-h-8 min-w-8 text-sky-300 mt-1" />
                   <div>
                     <h3 className="text-xl font-semibold mb-2">Horário de Atendimento</h3>
                     <p className="text-sky-100">
@@ -842,6 +847,12 @@ export default function UnionBeachHeadquarters() {
             <p className="text-zinc-400">
               © {new Date().getFullYear()} STIP reservas. Todos os direitos reservados.
             </p>
+            <div className="text-zinc-400 flex items-center justify-center mt-4 gap-2 flex-col">
+              <p>Desenvolvido por</p>
+              <a target="_blank" href="https://eftecnologia.com">
+                <EfTecLogo />
+              </a>
+            </div>
           </div>
         </div>
       </footer>
