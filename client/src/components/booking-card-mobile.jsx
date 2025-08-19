@@ -3,8 +3,10 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { enumStatus } from "@/lib/enumStatus";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 export default function BookingCardMobile({ check_in, check_out, expires_at, utc_created_on, id, status }) {
+  const navigate = useNavigate();
   return (
     <div className="rounded-lg border bg-white shadow-sm p-4 mb-3">
       <div className="flex items-center justify-between">
