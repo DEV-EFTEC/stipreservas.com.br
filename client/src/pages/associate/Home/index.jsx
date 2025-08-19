@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSocket } from "@/hooks/useSocket";
+import BookingCardMobile from "@/components/booking-card-mobile";
 
 export function Home() {
   const navigate = useNavigate();
@@ -163,11 +164,11 @@ export function Home() {
       <Tabs defaultValue={option} onValueChange={(e) => setOption(e)}>
         <TabsList className={'w-full'}>
           <TabsTrigger value="bookings">Reservas</TabsTrigger>
-          <TabsTrigger value="draw_applies">Sorteios</TabsTrigger>
-          <TabsTrigger value="invites">Convites</TabsTrigger>
+          {/* <TabsTrigger value="draw_applies">Sorteios</TabsTrigger>
+          <TabsTrigger value="invites">Convites</TabsTrigger> */}
         </TabsList>
         <TabsContent value="bookings">
-          <div className="none xl:block">
+          <div className="hidden lg:block">
             <DataTable
               columns={columns}
               data={bookings}
@@ -184,11 +185,16 @@ export function Home() {
               pagination={paginationData}
             />
           </div>
-          {/* <div>
+          <div className="block lg:hidden ">
             {
-              bookings
+              bookings.length ?
+              bookings.map(book => (
+                <BookingCardMobile {...book}/>
+              ))
+              :
+              <p>Nenhuma solicitação/reserva encontrada.</p>
             }
-          </div> */}
+          </div>
         </TabsContent>
         <TabsContent value="draw_applies">
           {

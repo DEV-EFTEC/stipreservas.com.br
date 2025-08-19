@@ -12,11 +12,15 @@ export async function findBookingById(id) {
 }
 
 export async function findBookingsByUser(userId, limit, offset) {
-  return db("bookings")
+  const bookings = await db("bookings")
     .where("created_by", "=", userId)
     .orderBy("utc_created_on", "desc")
     .limit(limit)
     .offset(offset);
+  
+  const bookingsN = normalizeArrToPlainDate(bookings);
+
+  return bookingsN;
 }
 
 export async function createBooking(data) {
