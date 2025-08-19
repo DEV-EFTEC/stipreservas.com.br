@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { enumStatus } from "@/lib/enumStatus";
+import { fmtPlainDateBR } from "@/lib/fmtPlainBR";
 
 export const columns = [
   {
@@ -31,12 +32,12 @@ export const columns = [
   {
     accessorKey: "check_in",
     header: "Entrada",
-    cell: ({ row }) => (format(row.original.check_in, "dd/MM/yyyy"))
+    cell: ({ row }) => (fmtPlainDateBR(row.original.check_in))
   },
   {
     accessorKey: "check_out",
     header: "Saída",
-    cell: ({ row }) => (format(row.original.check_out, "dd/MM/yyyy"))
+    cell: ({ row }) => (fmtPlainDateBR(row.original.check_out))
   },
   {
     accessorKey: "utc_created_on",

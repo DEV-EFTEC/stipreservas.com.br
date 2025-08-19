@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { fmtPlainDateBR } from "@/lib/fmtPlainBR";
 import { format } from "date-fns";
 import { CircleHelp } from "lucide-react";
 
@@ -118,12 +119,12 @@ export default function BookingTable({ title, people, rooms, onChangeRoom, onCha
             </div>
             <Input
               type="date"
-              value={format(new Date(person.check_in), 'yyyy-MM-dd')}
+              value={fmtPlainDateBR(person.check_in)}
               onChange={(value) => onChangeCheckIn(person.id, value)}
             />
             <Input
               type="date"
-              value={format(new Date(person.check_out), 'yyyy-MM-dd')}
+              value={fmtPlainDateBR(person.check_out)}
               onChange={(value) => onChangeCheckOut(person.id, value)}
             />
           </div>
