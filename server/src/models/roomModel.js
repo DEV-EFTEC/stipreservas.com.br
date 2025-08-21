@@ -32,9 +32,9 @@ export async function findAvailableRooms(
         .whereRaw("br.room_id = r.id")
         .andWhere("br.booking_id", "<>", bookingId)
         .andWhere(function () {
-          this.where("br.check_out", ">", checkIn).andWhere(
+          this.where("br.check_out", ">=", checkIn).andWhere(
             "br.check_in",
-            "<",
+            "<=",
             checkOut
           );
         });
