@@ -34,6 +34,7 @@ export function FileUploadBlock({
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const viewerContainerRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -78,6 +79,8 @@ export function FileUploadBlock({
       setIsLoading(false);
     }
 
+    setIsSending(true);
+
     const documentUrl = await sendDocument(
       file,
       userId,
@@ -88,6 +91,7 @@ export function FileUploadBlock({
 
     if (documentUrl) {
       setFile(documentUrl.fileUrl);
+      setIsSending(false);
     }
   }
 
@@ -168,8 +172,15 @@ export function FileUploadBlock({
                 </div>
               )}
             </div>
+            {/* {
+              isSending
+              &&
+              <p className="text-sm text-gray-700 truncate">
+                Enviando...
+              </p>
+            } */}
             <p className="text-sm text-gray-700 truncate">
-              {value ? getFileNameFromFirebaseUrl(value) : fileName}
+              {!isSending ? value ? getFileNameFromFirebaseUrl(value) : fileName : "Enviando..."}
             </p>
           </div>
 

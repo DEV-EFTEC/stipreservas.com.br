@@ -23,6 +23,7 @@ import { FileUploadBlock } from "@/components/FileUploadBlock";
 import { enumAssociateRole } from "@/lib/enumAssociateRole";
 import { enumStatus } from "@/lib/enumStatus";
 import { useAssociate } from "@/hooks/useAssociate";
+import { fmtPlainBR } from "@/lib/fmtPlainBR";
 
 export default function FinishBookAdmin() {
   const location = useLocation();
@@ -113,11 +114,11 @@ export default function FinishBookAdmin() {
                 <CardContent className={'flex justify-between space-x-6'}>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm">Data de entrada</p>
-                    <Badge variant="secondary" className={'w-full'}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{fmtPlainBR(booking.check_in)}</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Data de saída</p>
-                    <Badge variant="secondary" className={'w-full'}>{format(booking.check_out, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{fmtPlainBR(booking.check_out)}</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Diária(s)</p>

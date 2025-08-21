@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { calculateTotalPrice } from "@/hooks/useBookingPrice";
 import { useEffect } from "react";
+import { fmtPlainBR } from "@/lib/fmtPlainBR";
 
 export default function Aside({ action, status }) {
   const { booking } = useBooking();
@@ -48,8 +49,8 @@ export default function Aside({ action, status }) {
                   booking
                     ?
                     <>
-                      <Text heading={"small"}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Text>
-                      <Text heading={"small"}>{format(booking.check_out, "d 'de' MMMM (ccc)", { locale: ptBR })}</Text>
+                      <Text heading={"small"}>{fmtPlainBR(booking.check_in)}</Text>
+                      <Text heading={"small"}>{fmtPlainBR(booking.check_out)}</Text>
                       <Text heading={"small"}>Total de {differenceInDays(booking.check_out, booking.check_in)} dia(s)</Text>
                     </>
                     :

@@ -1,13 +1,14 @@
 import { Card, CardContent } from "../ui/card";
 import Text from "../Text";
 import { Banknote, BedDouble, Calendar, CalendarRange, ChevronRight, UsersRound, XIcon } from "lucide-react";
-import { differenceInDays, format, interval, intlFormatDistance } from "date-fns";
+import { differenceInDays, eachDayOfInterval, format, interval, intlFormatDistance } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useBooking } from "@/hooks/useBooking";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { calculateTotalPrice } from "@/hooks/useBookingPrice";
 import { useEffect } from "react";
+import { fmtPlainBR } from "@/lib/fmtPlainBR";
 
 export default function Aside({ action, status }) {
   const { booking } = useBooking();
@@ -48,9 +49,9 @@ export default function Aside({ action, status }) {
                   booking
                     ?
                     <>
-                      <Text heading={"small"}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Text>
-                      <Text heading={"small"}>{format(booking.check_out, "d 'de' MMMM (ccc)", { locale: ptBR })}</Text>
-                      <Text heading={"small"}>Total de {differenceInDays(booking.check_out, booking.check_in)} dia(s)</Text>
+                      <Text heading={"small"}>{fmtPlainBR(booking.check_in)}</Text>
+                      <Text heading={"small"}>{fmtPlainBR(booking.check_out)}</Text>
+                      <Text heading={"small"}>Total de {eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length} dia(s)</Text>
                     </>
                     :
                     <Text heading={"small"}>A definir</Text>

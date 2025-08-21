@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays, eachDayOfInterval, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { enumStatus } from "@/lib/enumStatus";
 import {
@@ -25,6 +25,7 @@ import { calculateTotalPrice } from "@/hooks/useBookingPrice";
 import { useSocket } from "@/hooks/useSocket";
 import { toast } from "sonner";
 import html2pdf from 'html2pdf.js';
+import { fmtPlainBR } from "@/lib/fmtPlainBR";
 
 export default function DrawDetails() {
   const location = useLocation();
@@ -298,15 +299,15 @@ export default function DrawDetails() {
                 <CardContent className={'flex justify-between space-x-6'}>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm">Data de entrada</p>
-                    <Badge variant="secondary" className={'w-full'}>{format(booking.check_in, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{fmtPlainBR(booking.check_in)}</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Data de saída</p>
-                    <Badge variant="secondary" className={'w-full'}>{format(booking.check_out, "d 'de' MMMM (ccc)", { locale: ptBR })}</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{fmtPlainBR(booking.check_out)}</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Diária(s)</p>
-                    <Badge variant="secondary" className={'w-full'}>{differenceInDays(booking.check_out, booking.check_in)} dia(s)</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length} dia(s)</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Quarto(s)</p>

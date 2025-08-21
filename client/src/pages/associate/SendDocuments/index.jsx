@@ -38,6 +38,7 @@ export default function SendDocuments() {
   const [selectedChildren, setSelectedChildren] = useState([]);
   const [selectedStepchildren, setSelectedStepchildren] = useState([]);
   const [selectedAssociates, setSelectedAssociates] = useState([]);
+  const [toNextIsEnable, setToNextIsEnable] = useState(true);
   const [cpf, setCpf] = useState();
 
   const {
@@ -98,6 +99,18 @@ export default function SendDocuments() {
     }
   }
 
+  const isFilled = (v) =>
+    typeof v === "string" && v.trim().length > 0;
+
+  const listIsValid = (list) =>
+    (list ?? []).every((p) => {
+      const hasPic = isFilled(p.url_document_picture);
+      if (p?.disability) {
+        return hasPic && isFilled(p.url_medical_report);
+      }
+      return hasPic;
+    });
+
   useEffect(() => {
     (async () => {
       const response_dep = await apiRequest(`/dependents/get-dependents`, {
@@ -118,6 +131,29 @@ export default function SendDocuments() {
       setStepchildrenParcial(response_ste);
     })();
   }, []);
+
+  useEffect(() => {
+    const d = dependents ?? [];
+    const g = guests ?? [];
+    const sc = stepchildren ?? [];
+    const c = children ?? [];
+
+    const total = d.length + g.length + sc.length + c.length;
+
+    if (total === 0 && booking.url_word_card_file !== null &&
+      booking.url_receipt_picture !== null) {
+      setToNextIsEnable(false);
+      return;
+    }
+
+    const allValid =
+      listIsValid(d) &&
+      listIsValid(g) &&
+      listIsValid(sc) &&
+      listIsValid(c);
+
+      setToNextIsEnable(allValid);
+  }, [dependents, guests, stepchildren, children, booking]);
 
   useEffect(() => {
     if (!booking) return;
@@ -412,7 +448,7 @@ export default function SendDocuments() {
             </>
           }
         </section>
-        <Aside action={handleSubmit} isDisabled={booking.url_word_card_file === null || booking.url_receipt_picture === null && true}/>
+        <Aside action={handleSubmit} isDisabled={toNextIsEnable} />
       </section>
     </>
   );

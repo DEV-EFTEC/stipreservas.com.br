@@ -518,7 +518,7 @@ export default function BookingDetails() {
                                       Preferêncial
                                     </Badge>
                                   }
-                                  <Badge variant={'secondary'}>Data de nascimento: {format(dep.birth_date, 'dd/MM/yyyy')}</Badge>
+                                  <Badge variant={'secondary'}>Data de nascimento: {fmtPlainDateBR(dep.birth_date)}</Badge>
                                 </CardTitle>
                               </CardHeader>
                               <CardContent className={'flex justify-between'}>
@@ -575,7 +575,7 @@ export default function BookingDetails() {
                                       Preferêncial
                                     </Badge>
                                   }
-                                  <Badge variant={'secondary'}>Data de nascimento: {format(gue.birth_date, 'dd/MM/yyyy')}</Badge>
+                                  <Badge variant={'secondary'}>Data de nascimento: {fmtPlainDateBR(gue.birth_date)}</Badge>
                                 </CardTitle>
                               </CardHeader>
                               <CardContent className={'flex justify-between'}>
@@ -632,7 +632,7 @@ export default function BookingDetails() {
                                       Preferêncial
                                     </Badge>
                                   }
-                                  <Badge variant={'secondary'}>Data de nascimento: {format(chi.birth_date, 'dd/MM/yyyy')}</Badge>
+                                  <Badge variant={'secondary'}>Data de nascimento: {fmtPlainDateBR(chi.birth_date)}</Badge>
                                 </CardTitle>
                               </CardHeader>
                               <CardContent className={'flex justify-between'}>
@@ -689,7 +689,7 @@ export default function BookingDetails() {
                                       Preferêncial
                                     </Badge>
                                   }
-                                  <Badge variant={'secondary'}>Data de nascimento: {format(stepchi.birth_date, 'dd/MM/yyyy')}</Badge>
+                                  <Badge variant={'secondary'}>Data de nascimento: {fmtPlainDateBR(stepchi.birth_date)}</Badge>
                                 </CardTitle>
                               </CardHeader>
                               <CardContent className={'flex justify-between'}>
@@ -744,7 +744,7 @@ export default function BookingDetails() {
                                       Preferêncial
                                     </Badge>
                                   }
-                                  <Badge variant={'secondary'}>Data de nascimento: {format(associate.birth_date, 'dd/MM/yyyy')}</Badge>
+                                  <Badge variant={'secondary'}>Data de nascimento: {fmtPlainDateBR(associate.birth_date)}</Badge>
                                   {
                                     associate.status === 'accepted' &&
                                     <Badge variant={'approved'}>Convite aceito</Badge>
