@@ -13,29 +13,39 @@ import { Badge } from "../ui/badge"
 import { enumStatus } from "@/lib/enumStatus"
 import { apiRequest } from "@/lib/api"
 import { toast } from "sonner"
-import { CalendarDays, CheckCircle, Clock, Mail, MapPin, Phone, XCircle } from "lucide-react"
+import { CalendarDays, CheckCircle, Clock, Coins, Mail, MapPin, Phone, UsersRound, XCircle } from "lucide-react"
 import { enumPresenceRole } from "@/lib/enumPresenceRole"
 import { calculateTotalPrice } from "@/hooks/useBookingPrice";
 import { useEffect } from "react"
 
-export default function CardLocalBooking({ holders, associates, dependents, stepchildren, guests, children, check_in, check_out, presence_role, status, id, rooms, utc_check_in_confirmed, utc_check_out_confirmed, booking }) {
+export default function CardLocalBooking({ holders, associates, dependents, stepchildren, guests, children, check_in, check_out, presence_role, status, id, rooms, utc_check_in_confirmed, utc_check_out_confirmed, booking, setBookings }) {
   const { formatted } = calculateTotalPrice(booking);
 
-  useEffect(() => {
-    console.log(booking)
-  }, [])
-
   async function handleCheckIn(status) {
+    const utc_check_in_confirmed = new Date()
     try {
       const result = await apiRequest(`/bookings/update-booking`, {
         method: "POST",
         body: JSON.stringify({
           id,
-          presence_role: status
+          presence_role: status,
+          utc_check_in_confirmed
         })
       });
 
       if (result) {
+        setBookings(prevState => {
+          return prevState.map((ps) => {
+            if (ps.id === id) {
+              return {
+                ...ps,
+                presence_role: "check_in_confirmed",
+                utc_check_in_confirmed
+              }
+            }
+            return ps
+          })
+        })
         toast.success('CheckIn realizado com sucesso!');
       }
     } catch (err) {
@@ -44,17 +54,32 @@ export default function CardLocalBooking({ holders, associates, dependents, step
   }
 
   async function handleCheckOut(status) {
+    const utc_check_out_confirmed = new Date()
+
     try {
       const result = await apiRequest(`/bookings/update-booking`, {
         method: "POST",
         body: JSON.stringify({
           id,
           presence_role: status,
-          status: 'finished'
+          status: 'finished',
+          utc_check_out_confirmed
         })
       });
 
       if (result) {
+        setBookings(prevState => {
+          return prevState.map((ps) => {
+            if (ps.id === id) {
+              return {
+                ...ps,
+                presence_role: "check_out_confirmed",
+                utc_check_out_confirmed
+              }
+            }
+            return ps
+          })
+        })
         toast.success('CheckOut realizado com sucesso!');
       }
     } catch (err) {
@@ -74,6 +99,17 @@ export default function CardLocalBooking({ holders, associates, dependents, step
       });
 
       if (result) {
+        setBookings(prevState => {
+          return prevState.map((ps) => {
+            if (ps.id === id) {
+              return {
+                ...ps,
+                presence_role: "not_present"
+              }
+            }
+            return ps
+          })
+        })
         toast.warning('Presença alterada.');
       }
     } catch (err) {
@@ -117,7 +153,7 @@ export default function CardLocalBooking({ holders, associates, dependents, step
           </div>
         </CardHeader>
         <CardContent className="m-0 p-0">
-          <div className="flex my-6 flex-wrap gap-50">
+          <div className="flex mt-6 flex-wrap gap-20 border-b pb-4 mb-2">
             <div className="flex items-center gap-2">
               <CalendarDays className="h-4 w-4 text-slate-500" />
               <div className="text-sm">
@@ -162,7 +198,7 @@ export default function CardLocalBooking({ holders, associates, dependents, step
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-slate-500" />
+              <Coins className="h-4 w-4 text-slate-500" />
               <div className="text-sm">
                 <p className="font-semibold">Preço</p>
                 <p className="text-slate-500">
@@ -172,70 +208,78 @@ export default function CardLocalBooking({ holders, associates, dependents, step
             </div>
           </div>
           <div>
-            <h2 className="font-medium text-sm">Acompanhantes</h2>
             {
-              dependents.length > 0
-                ?
-                <div>
-                  <p className="font-bold">Dependentes</p>
-                  {dependents.map(dep => (
-                    <p>{dep.name} - {dep.cpf}</p>
-                  ))}
-                </div>
-                : <></>
-            }
-            {
-              guests.length > 0
-                ?
-                <div>
-                  <p className="font-bold">Convidados</p>
-                  {guests.map(gue => (
-                    <p>{gue.name} - {gue.cpf}</p>
-                  ))}
-                </div>
-                : <></>
-            }
-            {
-              children.length > 0
-                ?
-                <div>
-                  <p className="font-bold">Crianças menores que 5 anos</p>
-                  {children.map(chi => (
-                    <p>{chi.name} - {chi.cpf}</p>
-                  ))}
-                </div>
-                : <></>
-            }
-            {
-              stepchildren.length > 0
-                ?
-                <div>
-                  <p className="font-bold">Enteados</p>
-                  {stepchildren.map(ste => (
-                    <p>{ste.name} - {ste.cpf}</p>
-                  ))}
-                </div>
-                : <></>
-            }
-            {
-              associates.length > 0
-                ?
-                <div>
-                  <p className="font-bold">Associados</p>
-                  {associates.map(ass => (
-                    <p>{ass.name} - {ass.cpf}</p>
-                  ))}
-                </div>
-                : <></>
+              dependents.length + guests.length + children.length + stepchildren.length + associates.length > 0
+              &&
+              <>
+                <h2 className="font-medium text-sm flex items-center gap-2"><UsersRound className="h-4 w-4 text-slate-500" /> Acompanhantes ({dependents.length + guests.length + children.length + stepchildren.length + associates.length})</h2>
+                <section className="flex flex-wrap mt-2 pb-4 mb-2 border-b gap-4">
+                  {
+                    dependents.length > 0
+                      ?
+                      dependents.map(dep => (
+                        <div className="bg-muted text-sm rounded-lg p-2">
+                          <p className="font-bold">{dep.name} - Dependente</p>
+                          <span className="text-slate-500 text-xs font-medium">CPF: {dep.cpf}</span>
+                        </div>
+                      ))
+                      : <></>
+                  }
+                  {
+                    guests.length > 0
+                      ?
+                      guests.map(gue => (
+                        <div className="bg-muted text-sm rounded-lg p-2">
+                          <p className="font-bold">{gue.name} - Convidado</p>
+                          <span className="text-slate-500 text-xs font-medium">CPF: {gue.cpf}</span>
+                        </div>
+                      ))
+                      : <></>
+                  }
+                  {
+                    children.length > 0
+                      ?
+                      children.map(chi => (
+                        <div className="bg-muted text-sm rounded-lg p-2">
+                          <p className="font-bold">{chi.name} - Menor de 5 anos</p>
+                          <span className="text-slate-500 text-xs font-medium">CPF: {chi.cpf ? chi.cpf : "Não possui"}</span>
+                        </div>
+                      ))
+                      : <></>
+                  }
+                  {
+                    stepchildren.length > 0
+                      ?
+                      stepchildren.map(ste => (
+                        <div className="bg-muted text-sm rounded-lg p-2">
+                          <p className="font-bold">{ste.name} - Enteado</p>
+                          <span className="text-slate-500 text-xs font-medium">CPF: {ste.cpf ? ste.cpf : "Não possui"}</span>
+                        </div>
+                      ))
+                      : <></>
+                  }
+                  {
+                    associates.length > 0
+                      ?
+                      associates.map(ass => (
+                        <div className="bg-muted text-sm rounded-lg p-2">
+                          <p className="font-bold">{ass.name} - Enteado</p>
+                          <span className="text-slate-500 text-xs font-medium">CPF: {ass.cpf}</span>
+                        </div>
+                      ))
+                      : <></>
+                  }
+                </section>
+              </>
             }
           </div>
         </CardContent>
+        <div className="flex gap-4">
+          <Button disabled={presence_role === 'pending' ? false : true} variant={'check_in_confirmed'} onClick={() => handleCheckIn('check_in_confirmed')}><CheckCircle />Realizar Check-In</Button>
+          <Button variant="not_present" disabled={presence_role === 'pending' ? false : true} onClick={() => handleNotPresence('not_present')}><XCircle />Marcar como Não compareceu</Button>
+          <Button variant={'check_out_confirmed'} disabled={presence_role === 'check_in_confirmed' ? false : true} onClick={() => handleCheckOut('check_out_confirmed')}><CheckCircle /> Realizar Check-Out</Button>
+        </div>
       </div>
-      {/* <div className="flex flex-col gap-4">
-        <Button disabled={presence_role === 'pending' ? false : true} variant={'check_in_confirmed'} onClick={() => handleCheckIn('check_in_confirmed')}>Confirmar Check-In</Button>
-        <Button variant="not_presence" disabled={presence_role === 'pending' ? false : true} onClick={() => handleNotPresence('not_present')}>Não compareceu</Button>
-        <Button variant={'refused'} disabled={presence_role === 'check_in_confirmed' ? false : true} onClick={() => handleCheckOut('check_out_confirmed')}>Confirmar Check-Out</Button>
-      </div> */}
     </Card>
   )
 }
