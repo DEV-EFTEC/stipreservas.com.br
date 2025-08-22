@@ -448,7 +448,7 @@ export default function SendDocuments() {
             </>
           }
         </section>
-        <Aside action={handleSubmit} isDisabled={toNextIsEnable} />
+        <Aside action={handleSubmit} />
       </section>
     </>
   );
