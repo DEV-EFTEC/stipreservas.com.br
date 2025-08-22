@@ -18,7 +18,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { rangeIncludesDate } from "react-day-picker";
-import { fmtPlainBR } from "@/lib/fmtPlainBR";
+import { fmtPlainBR, fmtPlainDateBR } from "@/lib/fmtPlainBR";
 
 function Summary() {
   const { booking } = useBooking();
@@ -51,8 +51,8 @@ function Summary() {
                     booking
                       ?
                       <>
-                        <Text heading={"small"}>{fmtPlainBR(booking.check_in)}</Text>
-                        <Text heading={"small"}>{fmtPlainBR(booking.check_out)}</Text>
+                        <Text heading={"small"}>{fmtPlainDateBR(booking.check_in)}</Text>
+                        <Text heading={"small"}>{fmtPlainDateBR(booking.check_out)}</Text>
                         <Text heading={"small"}>Total de {eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length} dia(s)</Text>
                       </>
                       :

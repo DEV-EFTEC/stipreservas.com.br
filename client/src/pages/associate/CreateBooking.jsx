@@ -102,7 +102,7 @@ export default function CreateBooking() {
         login(result)
       }
 
-      saveBooking({ ...result, holders, associates: [] });
+      saveBooking({ ...result, check_in: result.check_in.split('T')[0], check_out: result.check_out.split('T')[0], holders, associates: [] });
       navigate(`/associado/criar-reserva/${result.id.slice(0, 8)}/enviar-documentos`);
     }
   }

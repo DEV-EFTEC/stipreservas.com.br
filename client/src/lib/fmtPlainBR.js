@@ -10,7 +10,7 @@ export const fmtPlainBR = (s) =>
 
 export const fmtPlainDateBR = (s) =>
   format(
-    parse(s, "yyyy-MM-dd", new Date()), // <-- parse como DATA local (sem UTC)
+    parse(s.includes("T") ? s.split("T")[0] : s, "yyyy-MM-dd", new Date()), // <-- parse como DATA local (sem UTC)
     "dd/MM/yyyy", // use "eee" p/ sex, sáb, dom...
     { locale: ptBR }
   );
