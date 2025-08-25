@@ -24,28 +24,28 @@ import { useDynamicList } from "@/hooks/useDynamicList";
 import { toast } from "sonner";
 import MonthYearCalendar from "@/components/month-year-calendar";
 
-export default function ListDependents() {
+export default function ListChildren() {
   const { user } = useAuth();
+
+  const {
+    list: children,
+    updateItem: updateChild,
+    resetList: setChildren
+  } = useDynamicList([]);
 
   useEffect(() => {
     (async () => {
-      const result = await apiRequest(`/dependents/get-dependents`, {
+      const result = await apiRequest(`/children/get-children`, {
         method: 'GET'
       });
-      setDependents(result)
+      setChildren(result)
     })()
   }, []);
 
-  const {
-    list: dependents,
-    updateItem: updateDependent,
-    resetList: setDependents
-  } = useDynamicList([]);
-
-  async function handleUpdateDependent(dep) {
-    const { id, name, cpf, birth_date, disability, url_document_picture, url_medical_report } = dep;
+  async function handleUpdateChild(chi) {
+    const { id, name, cpf, birth_date, disability, url_document_picture, url_medical_report } = chi;
     try {
-      const result = await apiRequest(`/dependents/update-dependent/${id}`, {
+      const result = await apiRequest(`/children/update-child/${id}`, {
         method: 'PATCH',
         body: JSON.stringify({
           id, name, cpf, birth_date, disability, url_document_picture, url_medical_report
@@ -64,88 +64,88 @@ export default function ListDependents() {
   return (
     <section className="w-full xl:p-20 pr-2 overflow-y-auto">
       {
-        dependents
+        children
         &&
         <section className="w-full pr-2 overflow-y-auto">
           <GlobalBreadcrumb />
           <div className="flex gap-12 items-end mb-8 flex-wrap">
-            <Text heading="h1">Atualizar dependentes</Text>
+            <Text heading="h1">Atualizar crianças</Text>
           </div>
 
-          <section className="flex flex-column w-full justify-between flex-wrap lg:gap-16">
-            <section className="w-full md:w-[90%] lg:w-[80%] xl:w-[100%] flex-col space-y-8">
+          <section className="flex flex-column w-full justify-between flex-wrap lg:space-x-16">
+            <section className="w-full md:w-[90%] lg:w-[80%] xl:w-[100%] flex-column space-y-8">
               {
-                dependents.map((dep, index) => (
+                children.map((chi, index) => (
                   <Card className="w-fit">
                     <CardContent>
-                      <header className="flex w-full justify-between items-center flex-wrap">
+                      <header className="flex w-full justify-between items-center">
                         <div className="flex items-center gap-2 mb-4">
                           <UserRound strokeWidth={3} className="text-blue-500" width={20} />
-                          <Text heading={'h3'}>{dep.name ? dep.name : `Dependente ${index + 1}`}</Text>
-                          <Badge variant="">#{dep.id?.slice(0, 8)}</Badge>
+                          <Text heading={'h3'}>{chi.name ? chi.name : `Convidado ${index + 1}`}</Text>
+                          <Badge variant="">#{chi.id?.slice(0, 8)}</Badge>
                         </div>
                       </header>
                       <div className="flex flex-col gap-8 mb-8">
                         <div className="flex gap-10 lg:gap-15 flex-wrap flex-col lg:flex-row">
                           <LabeledInput
                             label={"Nome"}
-                            onChange={(e) => updateDependent(index, "name", e.target.value)}
-                            value={dep.name}
-                            id={"dep_name" + index}
-                            key={"dep_name" + index} />
+                            onChange={(e) => updateChild(index, "name", e.target.value)}
+                            value={chi.name}
+                            id={"chi_name" + index}
+                            key={"chi_name" + index} />
                           <LabeledInput
                             label={"CPF"}
                             onChange={(e) => {
                               const value = maskCPF(e.target.value);
-                              updateDependent(index, "cpf", value);
+                              updateChild(index, "cpf", value);
                               return value;
                             }}
-                            value={dep.cpf}
-                            id={"dep_cpf" + index}
-                            key={"dep_cpf" + index} />
+                            value={chi.cpf}
+                            id={"chi_cpf" + index}
+                            key={"chi_cpf" + index} />
                         </div>
                         <div className="flex gap-10 lg:gap-15 flex-wrap flex-col lg:flex-row">
                           <div className="flex flex-col w-80 gap-2">
                             <Label>Data de Nascimento</Label>
                             <MonthYearCalendar
-                              date={new Date(dep.birth_date || '2000-01-01')}
-                              setDate={(newDate) => updateDependent(index, "birth_date", newDate)}
+                              date={new Date(chi.birth_date || '2000-01-01')}
+                              setDate={(newDate) => updateChild(index, "birth_date", newDate)}
                             />
                           </div>
                           <FileUploadBlock
                             label="Documento com foto"
-                            id={"dep_picture" + index}
+                            id={"chi_picture" + index}
                             associationId={user.id}
                             documentType={'documento_com_foto'}
                             documentsAssociation={'dependents'}
                             userId={user.id}
-                            setFile={(url) => updateDependent(index, "url_document_picture", url)}
-                            value={dep ? dep.url_document_picture : ""}
+                            setFile={(url) => updateChild(index, "url_document_picture", url)}
+                            value={chi ? chi.url_document_picture : ""}
                           />
                         </div>
                       </div>
                       {
-                        dep.disability == true ?
+                        chi.disability == true ?
                           <div className="mb-8">
                             <FileUploadBlock
                               label="Documento comprobatório"
-                              id={"dep_url_medical_report" + index}
+                              id={"chi_url_medical_report" + index}
                               associationId={user.id}
                               documentType={'doc_comprobatorio'}
                               documentsAssociation={'dependents'}
                               userId={user.id}
-                              setFile={(url) => updateDependent(index, "url_medical_report", url)}
-                              value={dep ? dep.url_medical_report : ""}
+                              setFile={(url) => updateChild(index, "url_medical_report", url)}
+                              value={chi ? chi.url_medical_report : ""}
                             />
                           </div>
                           :
                           <></>
                       }
                       <div className="items-top flex space-x-2">
-                        <Checkbox id="dep_disability" onCheckedChange={(checked) => { updateDependent(index, "disability", checked) }} checked={dep.disability} />
+                        <Checkbox id="chi_disability" onCheckedChange={(checked) => { updateChild(index, "disability", checked) }} checked={chi.disability} />
                         <div className="grid gap-1.5 leading-none">
                           <label
-                            htmlFor="dep_disability"
+                            htmlFor="chi_disability"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           >
                             Possui dificuldade de locomoção ou laudo médico
@@ -157,10 +157,10 @@ export default function ListDependents() {
                       </div>
                       <div className="flex items-center justify-end w-full space-x-8">
                         <Button variant={'default'} onClick={async () => {
-                          if (validarCpf(dep.cpf)) {
-                            await handleUpdateDependent(dep);
+                          if (validarCpf(chi.cpf)) {
+                            await handleUpdateChild(chi);
                           } else {
-                            toast.error(`CPF Inválido para dependente ${dep.name}`)
+                            toast.error(`CPF Inválido para dependente ${chi.name}`)
                           }
                         }}>Salvar</Button>
                       </div>

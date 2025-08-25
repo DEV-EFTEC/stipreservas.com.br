@@ -17,6 +17,7 @@ import { CalendarDays, CheckCircle, Clock, Coins, Mail, MapPin, Phone, UsersRoun
 import { enumPresenceRole } from "@/lib/enumPresenceRole"
 import { calculateTotalPrice } from "@/hooks/useBookingPrice";
 import { useEffect } from "react"
+import { fmtPlainBR, fmtPlainDateBR } from "@/lib/fmtPlainBR"
 
 export default function CardLocalBooking({ holders, associates, dependents, stepchildren, guests, children, check_in, check_out, presence_role, status, id, rooms, utc_check_in_confirmed, utc_check_out_confirmed, booking, setBookings }) {
   const { formatted } = calculateTotalPrice(booking);
@@ -159,12 +160,19 @@ export default function CardLocalBooking({ holders, associates, dependents, step
               <div className="text-sm">
                 <p className="font-semibold">Check-in</p>
                 <p className="text-slate-500">
-                  {format(check_in, "dd/MM/yyyy")}
-                  {" "}
+                  {fmtPlainDateBR(check_in, "dd/MM/yyyy")}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-4 w-4 text-slate-500" />
+              <div className="text-sm">
+                <p className="font-semibold">Check-in confirmado em</p>
+                <p className="text-slate-500">
                   <p className="text-green-700">
                     {utc_check_in_confirmed
                       &&
-                      `às ${format(utc_check_in_confirmed, 'HH:mm')}`
+                      `${format(utc_check_in_confirmed, "dd/MM/yyyy 'às' HH:mm")}`
                     }
                   </p>
                 </p>
@@ -175,12 +183,19 @@ export default function CardLocalBooking({ holders, associates, dependents, step
               <div className="text-sm">
                 <p className="font-semibold">Check-out</p>
                 <p className="text-slate-500">
-                  {format(check_out, "dd/MM/yyyy")}
-                  {" "}
+                  {fmtPlainDateBR(check_out)}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-4 w-4 text-slate-500" />
+              <div className="text-sm">
+                <p className="font-semibold">Check-out confirmado em</p>
+                <p className="text-slate-500">
                   <p className="text-blue-700">
                     {utc_check_out_confirmed
                       &&
-                      `às ${format(utc_check_out_confirmed, 'HH:mm')}`
+                      `${format(utc_check_out_confirmed, "dd/MM/yyyy 'às' HH:mm")}`
                     }
                   </p>
                 </p>

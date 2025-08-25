@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import validarCpf from "validar-cpf";
 import { useDynamicList } from "@/hooks/useDynamicList";
 import { toast } from "sonner";
+import MonthYearCalendar from "@/components/month-year-calendar";
 
 export default function ListGuests() {
   const { user } = useAuth();
@@ -72,7 +73,7 @@ export default function ListGuests() {
           </div>
 
           <section className="flex flex-column w-full justify-between flex-wrap lg:space-x-16">
-            <section className="w-full md:w-[90%] lg:w-[80%] xl:w-[100%] flex-column space-y-8 lg:bg-lime-500 md:bg-rose-500 xl:bg-yellow-500 2xl:bg-blue-500">
+            <section className="w-full md:w-[90%] lg:w-[80%] xl:w-[100%] flex-column space-y-8">
               {
                 guests.map((gue, index) => (
                   <Card className="w-fit">
@@ -85,7 +86,7 @@ export default function ListGuests() {
                         </div>
                       </header>
                       <div className="flex flex-col gap-8 mb-8">
-                        <div className="flex gap-15">
+                        <div className="flex gap-10 lg:gap-15 flex-wrap flex-col lg:flex-row">
                           <LabeledInput
                             label={"Nome"}
                             onChange={(e) => updateGuest(index, "name", e.target.value)}
@@ -103,10 +104,10 @@ export default function ListGuests() {
                             id={"gue_cpf" + index}
                             key={"gue_cpf" + index} />
                         </div>
-                        <div className="flex gap-15">
+                        <div className="flex gap-10 lg:gap-15 flex-wrap flex-col lg:flex-row">
                           <div className="flex flex-col w-80 gap-2">
                             <Label>Data de Nascimento</Label>
-                            <DatePickerBirth
+                            <MonthYearCalendar
                               date={new Date(gue.birth_date || '2000-01-01')}
                               setDate={(newDate) => updateGuest(index, "birth_date", newDate)}
                             />

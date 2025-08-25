@@ -65,6 +65,9 @@ import { CreateSystemUser } from './pages/admin/CreateSystemUser';
 import SendDocumentsInvited from './pages/associate/SendDocumentsInvited';
 import NotFound from './pages/NotFound';
 import * as Sentry from "@sentry/react";
+import { Fallback } from '@radix-ui/react-avatar';
+import FallbackUI from './pages/FallbackUI';
+import ListChildren from './pages/associate/Escorts/ListChildren';
 
 Sentry.init({
   dsn: "https://a69d779eb34328a98f0a16f801f5184a@o4509888823099392.ingest.us.sentry.io/4509888824016896",
@@ -314,6 +317,22 @@ let router = createBrowserRouter([
               <AssociateSidebar />
               <AssociateSidebarTrigger />
               <ListGuests />
+            </BookingProvider>
+          </AssociateSidebarProvider>
+        </SocketProvider>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path: "/associado/acompanhantes/criancas",
+    element: (
+      <ProtectedRoute role={"associate"}>
+        <SocketProvider>
+          <AssociateSidebarProvider>
+            <BookingProvider>
+              <AssociateSidebar />
+              <AssociateSidebarTrigger />
+              <ListChildren />
             </BookingProvider>
           </AssociateSidebarProvider>
         </SocketProvider>
@@ -691,6 +710,10 @@ let router = createBrowserRouter([
         <NotFound />
       </ProtectedRoute>
     )
+  },
+  {
+    path: "/fallback",
+    element: <FallbackUI homePath="/admin/home" />
   }
 ])
 
