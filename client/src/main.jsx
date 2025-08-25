@@ -64,6 +64,20 @@ import { GenerateRegisterLink } from './pages/admin/GenerateRegisterLink';
 import { CreateSystemUser } from './pages/admin/CreateSystemUser';
 import SendDocumentsInvited from './pages/associate/SendDocumentsInvited';
 import NotFound from './pages/NotFound';
+import * as Sentry from "@sentry/react";
+
+Sentry.init({
+  dsn: "https://a69d779eb34328a98f0a16f801f5184a@o4509888823099392.ingest.us.sentry.io/4509888824016896",
+  sendDefaultPii: true,
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration()
+  ],
+  tracesSampleRate: 1.0,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+  enableLogs: true
+});
 
 let router = createBrowserRouter([
   {

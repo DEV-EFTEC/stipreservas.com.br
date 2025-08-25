@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSocket } from "@/hooks/useSocket";
 import BookingCardMobile from "@/components/booking-card-mobile";
+import * as Sentry from "@sentry/react";
 
 export function Home() {
   const navigate = useNavigate();
@@ -187,11 +188,11 @@ export function Home() {
           <div className="block lg:hidden ">
             {
               bookings.length ?
-              bookings.map(book => (
-                <BookingCardMobile {...book}/>
-              ))
-              :
-              <p>Nenhuma solicitação/reserva encontrada.</p>
+                bookings.map(book => (
+                  <BookingCardMobile {...book} />
+                ))
+                :
+                <p>Nenhuma solicitação/reserva encontrada.</p>
             }
           </div>
         </TabsContent>
