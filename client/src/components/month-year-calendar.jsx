@@ -10,6 +10,7 @@ import { CalendarIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { fmtPlainNameDateBR } from "@/lib/fmtPlainBR";
 
 export default function MonthYearCalendar({ date, setDate, isChild = false, isDisabled = false }) {
   const [open, setOpen] = React.useState(false)
