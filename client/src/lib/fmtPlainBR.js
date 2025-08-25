@@ -12,3 +12,10 @@ export const fmtPlainDateBR = (s) =>
     "dd/MM/yyyy",
     { locale: ptBR }
   );
+
+export const fmtPlainNameDateBR = (s) =>
+  format(
+    parse(s.includes("T") ? s.split("T")[0] : s, "yyyy-MM-dd", new Date()),
+    "dd 'de' MMMM 'de' yyyy",
+    { locale: ptBR }
+  );

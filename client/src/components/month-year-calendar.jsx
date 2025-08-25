@@ -24,7 +24,7 @@ export default function MonthYearCalendar({ date, setDate, isChild = false, isDi
             disabled={isDisabled}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : <span>Selecionar data</span>}
+            {date ? fmtPlainNameDateBR(date) : <span>Selecionar data</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">

@@ -109,7 +109,7 @@ export default function ListDependents() {
                           <div className="flex flex-col w-80 gap-2">
                             <Label>Data de Nascimento</Label>
                             <MonthYearCalendar
-                              date={new Date(fmtPlainDateBR(dep.birth_date) || '2000-01-01')}
+                              date={new Date(dep.birth_date || '2000-01-01')}
                               setDate={(newDate) => updateDependent(index, "birth_date", newDate)}
                             />
                           </div>

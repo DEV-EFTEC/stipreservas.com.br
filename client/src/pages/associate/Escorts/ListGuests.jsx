@@ -109,7 +109,7 @@ export default function ListGuests() {
                           <div className="flex flex-col w-80 gap-2">
                             <Label>Data de Nascimento</Label>
                             <MonthYearCalendar
-                              date={new Date(fmtPlainDateBR(gue.birth_date) || '2000-01-01')}
+                              date={new Date(gue.birth_date || '2000-01-01')}
                               setDate={(newDate) => updateGuest(index, "birth_date", newDate)}
                             />
                           </div>
