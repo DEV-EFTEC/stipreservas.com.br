@@ -23,10 +23,6 @@ import validarCpf from "validar-cpf";
 import { useDynamicList } from "@/hooks/useDynamicList";
 import { toast } from "sonner";
 
-function Boom() {
-  throw new Error("Boom!");
-}
-
 export default function ListDependents() {
   const { user } = useAuth();
 
@@ -66,7 +62,6 @@ export default function ListDependents() {
 
   return (
     <section className="w-full xl:p-20 pr-2 overflow-y-auto">
-      <Boom />
       {
         dependents
         &&
