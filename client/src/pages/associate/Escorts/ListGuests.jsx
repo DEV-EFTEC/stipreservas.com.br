@@ -23,6 +23,7 @@ import validarCpf from "validar-cpf";
 import { useDynamicList } from "@/hooks/useDynamicList";
 import { toast } from "sonner";
 import MonthYearCalendar from "@/components/month-year-calendar";
+import { fmtPlainDateBR } from "@/lib/fmtPlainBR";
 
 export default function ListGuests() {
   const { user } = useAuth();
@@ -108,7 +109,7 @@ export default function ListGuests() {
                           <div className="flex flex-col w-80 gap-2">
                             <Label>Data de Nascimento</Label>
                             <MonthYearCalendar
-                              date={new Date(gue.birth_date || '2000-01-01')}
+                              date={new Date(fmtPlainDateBR(gue.birth_date) || '2000-01-01')}
                               setDate={(newDate) => updateGuest(index, "birth_date", newDate)}
                             />
                           </div>
