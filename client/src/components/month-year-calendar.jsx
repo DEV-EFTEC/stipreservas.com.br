@@ -31,8 +31,8 @@ export default function MonthYearCalendar({ date, setDate, isChild = false, isDi
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
-            defaultMonth={date}
-            selected={date}
+            defaultMonth={new Date(date)}
+            selected={new Date(date)}
             onSelect={setDate}
             captionLayout={"dropdown"}
             className="rounded-lg border shadow-sm" />
