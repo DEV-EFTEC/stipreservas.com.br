@@ -109,8 +109,8 @@ export default function ListChildren() {
                           <div className="flex flex-col w-80 gap-2">
                             <Label>Data de Nascimento</Label>
                             <MonthYearCalendar
-                              date={chi.birth_date || '2000-01-01'}
-                              setDate={(newDate) => updateChild(index, "birth_date", newDate)}
+                              date={chi.birth_date ? new Date(chi.birth_date) : new Date("2000-01-01")}
+                              setDate={(newDate) => updateChild(index, "birth_date", newDate?.toISOString())}
                             />
                           </div>
                           <FileUploadBlock

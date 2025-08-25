@@ -1,4 +1,4 @@
-import { parse, format } from "date-fns";
+import { parse, format, isDate } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export const fmtPlainBR = (s) =>
@@ -13,9 +13,18 @@ export const fmtPlainDateBR = (s) =>
     { locale: ptBR }
   );
 
-export const fmtPlainNameDateBR = (s) =>
-  format(
-    parse(s.includes("T") ? s.split("T")[0] : s, "yyyy-MM-dd", new Date()),
-    "dd 'de' MMMM 'de' yyyy",
-    { locale: ptBR }
-  );
+export const fmtPlainNameDateBR = (s) => {
+  let date;
+
+  if (!s) return "";
+
+  if (isDate(s)) {
+    date = s;
+  } else if (typeof s === "string") {
+    date = parseISO(s);
+  } else {
+    throw new Error("fmtPlainNameDateBR recebeu tipo inesperado: " + typeof s);
+  }
+
+  return format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+};
