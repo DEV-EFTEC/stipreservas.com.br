@@ -29,6 +29,7 @@ import { useAuth } from "@/hooks/useAuth";
 import maskCPF from "@/lib/maskCPF";
 import validarCpf from "validar-cpf";
 import { toast } from "sonner";
+import MonthYearCalendar from "@/components/month-year-calendar";
 
 export default function Guests({ setGuests, setSelectedGuests, guestsParcial, selectedGuests, guests, updateGuest, saveEntity, deleteEntity }) {
   const { user } = useAuth();
@@ -103,7 +104,7 @@ export default function Guests({ setGuests, setSelectedGuests, guestsParcial, se
                     <div className="flex gap-15">
                       <div className="flex flex-col w-80 gap-2">
                         <Label>Data de Nascimento</Label>
-                        <DatePickerBirth
+                        <MonthYearCalendar
                           date={new Date(gue.birth_date || '2000-01-01')}
                           setDate={(newDate) => updateGuest(index, "birth_date", newDate)}
                         />

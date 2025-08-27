@@ -30,6 +30,7 @@ import { useAssociate } from "@/hooks/useAssociate";
 import maskCPF from "@/lib/maskCPF";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { FileUploadBlock } from "@/components/admin/FileUploadBlock";
 
 export default function CreateBookingAdmin() {
   const { saveAssociate, loading } = useAssociate();
@@ -42,6 +43,7 @@ export default function CreateBookingAdmin() {
     to: null,
   });
   const [partnerPresence, setPartnerPresence] = useState(true);
+  const [userNewPicture, setUserNewPicture] = useState(null);
 
   const formSchema = z.object({
     name: z.string(),
@@ -55,8 +57,9 @@ export default function CreateBookingAdmin() {
 
   useEffect(() => {
     if (user) {
-      form.setValue("name", user.name || "");
-      form.setValue("cpf", user.cpf || "");
+      form.setValue("name", user.name);
+      form.setValue("cpf", user.cpf);
+      console.log(user.associate_role)
       form.setValue("associate_role", user.associate_role);
     }
   }, [user]);
@@ -120,13 +123,16 @@ export default function CreateBookingAdmin() {
 
   return (
     <section className="w-full xl:p-20 pr-2 overflow-y-auto">
-      <section className="w-full">
+      <section className="w-full mb-40">
         <GlobalBreadcrumb />
         <div className="flex flex-col space-y-4 mb-6">
           <Text heading={"h1"}>Nova solicitação</Text>
           <Text heading={"h2"}>Informações do titular</Text>
           <div className="flex w-fit space-x-4">
-            <Input onChange={(e) => setCpf(e.target.value)} placeholder="Digite o CPF do associado" />
+            <Input value={cpf} onChange={(e) => {
+              const masked = maskCPF(e.target.value);
+              setCpf(masked);
+            }} placeholder="Digite o CPF do associado" />
             <Button onClick={searchUser}>Procurar</Button>
           </div>
         </div>
@@ -157,6 +163,45 @@ export default function CreateBookingAdmin() {
                         <FormLabel>CPF</FormLabel>
                         <FormControl>
                           <Input placeholder={user.cpf} {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FileUploadBlock
+                    label="Documento com foto"
+                    id="document_picture"
+                    associationId={user.id}
+                    documentType={'document_picture'}
+                    documentsAssociation={'holder'}
+                    userId={user.id}
+                    key={'document_picture_sender'}
+                    setFile={(url) => setUserNewPicture(url)}
+                    value={!userNewPicture ? user.url_document_picture : userNewPicture}
+                  />
+                </div>
+                <div className="flex justify-between space-y-4 flex-wrap sm:flex-nowrap sm:space-y-0 sm:space-x-4">
+                  <FormField
+                    control={form.control}
+                    name="cnpj"
+                    render={({ field }) => (
+                      <FormItem className={"w-full"}>
+                        <FormLabel>CNPJ empregador</FormLabel>
+                        <FormControl>
+                          <Input placeholder={user.enterprise.cnpj} {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="enterprise_name"
+                    render={({ field }) => (
+                      <FormItem className={"w-full"}>
+                        <FormLabel>Razão social</FormLabel>
+                        <FormControl>
+                          <Input placeholder={user.enterprise.name} {...field} disabled />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -215,15 +260,15 @@ export default function CreateBookingAdmin() {
               <div>
                 <Text heading={'h2'}>Dados da reserva</Text>
               </div>
-              <div>
+              <div className="mb-4">
                 <Label className={"mb-2"}>Data de Entrada e Saída</Label>
                 <DatePickerWithRange date={date} setDate={setDate} associate_role={user.associate_role} />
               </div>
             </form>
           </Form>
         }
-        <Aside action={form.handleSubmit(onSubmit)} isDisabled={date.from === null ? true : false} />
       </section>
+      <Aside action={form.handleSubmit(onSubmit)} isDisabled={date.from === null ? true : false} />
     </section>
   )
 }
