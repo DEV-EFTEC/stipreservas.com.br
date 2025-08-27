@@ -1,6 +1,6 @@
 import knex from "knex";
 import knexConfig from "../../knexfile.js";
-const environment = process.env.NODE_ENV || 'development';
+const environment = process.env.NODE_ENV || "development";
 const db = knex(knexConfig[environment]);
 
 export async function findAllRooms() {
@@ -23,8 +23,13 @@ export async function findAvailableRooms(
   checkIn,
   checkOut,
   capacity,
-  bookingId
+  bookingId,
+  hasChild,
+  hasOld
 ) {
+  // Normaliza booleans
+  const child = hasChild === true || hasChild === "true" || hasChild === 1;
+  const old = hasOld === true || hasOld === "true" || hasOld === 1;
   return db("rooms as r")
     .whereNotExists(function () {
       this.select(1)
@@ -39,12 +44,23 @@ export async function findAvailableRooms(
           );
         });
     })
-    .modify((queryBuilder) => {
+    .modify((qb) => {
       if (capacity < 5) {
-        queryBuilder.where("r.capacity", 4);
+        if (child || old) {
+          // aceita 4 lugares OU preferencial de 6
+          qb.where(function () {
+            this.where("r.capacity", 4).orWhere(function () {
+              this.where("r.capacity", 6).andWhere("r.preferential", true);
+            });
+          });
+        } else {
+          // mantém só 4 lugares
+          qb.where("r.capacity", 4);
+        }
       }
     })
     .select("r.*")
+    .orderByRaw("CASE WHEN r.preferential THEN 0 ELSE 1 END") // preferenciais primeiro
     .orderBy("r.number", "asc");
 }
 

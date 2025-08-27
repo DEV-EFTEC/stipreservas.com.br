@@ -25,6 +25,12 @@ cron.schedule("5 */10 * * * *", async () => {
           .whereIn("booking_id", bookingIds)
           .del();
         await trx("children_bookings").whereIn("booking_id", bookingIds).del();
+        await trx("stepchildren_bookings")
+          .whereIn("booking_id", bookingIds)
+          .del();
+        await trx("associates_bookings")
+          .whereIn("booking_id", bookingIds)
+          .del();
         await trx("booking_rooms").whereIn("booking_id", bookingIds).del();
         await trx("bookings").whereIn("id", bookingIds).del();
       });
@@ -62,6 +68,9 @@ cron.schedule("15 */1 * * * *", async () => {
         await trx("bookings")
           .whereIn("id", bookingIds)
           .update({ status: "expired", expires_at: null });
+        await trx("booking_rooms")
+          .whereIn("booking_id", bookingIds)
+          .del();
       });
 
       console.log(
@@ -105,6 +114,45 @@ cron.schedule("30 */5 * * * *", async () => {
   } catch (err) {
     console.error(
       "[CRON - status: DECLINED] : Erro ao limpar reservas expiradas:",
+      err
+    );
+  }
+});
+
+cron.schedule("10 */3 * * * *", async () => {
+  console.log(
+    `\x1b[33m[CRON - status: REFUSED]\x1b[0m${new Date().toISOString()} ~ Verificando reservas com pendencia de reenvio expiradas...`
+  );
+
+  try {
+    const expiredBookings = await db("bookings")
+      .where("status", "refused")
+      .andWhere("expires_at", "<=", db.fn.now())
+      .select("id");
+
+    const bookingIds = expiredBookings.map((b) => b.id);
+
+    if (bookingIds.length) {
+      await db.transaction(async (trx) => {
+        await trx("bookings")
+          .whereIn("id", bookingIds)
+          .update({ status: "expired", expires_at: null });
+        await trx("booking_rooms")
+          .whereIn("booking_id", bookingIds)
+          .del();
+      });
+
+      console.log(
+        `\x1b[33m[CRON - status: REFUSED]\x1b[0m${new Date().toISOString()} = Reservas recusadas expiradas removidas.`
+      );
+    } else {
+      console.log(
+        `\x1b[33m[CRON - status: REFUSED]\x1b[0m${new Date().toISOString()} + Nenhuma reserva expirada encontrada.`
+      );
+    }
+  } catch (err) {
+    console.error(
+      "[CRON - status: REFUSED] : Erro ao limpar reservas expiradas:",
       err
     );
   }

@@ -35,10 +35,10 @@ export async function createRoom(req, res) {
 
 export async function findAvailableRooms(req, res) {
   try {
-      const { check_in, check_out, capacity, booking_id } = req.query;
-      const result = await roomService.findAvailableRooms(check_in, check_out, capacity, booking_id);
+      const { check_in, check_out, capacity, booking_id, hasChild, hasOld } = req.query;
+      const result = await roomService.findAvailableRooms(check_in, check_out, capacity, booking_id, hasChild, hasOld);
       
-      if (!result) return res.status(404).json({ message: "Nenhum quarto disponível para essas datas." });
+      if (!result) return res.status(200).json({ message: "Nenhum quarto disponível para essas datas." });
 
       res.status(200).json(result);
   } catch (err) {
@@ -52,7 +52,7 @@ export async function findRoomById(req, res) {
     const { id } = req.query;
     const result = await roomService.findRoomById(id);
     
-    if (!result) return res.status(404).json({ message: "nenhum quarto encontrado." });
+    if (!result) return res.status(200).json({ message: "nenhum quarto encontrado." });
 
     res.status(200).json(result);
   } catch (err) {
@@ -66,7 +66,7 @@ export async function bookRoom(req, res) {
     const { rooms } = req.body;
     const result = await roomService.bookRoom(rooms);
     
-    if (!result) return res.status(404).json({ message: "nenhum quarto encontrado." });
+    if (!result) return res.status(200).json({ message: "nenhum quarto encontrado." });
 
     res.status(200).json(result);
   } catch (err) {

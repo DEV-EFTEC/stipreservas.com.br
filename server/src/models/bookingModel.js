@@ -259,7 +259,7 @@ export async function approveBooking(id) {
   const [updatedBooking] = await db("bookings")
     .where({ id })
     .update({
-      expires_at: db.raw(`"utc_created_on" + interval '2 days'`),
+      expires_at: db.raw(`timezone('utc', now()) + interval '2 days'`),
       status: "payment_pending",
     })
     .returning("*");
@@ -271,7 +271,7 @@ export async function refuseBooking(id) {
   const [updatedBooking] = await db("bookings")
     .where({ id })
     .update({
-      expires_at: db.raw(`"utc_created_on" + interval '1 day'`),
+      expires_at: db.raw(`timezone('utc', now()) + interval '1 day'`),
       status: "refused",
     })
     .returning("*");

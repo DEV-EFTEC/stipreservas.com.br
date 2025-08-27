@@ -13,7 +13,13 @@ export async function bookingPaided(req, res) {
     const payment = await paymentService.updatePaymentByAsaasPaymentId(
       body.payment.id,
       "payments",
-      { status_role: body.payment.status === "RECEIVED" && "paid" }
+      {
+        status_role: ["RECEIVED", "RECEIVED_IN_CASH"].includes(
+          body.payment.status
+        )
+          ? "paid"
+          : "pending",
+      }
     );
 
     const booking = await bookingService.updateBooking({

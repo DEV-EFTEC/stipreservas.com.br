@@ -10,6 +10,7 @@ import { useBooking } from "@/hooks/useBooking";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { differenceInYears } from "date-fns";
 
 export default function GetRoom() {
   const [rooms, setRooms] = useState([]);
@@ -21,17 +22,40 @@ export default function GetRoom() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
+  function hasUnder12(arrays) {
+    const today = new Date();
+
+    return arrays.some(arr =>
+      arr.some(obj => {
+        const age = differenceInYears(today, new Date(obj.birth_date));
+        return age <= 12;
+      })
+    );
+  }
+
+  function hasOver50(arrays) {
+    const today = new Date();
+
+    return arrays.some(arr =>
+      arr.some(obj => {
+        const age = differenceInYears(today, new Date(obj.birth_date));
+        return age >= 50;
+      })
+    );
+  }
+
   useEffect(() => {
     if (loading) return;
 
     setUserType(user.associate_role);
 
     if (booking) {
+      console.log(booking)
       if (!booking.rooms || booking.rooms.length < 1) {
         const qtd = (booking.partner_presence ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity;
         setPeopleCapacity(qtd);
         (async () => {
-          const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}&booking_id=${booking.id}`);
+          const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}&booking_id=${booking.id}&hasChild=${hasUnder12([booking.dependents, booking.guests, booking.stepchildren, booking.children])}&hasOld=${hasOver50([booking.dependents, booking.guests, booking.stepchildren, booking.children])}`);
           setRooms(response);
         })()
       } else {
@@ -114,9 +138,9 @@ export default function GetRoom() {
       toast.warning("Você não selecionou quartos suficientes pela quantidade total de pessoas na reserva.")
     } else {
       if (isUpdate) {
-        navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/finalizar-reserva?booking_id=${booking.id}`);
+        navigate(`/associado/criar-reserva/${booking.id.slice(0,8)}/finalizar-reserva?booking_id=${booking.id}`);
       } else {
-        navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/organizar-reserva?booking_id=${booking.id}`);
+        navigate(`/associado/criar-reserva/${booking.id.slice(0,8)}/organizar-reserva?booking_id=${booking.id}`);
       }
     }
   }

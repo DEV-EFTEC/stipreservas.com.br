@@ -17,8 +17,8 @@ export async function findRoomById(id) {
   return roomModel.findRoomById(id);
 }
 
-export async function findAvailableRooms(checkIn, checkOut, capacity, bookingId) {
-  return roomModel.findAvailableRooms(checkIn, checkOut, capacity, bookingId);
+export async function findAvailableRooms(checkIn, checkOut, capacity, bookingId, hasChild, hasOld) {
+  return roomModel.findAvailableRooms(checkIn, checkOut, capacity, bookingId, hasChild, hasOld);
 }
 
 export async function bookRoom(data) {

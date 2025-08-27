@@ -200,7 +200,7 @@ export default function SendDocuments() {
       })
     });
 
-    saveBooking({ ...booking, ...result, associates_quantity: selectedAssociates.length });
+    saveBooking({ ...booking, ...result, associates_quantity: selectedAssociates.length, dependents, guests, children, stepchildren, selectedAssociates });
     navigate(`/associado/criar-reserva/${booking.id.slice(0, 8)}/escolher-quarto`);
   }
 
