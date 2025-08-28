@@ -565,7 +565,7 @@ export default function BookingDetails() {
                           booking.guests.map((gue, index) => (
                             <Card>
                               <CardHeader>
-                                <CardTitle className={'flex items-center gap-4'}>
+                                <CardTitle className={'flex items-center gap-4 flex-wrap'}>
                                   {gue.name}
                                   <Badge variant={'cpf_details'}>CPF {gue.cpf}</Badge>
                                   {
@@ -622,7 +622,7 @@ export default function BookingDetails() {
                           booking.children.map((chi, index) => (
                             <Card>
                               <CardHeader>
-                                <CardTitle className={'flex items-center gap-4'}>
+                                <CardTitle className={'flex items-center gap-4 flex-wrap'}>
                                   {chi.name}
                                   <Badge variant={'cpf_details'}>CPF {chi.cpf}</Badge>
                                   {
@@ -679,7 +679,7 @@ export default function BookingDetails() {
                           booking.stepchildren.map((stepchi, index) => (
                             <Card>
                               <CardHeader>
-                                <CardTitle className={'flex items-center gap-4'}>
+                                <CardTitle className={'flex items-center gap-4 flex-wrap'}>
                                   {stepchi.name}
                                   <Badge variant={'cpf_details'}>CPF {stepchi.cpf}</Badge>
                                   {
@@ -734,7 +734,7 @@ export default function BookingDetails() {
                           booking.associates.map((associate, index) => (
                             <Card>
                               <CardHeader>
-                                <CardTitle className={'flex items-center gap-4'}>
+                                <CardTitle className={'flex items-center gap-4 flex-wrap'}>
                                   {associate.name}
                                   <Badge variant={'cpf_details'}>CPF {associate.cpf}</Badge>
                                   {

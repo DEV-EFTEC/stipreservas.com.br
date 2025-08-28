@@ -59,6 +59,12 @@ export default function ApproveDocuments() {
     resetList: setAssociates
   } = useDynamicList([]);
 
+  const {
+    list: holders,
+    updateItem: updateHolder,
+    resetList: setHolders
+  } = useDynamicList([]);
+
   useEffect(() => {
     if (!booking || loadingBooking) return;
 
@@ -70,6 +76,7 @@ export default function ApproveDocuments() {
         setChildren(response.children);
         setAssociates(response.associates);
         setStepchildren(response.stepchildren);
+        setHolders(response.holders);
       }
     };
 
@@ -114,7 +121,7 @@ export default function ApproveDocuments() {
       setFinalPath(`/admin/enviar-recusa/${booking.id}`);
     }
 
-  }, [booking, dependents, guests, children, associates, stepchildren]);
+  }, [booking, dependents, guests, children, associates, stepchildren, holders]);
 
   async function handleSubmit() {
     await apiRequest(`/bookings/update-participants/${booking.id}`, {
@@ -125,6 +132,7 @@ export default function ApproveDocuments() {
         children: children.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
         stepchildren: children.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
         associates: children.map(({ id, word_card_file_status, receipt_picture_status, document_picture_status }) => ({ id, word_card_file_status, receipt_picture_status, document_picture_status })),
+        holders: holders.map(({ id, document_picture_status }) => ({ id, document_picture_status })),
         word_card_file_status: booking.word_card_file_status,
         receipt_picture_status: booking.receipt_picture_status
       })
@@ -145,9 +153,34 @@ export default function ApproveDocuments() {
               <Badge variant="">#{booking && booking.id.slice(0, 8)}</Badge>
             </div>
           </div>
-          <Text heading="h2">Documentos do titular</Text>
+          <Text heading="h2">Documentos do titular 1</Text>
           <Card className="w-fit mb-7 mt-5">
             <CardContent className="flex gap-15 w-fit">
+              {
+                holders.length > 0 &&
+                <FileUploadBlock
+                  label="Documento com foto"
+                  id="documento_com_foto"
+                  associationId={holders[0].id}
+                  documentType={'documento_com_foto'}
+                  documentsAssociation={'holder'}
+                  userId={holders[0].id}
+                  key={'document_picture'}
+                  setFile={(url) => setBooking(prevState => {
+                    const newURL = url; return {
+                      ...prevState,
+                      url_receipt_picture: newURL
+                    }
+                  })}
+                  setStatus={(status) =>
+                    setHolders(prevState => {
+                      return [{ ...prevState[0], document_picture_status: status }]
+                    })
+                  }
+                  value={booking ? holders[0].url_document_picture : ""}
+                  status={booking ? holders[0].document_picture_status : "neutral"}
+                />
+              }
               <FileUploadBlock
                 label="Holerite recente"
                 id="holerite"
@@ -203,26 +236,46 @@ export default function ApproveDocuments() {
             booking.url_word_card_file &&
             booking.url_receipt_picture &&
             <>
-              <Dependents
-                dependents={dependents}
-                updateDependent={updateDependent}
-              />
-              <Guests
-                guests={guests}
-                updateGuest={updateGuest}
-              />
-              <Children
-                children={children}
-                updateChild={updateChild}
-              />
-              <StepChildren
-                stepchildren={stepchildren}
-                updateStepchild={updateStepchild}
-              />
-              <Associates
-                associates={associates}
-                updateAssociate={updateAssociate}
-              />
+              {
+                dependents.length > 0
+                &&
+                <Dependents
+                  dependents={dependents}
+                  updateDependent={updateDependent}
+                />
+              }
+              {
+                guests.length > 0
+                &&
+                <Guests
+                  guests={guests}
+                  updateGuest={updateGuest}
+                />
+              }
+              {
+                children.length > 0
+                &&
+                <Children
+                  children={children}
+                  updateChild={updateChild}
+                />
+              }
+              {
+                stepchildren.length > 0
+                &&
+                <StepChildren
+                  stepchildren={stepchildren}
+                  updateStepchild={updateStepchild}
+                />
+              }
+              {
+                associates.length > 0
+                &&
+                <Associates
+                  associates={associates}
+                  updateAssociate={updateAssociate}
+                />
+              }
             </>
           }
         </section>

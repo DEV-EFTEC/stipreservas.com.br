@@ -134,6 +134,12 @@ export function Home() {
     })();
   }, [today])
 
+  // useEffect(() => {
+  //   if (loading) return;
+
+
+  // }, [user])
+
   return (
     <section className="w-full xl:p-20 pr-2 overflow-y-auto">
       <div className="flex xl:flex-row flex-col w-full justify-between items-center mb-10">
@@ -164,8 +170,8 @@ export function Home() {
       <Tabs defaultValue={option} onValueChange={(e) => setOption(e)}>
         <TabsList className={'w-full'}>
           <TabsTrigger value="bookings">Reservas</TabsTrigger>
-          {/* <TabsTrigger value="draw_applies">Sorteios</TabsTrigger>
-          <TabsTrigger value="invites">Convites</TabsTrigger> */}
+          {/* <TabsTrigger value="draw_applies">Sorteios</TabsTrigger> */}
+          <TabsTrigger value="invites">Convites</TabsTrigger>
         </TabsList>
         <TabsContent value="bookings">
           <div className="hidden lg:block">
@@ -219,21 +225,35 @@ export function Home() {
         <TabsContent value="invites">
           {
             invites &&
-            <DataTable
-              columns={columns}
-              data={invites}
-              nextPage={() => setPage(prevState => prevState + 1)}
-              previousPage={
-                () => setPage(prevState => {
-                  if (prevState > 1) {
-                    return prevState - 1
-                  } else {
-                    return 1
+            <>
+              <div className="hidden lg:block">
+                <DataTable
+                  columns={columns}
+                  data={invites}
+                  nextPage={() => setPage(prevState => prevState + 1)}
+                  previousPage={
+                    () => setPage(prevState => {
+                      if (prevState > 1) {
+                        return prevState - 1
+                      } else {
+                        return 1
+                      }
+                    })
                   }
-                })
-              }
-              pagination={paginationData}
-            />
+                  pagination={paginationData}
+                />
+              </div>
+              <div className="block lg:hidden ">
+                {
+                  invites.length ?
+                    invites.map(book => (
+                      <BookingCardMobile {...book} />
+                    ))
+                    :
+                    <p>Nenhum convite encontrado.</p>
+                }
+              </div>
+            </>
           }
         </TabsContent>
       </Tabs>
