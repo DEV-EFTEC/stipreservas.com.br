@@ -80,7 +80,7 @@ export async function verifyToken(req, res) {
   try {
     const { token } = req.body;
     const result = await userService.verifyToken(token);
-    if (!result || result.used || new Date() > result.expires_at) {
+    if (!result || result.used) {
       return res.status(400).json({ error: "Token inválido ou expirado" });
     }
     res.status(201).json({ success: true });

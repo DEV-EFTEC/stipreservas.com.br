@@ -130,8 +130,8 @@ export default function ApproveDocuments() {
         dependents: dependents.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
         guests: guests.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
         children: children.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
-        stepchildren: children.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
-        associates: children.map(({ id, word_card_file_status, receipt_picture_status, document_picture_status }) => ({ id, word_card_file_status, receipt_picture_status, document_picture_status })),
+        stepchildren: stepchildren.map(({ id, medical_report_status, document_picture_status }) => ({ id, medical_report_status, document_picture_status })),
+        associates: associates.map(({ id, word_card_file_status, receipt_picture_status, document_picture_status }) => ({ id, word_card_file_status, receipt_picture_status, document_picture_status })),
         holders: holders.map(({ id, document_picture_status }) => ({ id, document_picture_status })),
         word_card_file_status: booking.word_card_file_status,
         receipt_picture_status: booking.receipt_picture_status

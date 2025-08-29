@@ -275,6 +275,7 @@ export async function updateParticipants(req, res) {
       guests,
       dependents,
       associates,
+      holders,
       word_card_file_status,
       receipt_picture_status,
     } = req.body;
@@ -284,6 +285,7 @@ export async function updateParticipants(req, res) {
       guests,
       dependents,
       associates,
+      holders,
       word_card_file_status,
       receipt_picture_status
     );

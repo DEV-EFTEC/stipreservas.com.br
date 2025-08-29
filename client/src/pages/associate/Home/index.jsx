@@ -16,6 +16,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSocket } from "@/hooks/useSocket";
 import BookingCardMobile from "@/components/booking-card-mobile";
 import * as Sentry from "@sentry/react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function Home() {
   const navigate = useNavigate();
@@ -28,6 +39,7 @@ export function Home() {
   const [draw, setDraw] = useState();
   const [draws, setDraws] = useState();
   const [option, setOption] = useState("bookings");
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
 
   const { socket } = useSocket();
@@ -135,13 +147,32 @@ export function Home() {
   }, [today])
 
   // useEffect(() => {
-  //   if (loading) return;
+  //   if (!user) return;
 
+  //   console.log(user)
+  //   if (user.url_document_picture === "") {
+  //     setIsAlertOpen(true);
+  //   }
 
   // }, [user])
 
   return (
     <section className="w-full xl:p-20 pr-2 overflow-y-auto">
+      {/* <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => alert()} disabled>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog> */}
       <div className="flex xl:flex-row flex-col w-full justify-between items-center mb-10">
         <Text heading={'h1'}>Suas solicitações recentes</Text>
         <Button variant="positive" onClick={() => navigate("/associado/criar-reserva")} className={"w-[100%] mt-4 xl:w-fit xl:mt-0"}><PlusIcon /> Criar uma nova solicitação</Button>

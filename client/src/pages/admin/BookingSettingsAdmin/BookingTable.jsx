@@ -69,18 +69,18 @@ export default function BookingTable({ title, people, rooms, onChangeRoom, onCha
               <TableCell className="w-1/5">
                 <Input
                   type="date"
-                  value={format(new Date(person.check_in), 'yyyy-MM-dd')}
-                  min={format(new Date(person.check_in), 'yyyy-MM-dd')}
-                  max={format(new Date(person.check_out), 'yyyy-MM-dd')}
+                  value={person.check_in}
+                  min={person.check_in}
+                  max={person.check_out}
                   onChange={(value) => onChangeCheckIn(person.id, value)}
                 />
               </TableCell>
               <TableCell className="w-1/5">
                 <Input
                   type="date"
-                  value={format(new Date(person.check_out), 'yyyy-MM-dd')}
-                  min={format(new Date(person.check_in), 'yyyy-MM-dd')}
-                  max={format(new Date(person.check_out), 'yyyy-MM-dd')}
+                  value={person.check_out}
+                    min={person.check_in}
+                    max={person.check_out}
                   onChange={(value) => onChangeCheckOut(person.id, value)}
                 />
               </TableCell>

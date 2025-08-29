@@ -30,8 +30,15 @@ import maskCPF from "@/lib/maskCPF";
 import validarCpf from "validar-cpf";
 import { toast } from "sonner";
 import MonthYearCalendar from "@/components/month-year-calendar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-export default function Dependents({ setDependents, setSelectedDependents, dependentsParcial, selectedDependents, dependents, updateDependent, saveEntity, deleteEntity }) {
+export default function Dependents({ setDependents, setSelectedDependents, dependentsParcial, selectedDependents, dependents, updateDependent, saveEntity, deleteEntity, associates, associateSelect, setAssociateSelect }) {
   const { user } = useAuth();
 
   return (
@@ -40,6 +47,18 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
         <hr className="my-14" />
         <div className="w-full flex items-center justify-between">
           <Text heading="h2">Documentos dos dependentes</Text>
+          <Select value={associateSelect} onValueChange={setAssociateSelect}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Criar para o associado..." />
+            </SelectTrigger>
+            <SelectContent>
+              {
+                associates.map(asc => (
+                  <SelectItem value={asc.id}>{asc.name}</SelectItem>
+                ))
+              }
+            </SelectContent>
+          </Select>
           <Button onClick={() => setDependents(prevState => [...prevState, dependentModel])}>Criar dependente</Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -156,10 +175,10 @@ export default function Dependents({ setDependents, setSelectedDependents, depen
                     !dep.is_saved
                     &&
                     <div className="flex items-center justify-end w-full space-x-8">
-                      <Button variant={'secondary'} onClick={() => deleteEntity('d', dep)}>Cancelar</Button>
+                      <Button variant={'secondary'} onClick={() => deleteEntity('d', dep, associateSelect)}>Cancelar</Button>
                       <Button variant={'default'} onClick={async () => {
                         if (validarCpf(dep.cpf)) {
-                          await saveEntity('d', dep);
+                          await saveEntity('d', dep, associateSelect);
                         } else {
                           toast.error(`CPF Inválido para dependente ${dep.name}`)
                         }

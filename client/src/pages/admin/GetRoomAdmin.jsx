@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAssociate } from "@/hooks/useAssociate";
+import { differenceInYears } from "date-fns";
 
 export default function GetRoomAdmin() {
   const [rooms, setRooms] = useState([]);
@@ -19,9 +20,31 @@ export default function GetRoomAdmin() {
   const [peopleCapacity, setPeopleCapacity] = useState(0);
   const [isUpdate, setIsUpdate] = useState(false);
   const { booking } = useBooking();
-  const {associate, loading } = useAssociate();
+  const { associate, loading } = useAssociate();
   const navigate = useNavigate();
   const user = associate;
+
+  function hasUnder12(arrays) {
+    const today = new Date();
+
+    return arrays.some(arr =>
+      arr.some(obj => {
+        const age = differenceInYears(today, new Date(obj.birth_date));
+        return age <= 12;
+      })
+    );
+  }
+
+  function hasOver50(arrays) {
+    const today = new Date();
+
+    return arrays.some(arr =>
+      arr.some(obj => {
+        const age = differenceInYears(today, new Date(obj.birth_date));
+        return age >= 50;
+      })
+    );
+  }
 
   useEffect(() => {
     if (loading) return;
@@ -33,7 +56,7 @@ export default function GetRoomAdmin() {
         const qtd = (booking.partner_presence ? 1 : 0) + booking.dependents_quantity + booking.guests_quantity;
         setPeopleCapacity(qtd);
         (async () => {
-          const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}&booking_id=${booking.id}`);
+          const response = await apiRequest(`/rooms/get-available-rooms?check_in=${booking.check_in}&check_out=${booking.check_out}&capacity=${qtd}&booking_id=${booking.id}&hasChild=${hasUnder12([booking.dependents, booking.guests, booking.children])}&hasOld=${hasOver50([booking.dependents, booking.guests, booking.children])}`);
           setRooms(response);
         })()
       } else {
@@ -124,7 +147,7 @@ export default function GetRoomAdmin() {
 
   return (
     <section className="flex w-full p-20 justify-between">
-      <section className="w-[80%]">
+      <section className="w-[80%] mb-40">
         <GlobalBreadcrumb />
         <div className="flex gap-12 items-end mb-8">
           <div className="flex flex-col space-y-4 mb-6">

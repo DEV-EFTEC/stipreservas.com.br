@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/api";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays, eachDayOfInterval, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/hooks/useSocket";
@@ -31,7 +31,7 @@ export default function FinishBookAdmin() {
   const booking_id = queryParams.get("booking_id");
   const navigate = useNavigate();
   const { socket } = useSocket();
-  const {associate} = useAssociate();
+  const { associate } = useAssociate();
   const user = associate;
   const [booking, setBooking] = useState();
   // const totalPrice = useBookingPrice(booking);
@@ -122,7 +122,7 @@ export default function FinishBookAdmin() {
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Diária(s)</p>
-                    <Badge variant="secondary" className={'w-full'}>{differenceInDays(booking.check_out, booking.check_in)} dia(s)</Badge>
+                    <Badge variant="secondary" className={'w-full'}>{eachDayOfInterval({ start: new Date(booking.check_out), end: new Date(booking.check_in) }).length} dia(s)</Badge>
                   </div>
                   <div className="flex-column w-full items-center justify-center text-center">
                     <p className="text-sm text-center">Quarto(s)</p>
@@ -346,6 +346,67 @@ export default function FinishBookAdmin() {
                       </div>
                     </div>
                   }
+                  {
+                    booking.associates.length > 0
+                    &&
+                    <div className="mt-5">
+                      <p className="font-medium text-slate-500 mb-1">Outros associados ({booking.associates.length})</p>
+                      <div className="flex-col space-y-4">
+                        {
+                          booking.associates.map((asc, index) => (
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className={'flex items-center gap-4'}>
+                                  {asc.name}
+                                  <Badge variant={'cpf_details'}>CPF {asc.cpf}</Badge>
+                                  {
+                                    asc.disability
+                                    &&
+                                    <Badge variant="preferential">
+                                      Preferêncial
+                                    </Badge>
+                                  }
+                                  <Badge variant={'secondary'}>Data de nascimento: {format(asc.birth_date, 'dd/MM/yyyy')}</Badge>
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className={'flex justify-between flex-wrap'}>
+                                <FileUploadBlock
+                                  label="Documento com foto"
+                                  id={"asc_picture" + index}
+                                  associationId={user.id}
+                                  documentType={'documento_com_foto'}
+                                  documentsAssociation={'associates'}
+                                  allowEdit={false}
+                                  userId={user.id}
+                                  value={asc ? asc.url_document_picture : ""}
+                                />
+                                <FileUploadBlock
+                                  label="CLT"
+                                  id={"asc_picture" + index}
+                                  associationId={user.id}
+                                  documentType={'documento_com_foto'}
+                                  documentsAssociation={'associates'}
+                                  allowEdit={false}
+                                  userId={user.id}
+                                  value={asc ? asc.url_word_card_file : ""}
+                                />
+                                <FileUploadBlock
+                                  label="Holerite"
+                                  id={"asc_picture" + index}
+                                  associationId={user.id}
+                                  documentType={'documento_com_foto'}
+                                  documentsAssociation={'associates'}
+                                  allowEdit={false}
+                                  userId={user.id}
+                                  value={asc ? asc.url_receipt_picture : ""}
+                                />
+                              </CardContent>
+                            </Card>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  }
                 </CardContent>
               </Card>
             </section>
@@ -365,11 +426,11 @@ export default function FinishBookAdmin() {
                 </Card>
                 {
                   booking.status === 'incomplete' ||
-                  booking.status === 'refused'
-                  ?
-                  <Button className={'mt-4 w-full'} onClick={handleSubmit} variant={'positive'}>Finalizar reserva<Check /></Button>
-                  :
-                  <></>
+                    booking.status === 'refused'
+                    ?
+                    <Button className={'mt-4 w-full'} onClick={handleSubmit} variant={'positive'}>Finalizar reserva<Check /></Button>
+                    :
+                    <></>
                 }
               </div>
             </div>

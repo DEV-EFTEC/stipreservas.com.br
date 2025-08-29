@@ -92,7 +92,8 @@ export async function findInvitesByUser(id) {
   return db("associate_bookings_invites as ab")
     .join("bookings as b", "ab.booking_id", "b.id")
     .where("ab.associate_invited_id", id)
-    .select("b.*");
+    .select("b.*")
+    .orderBy("b.utc_created_on", "desc")
 }
 
 export async function findInviteById(id) {

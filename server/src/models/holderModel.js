@@ -59,3 +59,12 @@ export async function createHolderByDraw(data) {
   
   return holder[0]
 }
+
+export async function updateHolder(id, data) {
+  const rows = await db("users")
+    .where({ id })
+    .update(data)
+    .returning("*");
+
+  return rows.map(({ password, ...r }) => r);
+}

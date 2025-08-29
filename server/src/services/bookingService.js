@@ -6,7 +6,7 @@ import * as associatesModel from "#models/associatesModel.js";
 import * as guestsModel from "#models/guestsModel.js";
 import * as childrenModel from "#models/childrenModel.js";
 import * as stepchildrenModel from "#models/stepchildrenModel.js";
-import * as holderModel from "#models/holderModel.js";
+import * as holdersModel from "#models/holderModel.js";
 import * as paymentService from "#services/paymentService.js";
 import _ from "lodash";
 import "dotenv/config";
@@ -277,7 +277,7 @@ export async function createParticipantsBooking(
     }
   }
   if (holders.length > 0) {
-    tasks.push(holderModel.createHolderByBooking(holders));
+    tasks.push(holdersModel.createHolderByBooking(holders));
   }
 
   return await Promise.all(tasks);
@@ -347,7 +347,7 @@ export async function updateParticipantsBooking(
 
   if (holders.length > 0) {
     const holdersUpdates = holders.map((hol) =>
-      holderModel.updateHoldersByBooking({
+      holdersModel.updateHoldersByBooking({
         holder_id: hol.id,
         check_in: hol.check_in,
         check_out: hol.check_out,
@@ -1031,6 +1031,7 @@ export async function updateParticipants(
   guests,
   dependents,
   associates,
+  holders,
   word_card_file_status,
   receipt_picture_status
 ) {
@@ -1074,6 +1075,15 @@ export async function updateParticipants(
       })
     );
     tasks.push(...associatesUpdates);
+  }
+
+  if (holders.length > 0) {
+    const holdersUpdates = holders.map((inv) =>
+      holdersModel.updateHolder(inv.id, {
+        document_picture_status: inv.document_picture_status,
+      })
+    );
+    tasks.push(...holdersUpdates);
   }
 
   await bookingModel.updateBooking(booking_id, {
