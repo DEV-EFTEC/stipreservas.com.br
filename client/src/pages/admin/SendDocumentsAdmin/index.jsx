@@ -193,7 +193,7 @@ export default function SendDocumentsAdmin() {
       method: 'POST',
       body: JSON.stringify({
         ...newEntity,
-        created_by: ownerId
+        created_by: ownerId || user.id
       })
     });
 

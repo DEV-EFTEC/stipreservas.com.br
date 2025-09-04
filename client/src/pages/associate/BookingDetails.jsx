@@ -858,7 +858,7 @@ export default function BookingDetails() {
                     {
                       ((new Date(booking.check_in) - new Date()) / (1000 * 60 * 60 * 24)) >= 3
                         ?
-                        <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleCancel}>Cancelar solicitação<X /></Button>
+                        <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleGetRefund}>Cancelar e pedir reembolso<X /></Button>
                         :
                         <Button className={'mt-4 w-full'} variant={'destructive'} onClick={handleCancel} disabled>Cancelar solicitação<X /></Button>
                     }
